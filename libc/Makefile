@@ -1,7 +1,3 @@
-DEFAULT_HOST!=../default-host.sh
-HOST?=DEFAULT_HOST
-HOSTARCH!=../target-triplet-to-arch.sh $(HOST)
-
 CFLAGS?=-O2 -g
 CPPFLAGS?=
 LDFLAGS?=
@@ -18,9 +14,16 @@ CPPFLAGS:=$(CPPFLAGS) -D__is_libc -Iinclude
 LIBK_CFLAGS:=$(CFLAGS)
 LIBK_CPPFLAGS:=$(CPPFLAGS) -D__is_libk
 
-ARCHDIR=arch/$(HOSTARCH)
+ARCHDIR=arch/i686
 
-include $(ARCHDIR)/make.config
+KERNEL_ARCH_CFLAGS=
+KERNEL_ARCH_CPPFLAGS=
+KERNEL_ARCH_LDFLAGS=
+KERNEL_ARCH_LIBS=
+
+KERNEL_ARCH_OBJS=\
+$(ARCHDIR)/boot.o \
+$(ARCHDIR)/tty.o \
 
 CFLAGS:=$(CFLAGS) $(ARCH_CFLAGS)
 CPPFLAGS:=$(CPPFLAGS) $(ARCH_CPPFLAGS)
@@ -48,7 +51,6 @@ $(HOSTEDOBJS) \
 
 LIBK_OBJS=$(FREEOBJS:.o=.libk.o)
 
-#BINARIES=libc.a libk.a # Not ready for libc yet.
 BINARIES=libk.a
 
 .PHONY: all clean install install-headers install-libs
