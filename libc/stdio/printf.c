@@ -25,6 +25,11 @@ print(const char* data, size_t length)
 static bool
 print_signed_integer(const int* data)
 {
+	if (0 == *data)
+	{
+		return print("0", 1);
+	}
+
 	bool gt0 = (*data >= 0);
 
 	int val = gt0 ? *data : *data * -1;
@@ -61,7 +66,12 @@ print_signed_integer(const int* data)
 static bool
 print_unsigned_integer(const uint32_t* data)
 {
-	uint32_t val = *data;
+	if (0 == *data)
+	{
+		return print("0", 1);
+	}
+
+	uint32_t val = (uint32_t) *data;
 	char buf[256];
 	memset(&buf, 0x00, 256);
 
@@ -72,6 +82,7 @@ print_unsigned_integer(const uint32_t* data)
 		val/= 10;
 
 		buf[i] = digit;
+		
 		i += 1;
 	}
 
@@ -88,9 +99,48 @@ print_unsigned_integer(const uint32_t* data)
 
 
 static bool
-print_hex(const unsigned long* data, bool lower_case)
+print_unsigned_long(const uint64_t* data)
 {
-	unsigned long val = *data;
+	if (0 == *data)
+	{
+		return print("0", 1);
+	}
+
+	uint64_t val = (uint64_t) *data;
+	char buf[256];
+	memset(&buf, 0x00, 256);
+
+	size_t i = 0;
+	while (val && i < 256)
+	{
+		char digit = (val % 10) + '0';
+		val/= 10;
+
+		buf[i] = digit;
+		
+		i += 1;
+	}
+
+	char reversed[256];
+	memset(&reversed, 0x00, 256);
+	for (size_t j = 0; j < i; j++)
+	{
+		reversed[j] = buf[i - j - 1];
+	}
+
+	return print((const char*)reversed, i);
+}
+
+
+static bool
+print_hex(const uint64_t* data, bool lower_case)
+{
+	if (0 == *data)
+	{
+		return print("0", 1);
+	}
+
+	unsigned int val = *data;
 	char buf[256];
 	memset(&buf, 0x00, 256);
 
@@ -135,7 +185,7 @@ print_hex(const unsigned long* data, bool lower_case)
 				/** If you fall here, probably the ALU is broken :( **/
 				return false;
 		}
-		val/= 10;
+		val/= 16;
 
 		buf[i] = cdigit;
 		i += 1;
@@ -160,7 +210,6 @@ printf(const char* restrict format, ...)
 	va_start(parameters, format);
 
 	int written = 0;
-
 	while (*format != EOS)
 	{
 		size_t maxrem = INT_MAX - written;
@@ -184,10 +233,13 @@ printf(const char* restrict format, ...)
 				errno = EOVERFLOW;
 				return -1;
 			}
+
+			
 			if (!print(format, amount))
 			{
 				return -1;
 			}
+
 			format += amount;
 			written += amount;
 			continue;
@@ -247,11 +299,28 @@ printf(const char* restrict format, ...)
 
 			written += 1;
 		}
+		else if ('U' == *format)
+		{
+			format += 1;
+
+			uint64_t i = (uint64_t) va_arg(parameters, uint64_t);
+			if (!maxrem)
+			{
+				errno = EOVERFLOW;
+				return -1;
+			}
+			if (!print_unsigned_long(&i))
+			{
+				return -1;
+			}
+
+			written += 1;	
+		}
 		else if ('x' == *format)
 		{
 			format += 1;
 
-			unsigned long i = (unsigned long) va_arg(parameters, unsigned long);
+			uint64_t i = (uint64_t) va_arg(parameters, uint64_t);
 			if (!maxrem)
 			{
 				errno = EOVERFLOW;
@@ -268,7 +337,7 @@ printf(const char* restrict format, ...)
 		{
 			format += 1;
 
-			unsigned long i = (unsigned long) va_arg(parameters, unsigned long);
+			uint64_t i = (uint64_t) va_arg(parameters, uint64_t);
 			if (!maxrem)
 			{
 				errno = EOVERFLOW;

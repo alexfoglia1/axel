@@ -15,7 +15,8 @@ static size_t 	 _row;
 static size_t 	 _column;
 static uint8_t 	 _color;
 static uint16_t* _tty;
-
+static size_t	 _tabulations;
+static size_t	 _tabulation_width;
 
 void
 tty_init(void)
@@ -24,6 +25,8 @@ tty_init(void)
 	_column = 0;
 	_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	_tty = VGA_MEMORY;
+	_tabulations = 8;
+	_tabulation_width = VGA_WIDTH / _tabulations; //10 tabulations spaces for the moment
 	
 	for (size_t y = 0; y < VGA_HEIGHT; y++)
 	{
@@ -77,6 +80,15 @@ tty_putchar(char c)
 			tty_scroll();
 			_row = VGA_HEIGHT - 1;
 		}
+	}
+	else if ('\r' == c)
+	{
+		_column = 0;
+	}
+	else if ('\t' == c)
+	{
+		size_t current_tabulation = _column / _tabulation_width;
+		_column = (1 + current_tabulation) * _tabulation_width;
 	}
 	else
 	{

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <kernel/tty.h>
 
 int
 puts(const char* string)
