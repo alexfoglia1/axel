@@ -2,7 +2,7 @@
 set -e
 . ./env-build.sh
 
-echo "Building axel . . ."
+echo "Building $OSNAME . . ."
 mkdir -p "$SYSROOT"
 
 for PROJECT in $SYSTEM_HEADER_PROJECTS; do

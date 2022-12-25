@@ -1,6 +1,7 @@
 SYSTEM_HEADER_PROJECTS="libc kernel"
 PROJECTS="libc kernel"
 
+export OSNAME=axel
 export MAKE=${MAKE:-make}
 export HOST=i686-elf
 

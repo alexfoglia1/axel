@@ -9,4 +9,4 @@ done
 
 rm -fr isodir
 rm -fr sysroot
-rm -fr axel.iso
+rm -fr ${OSNAME}.iso

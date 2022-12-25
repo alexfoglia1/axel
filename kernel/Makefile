@@ -3,7 +3,7 @@ CPPFLAGS?=
 LDFLAGS?=
 LIBS?=
 
-#PREFIX is the directory where AXEL binaries and headers will be installed : these are the SYSROOT subdirectories
+#PREFIX is the directory where $(OSNAME) binaries and headers will be installed : these are the SYSROOT subdirectories
 DESTDIR?=
 PREFIX?=/usr/local
 EXEC_PREFIX?=$(PREFIX)
@@ -55,11 +55,11 @@ $(ARCHDIR)/crtn.o \
 .PHONY: all clean install install-headers install-kernel
 .SUFFIXES: .o .c .S
 
-all: axel.kernel
+all: $(OSNAME).kernel
 
-axel.kernel: $(OBJS) $(ARCHDIR)/linker.ld
+$(OSNAME).kernel: $(OBJS) $(ARCHDIR)/linker.ld
 	$(CC) -T $(ARCHDIR)/linker.ld -o $@ $(CFLAGS) $(LINK_LIST)
-	grub-file --is-x86-multiboot axel.kernel
+	grub-file --is-x86-multiboot $(OSNAME).kernel
 
 $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 	OBJ=`$(CC) $(CFLAGS) $(LDFLAGS) -print-file-name=$(@F)` && cp "$$OBJ" $@
@@ -71,7 +71,7 @@ $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 	$(CC) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
 
 clean:
-	rm -f axel.kernel
+	rm -f $(OSNAME).kernel
 	rm -f $(OBJS) *.o */*.o */*/*.o
 	rm -f $(OBJS:.o=.d) *.d */*.d */*/*.d
 
@@ -81,8 +81,8 @@ install-headers:
 	mkdir -p $(DESTDIR)$(INCLUDEDIR)
 	cp -R --preserve=timestamps include/. $(DESTDIR)$(INCLUDEDIR)/.
 
-install-kernel: axel.kernel
+install-kernel: $(OSNAME).kernel
 	mkdir -p $(DESTDIR)$(BOOTDIR)
-	cp axel.kernel $(DESTDIR)$(BOOTDIR)
+	cp $(OSNAME).kernel $(DESTDIR)$(BOOTDIR)
 
 -include $(OBJS:.o=.d)
