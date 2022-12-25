@@ -9,4 +9,3 @@ done
 
 rm -fr isodir
 rm -fr sysroot
-rm -fr ${OSNAME}.iso
