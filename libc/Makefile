@@ -23,6 +23,7 @@ KERNEL_ARCH_LIBS=
 
 KERNEL_ARCH_OBJS=\
 $(ARCHDIR)/boot.o \
+$(ARCHDIR)/vga.o \
 $(ARCHDIR)/tty.o \
 
 CFLAGS:=$(CFLAGS) $(ARCH_CFLAGS)
@@ -32,6 +33,7 @@ LIBK_CPPFLAGS:=$(LIBK_CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
 
 FREEOBJS=\
 $(ARCH_FREEOBJS) \
+errno/errno.o \
 stdio/printf.o \
 stdio/putchar.o \
 stdio/puts.o \

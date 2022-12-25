@@ -1,8 +1,16 @@
 #include <stdio.h>
-
+#include <errno.h>
 #include <kernel/tty.h>
 
-void kernel_main(void) {
-	terminal_initialize();
-	printf("Hello, kernel World!\n");
+#include <kernel/multiboot.h>
+
+void
+_main(multiboot_info_t* mbd, uint32_t magic)
+{
+	errno = ENOERR;
+	tty_init();
+
+	printf("MULTIBOOT MAGIC NUMBER(%u)\n", magic);
+	
+
 }

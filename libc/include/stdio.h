@@ -4,6 +4,7 @@
 #include <sys/cdefs.h>
 
 #define EOF (-1)
+#define EOS (0)
 
 #ifdef __cplusplus
 extern "C" {
