@@ -1,12 +1,9 @@
-DEFAULT_HOST!=../default-host.sh
-HOST?=DEFAULT_HOST
-HOSTARCH!=../target-triplet-to-arch.sh $(HOST)
-
 CFLAGS?=-O2 -g
 CPPFLAGS?=
 LDFLAGS?=
 LIBS?=
 
+#PREFIX is the directory where AXEL binaries and headers will be installed : these are the SYSROOT subdirectories
 DESTDIR?=
 PREFIX?=/usr/local
 EXEC_PREFIX?=$(PREFIX)
@@ -18,9 +15,17 @@ CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
-ARCHDIR=arch/$(HOSTARCH)
+#x86 is the target architecture for the moment 
+ARCHDIR=arch/i686
 
-include $(ARCHDIR)/make.config
+KERNEL_ARCH_CFLAGS=
+KERNEL_ARCH_CPPFLAGS=
+KERNEL_ARCH_LDFLAGS=
+KERNEL_ARCH_LIBS=
+
+KERNEL_ARCH_OBJS=\
+$(ARCHDIR)/boot.o \
+$(ARCHDIR)/tty.o \
 
 CFLAGS:=$(CFLAGS) $(KERNEL_ARCH_CFLAGS)
 CPPFLAGS:=$(CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
@@ -50,11 +55,11 @@ $(ARCHDIR)/crtn.o \
 .PHONY: all clean install install-headers install-kernel
 .SUFFIXES: .o .c .S
 
-all: myos.kernel
+all: axel.kernel
 
-myos.kernel: $(OBJS) $(ARCHDIR)/linker.ld
+axel.kernel: $(OBJS) $(ARCHDIR)/linker.ld
 	$(CC) -T $(ARCHDIR)/linker.ld -o $@ $(CFLAGS) $(LINK_LIST)
-	grub-file --is-x86-multiboot myos.kernel
+	grub-file --is-x86-multiboot axel.kernel
 
 $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 	OBJ=`$(CC) $(CFLAGS) $(LDFLAGS) -print-file-name=$(@F)` && cp "$$OBJ" $@
@@ -66,7 +71,7 @@ $(ARCHDIR)/crtbegin.o $(ARCHDIR)/crtend.o:
 	$(CC) -MD -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
 
 clean:
-	rm -f myos.kernel
+	rm -f axel.kernel
 	rm -f $(OBJS) *.o */*.o */*/*.o
 	rm -f $(OBJS:.o=.d) *.d */*.d */*/*.d
 
@@ -76,8 +81,8 @@ install-headers:
 	mkdir -p $(DESTDIR)$(INCLUDEDIR)
 	cp -R --preserve=timestamps include/. $(DESTDIR)$(INCLUDEDIR)/.
 
-install-kernel: myos.kernel
+install-kernel: axel.kernel
 	mkdir -p $(DESTDIR)$(BOOTDIR)
-	cp myos.kernel $(DESTDIR)$(BOOTDIR)
+	cp axel.kernel $(DESTDIR)$(BOOTDIR)
 
 -include $(OBJS:.o=.d)
