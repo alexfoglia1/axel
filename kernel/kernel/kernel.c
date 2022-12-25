@@ -31,8 +31,9 @@ _main(multiboot_info_t* mbd, uint32_t magic)
 			addr |= mmmt->addr_low;
 			uint64_t len = ((uint64_t)(mmmt->len_high) << 32);
 			len |= mmmt->len_low;
-        	printf("Addr : %x   \t  Length : %x \t  Size : %x \t  Type : %d\n", addr, len, mmmt->size, mmmt->type);
-		
+        	printf("Addr : %x   \t  Length : %x \t  Size : %x \t", addr, len, mmmt->size);
+			printf(" Type : %x\n", mmmt->type);
+			
 			if (available)
 			{
 				memsize += len;
