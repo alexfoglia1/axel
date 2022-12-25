@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+. ./env-build.sh
 
 echo "Generating $OSNAME iso . . ."
 if [ ! -f sysroot/boot/$OSNAME.kernel ]; then
