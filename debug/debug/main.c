@@ -1,6 +1,8 @@
 #include <stdio.h>
 
-int main(int argc, char** argv)
+
+int
+main(int argc, char** argv)
 {
     /** Call and debug kernel functions which are bugged :) **/
 
