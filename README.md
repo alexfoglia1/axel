@@ -28,6 +28,14 @@ The codebase has the following structure
     libc/
          string   : reimplementation of the C string library
 
+    
+    common/
+           include/
+                   common: headers containing functions which are intended to be general purpose and accessible by every OS module
+    common/
+            common : implementation of general purpose functions
+
+
 
     sysroot/ : The AXEL-OS system root, it is generated during the build process and it contains kernel binary and a minimal initial filesystem
     

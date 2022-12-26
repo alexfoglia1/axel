@@ -19,6 +19,4 @@ kernel_main()
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	printf("Starting AXEL %d.%d-%c\n", MAJOR_V, MINOR_V, STAGE_V);
 
-
-	printf("Kernel at 0x%X\n", p_32_to_uint_64(&kernel_main));
 }
