@@ -18,7 +18,8 @@ _main(multiboot_info_t* mbd, uint32_t magic)
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	printf("Starting AXEL %d.%d-%c\n", MAJOR_V, MINOR_V, STAGE_V);
 
-	printf("floating point(%f)\n", 1.2345f);
+	printf("signed integer(%d)\n", -77);
+	printf("floating point(%f)\n", -123.4567f);
 
 	if (MULTIBOOT_BOOTLOADER_MAGIC == magic)
 	{

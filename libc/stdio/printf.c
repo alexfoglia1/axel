@@ -65,7 +65,7 @@ print_signed_integer(const int* data)
 	}
 	for (size_t j = rev0; j < i + rev0; j++)
 	{
-		reversed[j] = buf[i - j - 1];
+		reversed[j] = buf[i - j - 1 + rev0];
 	}
 
 	print((const char*)reversed, i + rev0);
@@ -231,12 +231,20 @@ print_float(const float* data)
 	float absval = *data < 0 ? *data * -1 : *data;
 	int abs_integer_part = (int)(absval);
 	float decimal_part = absval - abs_integer_part;
-	while (decimal_part < 1)
+
+	while (1)
 	{
 		decimal_part *= 10;
+
+		int next_10times_decimal_part = (uint32_t)(decimal_part * 10);
+		if (next_10times_decimal_part % 10 == 0)
+		{
+			break;
+		}
 	}
 
-	written += print_unsigned_integer((int)decimal_part);
+	uint32_t idecimal_part = (uint32_t)(decimal_part);
+	written += print_unsigned_integer(&idecimal_part);
 
 	return written;
 }
@@ -311,10 +319,10 @@ printf(const char* restrict format, ...)
 					written += len;
 					break;
 				}
-				case 'f'
+				case 'f':
 				{
 					p_next_char += 1;
-					float arg = (float) (va_arg(parameters, float));
+					float arg = (float) (va_arg(parameters, double));
 					written += print_float(&arg);
 					break;
 				}
