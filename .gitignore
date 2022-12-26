@@ -6,3 +6,5 @@ isodir
 sysroot
 *build*
 *.user
+axel.iso
+axel.img
