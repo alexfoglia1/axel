@@ -253,6 +253,38 @@ print_float(const double* data)
 }
 
 
+static int
+print_unsigned_int8(const uint8_t* data)
+{
+	uint32_t promoted = (uint32_t)(*data);
+	return print_unsigned_integer(&promoted);
+}
+
+
+static int
+print_signed_int8(const int8_t* data)
+{
+	int promoted = (int)(*data);
+	return print_signed_integer(&promoted);
+}
+
+
+static int
+print_unsigned_int16(const uint16_t* data)
+{
+	uint32_t promoted = (uint32_t)(*data);
+	return print_unsigned_integer(&promoted);
+}
+
+
+static int
+print_signed_int16(const int16_t* data)
+{
+	int promoted = (int)(*data);
+	return print_signed_integer(&promoted);
+}
+
+
 int
 printf(const char* restrict format, ...)
 {
@@ -297,6 +329,34 @@ printf(const char* restrict format, ...)
 					p_next_char += 1;					
 					uint64_t arg = (uint64_t) (va_arg(parameters, uint64_t));
 					written += print_unsigned_long(&arg);
+					break;
+				}
+				case 'b': // Mnemonic : byte
+				{
+					p_next_char += 1;
+					uint8_t arg = (uint8_t) (va_arg(parameters, uint32_t) & 0xFF);
+					written += print_unsigned_int8(&arg);
+					break;
+				}
+				case 'h':
+				{
+					p_next_char += 1;
+					int8_t arg = (int8_t) (va_arg(parameters, int) & 0xFF);
+					written += print_signed_int8(&arg);
+					break;
+				}
+				case 'w': // Mnemonic : word
+				{
+					p_next_char += 1;
+					uint16_t arg = (uint16_t) (va_arg(parameters, uint32_t) & 0xFFFF);
+					written += print_unsigned_int16(&arg);
+					break;
+				}
+				case 'r': // Mnemonic : shoRt
+				{
+					p_next_char += 1;
+					int16_t arg = (int16_t) (va_arg(parameters, int) & 0xFFFF);
+					written += print_signed_int16(&arg);
 					break;
 				}
 				case 'x':

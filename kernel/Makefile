@@ -30,6 +30,8 @@ KERNEL_ARCH_OBJS=\
 $(ARCHDIR)/boot.o \
 $(ARCHDIR)/vga.o \
 $(ARCHDIR)/tty.o \
+$(ARCHDIR)/asm.o \
+$(ARCHDIR)/gdt.o \
 $(COMMONDIR)/common/utils.o \
 
 

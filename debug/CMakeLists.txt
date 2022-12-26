@@ -11,6 +11,8 @@ axel-kernel-debug
 #---- ARCHITECTURE SPECIFIC SOURCES ----#
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/tty.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/vga.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/asm.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/gdt.c
 
 #---- COMMON      ----#
 ${CMAKE_SOURCE_DIR}/../common/common/utils.c
