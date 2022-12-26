@@ -10,11 +10,12 @@ INCLUDEDIR?=$(PREFIX)/include
 LIBDIR?=$(EXEC_PREFIX)/lib
 
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra
-CPPFLAGS:=$(CPPFLAGS) -D__is_libc -Iinclude
+CPPFLAGS:=$(CPPFLAGS) -D__is_libc -Iinclude -I../common/include
 LIBK_CFLAGS:=$(CFLAGS)
 LIBK_CPPFLAGS:=$(CPPFLAGS) -D__is_libk
 
 ARCHDIR=arch/i686
+COMMONDIR=../common
 
 KERNEL_ARCH_CFLAGS=
 KERNEL_ARCH_CPPFLAGS=
@@ -25,6 +26,7 @@ KERNEL_ARCH_OBJS=\
 $(ARCHDIR)/boot.o \
 $(ARCHDIR)/vga.o \
 $(ARCHDIR)/tty.o \
+$(COMMONDIR)/common/utils.o
 
 CFLAGS:=$(CFLAGS) $(ARCH_CFLAGS)
 CPPFLAGS:=$(CPPFLAGS) $(ARCH_CPPFLAGS)
@@ -43,6 +45,7 @@ string/memcpy.o \
 string/memmove.o \
 string/memset.o \
 string/strlen.o \
+
 
 HOSTEDOBJS=\
 $(ARCH_HOSTEDOBJS) \

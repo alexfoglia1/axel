@@ -1,6 +1,8 @@
-#include "utils.h"
+#include <common/utils.h>
 
-uint64_t p_32_to_uint_64(void* v_ptr)
+
+uint64_t
+p_32_to_uint_64(void* v_ptr)
 {
 	uint32_t* ptr = (uint32_t*) (v_ptr);
 	uint32_t  p_32_value = (uint32_t) (ptr);

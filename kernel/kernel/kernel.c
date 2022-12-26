@@ -4,7 +4,7 @@
 
 #include <kernel/tty.h>
 #include <kernel/multiboot.h>
-//#include <common/utils.h>
+#include <common/utils.h>
 
 #define MAJOR_V 0
 #define MINOR_V 1
@@ -20,5 +20,5 @@ kernel_main()
 	printf("Starting AXEL %d.%d-%c\n", MAJOR_V, MINOR_V, STAGE_V);
 
 
-	printf("Kernel at 0x%X\n", p_32_to_p_64(&kernel_main));
+	printf("Kernel at 0x%X\n", p_32_to_uint_64(&kernel_main));
 }

@@ -11,12 +11,15 @@ BOOTDIR?=$(EXEC_PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude
+CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -I../common/include
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
 #x86 is the target architecture for the moment 
 ARCHDIR=arch/i686
+
+#My own common sources
+COMMONDIR=../common
 
 KERNEL_ARCH_CFLAGS=
 KERNEL_ARCH_CPPFLAGS=
@@ -27,6 +30,8 @@ KERNEL_ARCH_OBJS=\
 $(ARCHDIR)/boot.o \
 $(ARCHDIR)/vga.o \
 $(ARCHDIR)/tty.o \
+$(COMMONDIR)/common/utils.o \
+
 
 CFLAGS:=$(CFLAGS) $(KERNEL_ARCH_CFLAGS)
 CPPFLAGS:=$(CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
