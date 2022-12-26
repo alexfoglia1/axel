@@ -12,6 +12,9 @@ axel-kernel-debug
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/tty.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/vga.c
 
+#---- COMMON      ----#
+${CMAKE_SOURCE_DIR}/../common/common/utils.c
+
 #---- LIBC ERRNO  ----#
 ${CMAKE_SOURCE_DIR}/../libc/errno/errno.c
 
@@ -38,6 +41,7 @@ target_include_directories(axel-kernel-debug PUBLIC
 
 ${CMAKE_SOURCE_DIR}/../kernel/include
 ${CMAKE_SOURCE_DIR}/../libc/include
+${CMAKE_SOURCE_DIR}/../common/include
 )
 
 add_compile_options(-Wl,nostdlib -Wl,nodefaultlibs)
