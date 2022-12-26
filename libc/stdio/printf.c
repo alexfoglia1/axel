@@ -21,13 +21,22 @@ print(const char* data, size_t length)
 	return true;
 }
 
+static int
+print_char(const char* data)
+{
+	print(data, 1);
+	return 1;
+}
 
-static bool
+
+
+static int
 print_signed_integer(const int* data)
 {
 	if (0 == *data)
 	{
-		return print("0", 1);
+		print("0", 1);
+		return 1;
 	}
 
 	bool gt0 = (*data >= 0);
@@ -35,7 +44,6 @@ print_signed_integer(const int* data)
 	int val = gt0 ? *data : *data * -1;
 	char buf[256];
 	memset(&buf, 0x00, 256);
-
 
 	size_t i = 0;
 	while (val && i < 256)
@@ -60,15 +68,17 @@ print_signed_integer(const int* data)
 		reversed[j] = buf[i - j - 1];
 	}
 
-	return print((const char*)reversed, i + rev0);
+	print((const char*)reversed, i + rev0);
+	return i + rev0;
 }
 
-static bool
+static int
 print_unsigned_integer(const uint32_t* data)
 {
 	if (0 == *data)
 	{
-		return print("0", 1);
+		print("0", 1);
+		return 1;
 	}
 
 	uint32_t val = (uint32_t) *data;
@@ -94,16 +104,18 @@ print_unsigned_integer(const uint32_t* data)
 		reversed[j] = buf[i - j - 1];
 	}
 
-	return print((const char*)reversed, i);
+	print((const char*)reversed, i);
+	return i;
 }
 
 
-static bool
+static int
 print_unsigned_long(const uint64_t* data)
 {
 	if (0 == *data)
 	{
-		return print("0", 1);
+		print("0", 1);
+		return 1;
 	}
 
 	uint64_t val = (uint64_t) *data;
@@ -128,26 +140,28 @@ print_unsigned_long(const uint64_t* data)
 		reversed[j] = buf[i - j - 1];
 	}
 
-	return print((const char*)reversed, i);
+	print((const char*)reversed, i);
+	return i;
 }
 
 
-static bool
+static int
 print_hex(const uint64_t* data, bool lower_case)
 {
 	if (0 == *data)
 	{
-		return print("0", 1);
+		print("0", 1);
+		return 1;
 	}
 
-	unsigned int val = *data;
+	uint64_t val = *data;
 	char buf[256];
 	memset(&buf, 0x00, 256);
 
 	size_t i = 0;
 	while (val && i < 256)
 	{
-		int digit = (val % 16);
+		uint64_t digit = (val % 16);
 		char cdigit;
 		switch (digit)
 		{
@@ -199,7 +213,32 @@ print_hex(const uint64_t* data, bool lower_case)
 		reversed[j] = buf[i - j - 1];
 	}
 
-	return print((const char*)reversed, i);
+	print((const char*)reversed, i);
+	return i;
+}
+
+
+static int
+print_float(const float* data)
+{
+	float val = *data;
+
+	int written = 0;
+	int integer_part = (int)(val);
+	written += print_signed_integer(&integer_part);
+	written += print_char(".");
+	
+	float absval = *data < 0 ? *data * -1 : *data;
+	int abs_integer_part = (int)(absval);
+	float decimal_part = absval - abs_integer_part;
+	while (decimal_part < 1)
+	{
+		decimal_part *= 10;
+	}
+
+	written += print_unsigned_integer((int)decimal_part);
+
+	return written;
 }
 
 
@@ -210,184 +249,87 @@ printf(const char* restrict format, ...)
 	va_start(parameters, format);
 
 	int written = 0;
-	while (*format != EOS)
+	const char* p_next_char = &format[0];
+
+	while (*p_next_char)
 	{
-		size_t maxrem = INT_MAX - written;
+		const char c_actual = *p_next_char;
+		const char c_next   = *(p_next_char + 1);
 
-		if (format[0] != '%' || format[1] == '%')
+		if ('%' == c_actual)
 		{
-			if (format[0] == '%')
+			switch (c_next)
 			{
-				format += 1;
+				case 'c':
+				{
+					p_next_char += 1;					
+					char arg = (char) (va_arg(parameters, int) & 0xFF);
+					written += print_char(&arg);
+					break;
+				}
+				case 'd':
+				{
+					p_next_char += 1;					
+					int arg = (int) (va_arg(parameters, int));
+					written += print_signed_integer(&arg);
+					break;
+				}
+				case 'u':
+				{
+					p_next_char += 1;					
+					uint32_t arg = (uint32_t) (va_arg(parameters, uint32_t));
+					written += print_unsigned_integer(&arg);
+					break;
+				}
+				case 'U':
+				{
+					p_next_char += 1;					
+					uint64_t arg = (uint64_t) (va_arg(parameters, uint64_t));
+					written += print_unsigned_long(&arg);
+					break;
+				}
+				case 'x':
+				{
+					p_next_char += 1;					
+					uint64_t arg = (uint64_t) (va_arg(parameters, uint64_t));
+					written += print_hex(&arg, true);
+					break;
+				}
+				case 'X':
+				{
+					p_next_char += 1;					
+					uint64_t arg = (uint64_t) (va_arg(parameters, uint64_t));
+					written += print_hex(&arg, false);
+					break;
+				}
+				case 's':
+				{
+					p_next_char += 1;
+					const char* arg = va_arg(parameters, const char*);
+					size_t len = strlen(arg);
+					print(arg, len);
+					written += len;
+					break;
+				}
+				case 'f'
+				{
+					p_next_char += 1;
+					float arg = (float) (va_arg(parameters, float));
+					written += print_float(&arg);
+					break;
+				}
+				default:
+					break;
 			}
-
-			size_t amount = 1;
-			while (format[amount] && format[amount] != '%')
-			{
-				amount += 1;
-			}
-
-			if (maxrem < amount)
-			{
-				// TODO: Set errno to EOVERFLOW.
-				errno = EOVERFLOW;
-				return -1;
-			}
-
-			
-			if (!print(format, amount))
-			{
-				return -1;
-			}
-
-			format += amount;
-			written += amount;
-			continue;
-		}
-
-		const char* format_begun_at = format++;
-
-		if ('c' == *format)
-		{
-			format += 1;
-
-			char c = (char) va_arg(parameters, int /* char promotes to int */);
-			if (!maxrem)
-			{
-				// TODO: Set errno to EOVERFLOW.
-				errno = EOVERFLOW;
-				return -1;
-			}
-			if (!print(&c, sizeof(c)))
-			{
-				return -1;
-			}
-
-			written += 1;
-		}
-		else if ('d' == *format)
-		{
-			format += 1;
-
-			int i = (int) va_arg(parameters, int);
-			if (!maxrem)
-			{
-				errno = EOVERFLOW;
-				return -1;
-			}
-			if (!print_signed_integer(&i))
-			{
-				return -1;
-			}
-
-			written += 1;
-		}
-		else if ('u' == *format)
-		{
-			format += 1;
-
-			uint32_t i = (uint32_t) va_arg(parameters, uint32_t);
-			if (!maxrem)
-			{
-				errno = EOVERFLOW;
-				return -1;
-			}
-			if (!print_unsigned_integer(&i))
-			{
-				return -1;
-			}
-
-			written += 1;
-		}
-		else if ('U' == *format)
-		{
-			format += 1;
-
-			uint64_t i = (uint64_t) va_arg(parameters, uint64_t);
-			if (!maxrem)
-			{
-				errno = EOVERFLOW;
-				return -1;
-			}
-			if (!print_unsigned_long(&i))
-			{
-				return -1;
-			}
-
-			written += 1;	
-		}
-		else if ('x' == *format)
-		{
-			format += 1;
-
-			uint64_t i = (uint64_t) va_arg(parameters, uint64_t);
-			if (!maxrem)
-			{
-				errno = EOVERFLOW;
-				return -1;
-			}
-			if (!print_hex(&i, true))
-			{
-				return -1;
-			}
-
-			written += 1;
-		}
-		else if ('X' == *format)
-		{
-			format += 1;
-
-			uint64_t i = (uint64_t) va_arg(parameters, uint64_t);
-			if (!maxrem)
-			{
-				errno = EOVERFLOW;
-				return -1;
-			}
-			if (!print_hex(&i, false))
-			{
-				return -1;
-			}
-
-			written += 1;
-		}
-		else if ('s' == *format)
-		{
-			format += 1;
-
-			const char* str = va_arg(parameters, const char*);
-			size_t len = strlen(str);
-			if (maxrem < len)
-			{
-				// TODO: Set errno to EOVERFLOW.
-				errno = EOVERFLOW;
-				return -1;
-			}
-			if (!print(str, len))
-			{
-				return -1;
-			}
-
-			written += len;
 		}
 		else
 		{
-			format = format_begun_at;
+			print((const char*)&c_actual, 1);
 
-			size_t len = strlen(format);
-			if (maxrem < len)
-			{
-				// TODO: Set errno to EOVERFLOW.
-				errno = EOVERFLOW;
-				return -1;
-			}
-			if (!print(format, len))
-			{
-				return -1;
-			}
-
-			written += len;
-			format += len;
+			written += 1;
 		}
+
+		p_next_char += 1;
 	}
 
 	va_end(parameters);

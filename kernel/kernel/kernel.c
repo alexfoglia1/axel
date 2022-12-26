@@ -5,6 +5,10 @@
 #include <kernel/tty.h>
 #include <kernel/multiboot.h>
 
+#define MAJOR_V 0
+#define MINOR_V 1
+#define STAGE_V 'b'
+
 void
 _main(multiboot_info_t* mbd, uint32_t magic)
 {
@@ -12,11 +16,13 @@ _main(multiboot_info_t* mbd, uint32_t magic)
 	tty_init();
 
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	printf("Starting AXEL\n");
+	printf("Starting AXEL %d.%d-%c\n", MAJOR_V, MINOR_V, STAGE_V);
+
+	printf("floating point(%f)\n", 1.2345f);
 
 	if (MULTIBOOT_BOOTLOADER_MAGIC == magic)
 	{
-		printf("Bootloader recognized, booting the system\n\n");
+		printf("%s\n\n", "Bootloader recognized, booting the system");
 
 		uint64_t memsize = 0;
     	for(uint32_t i = 0; i < mbd->mmap_length; i += sizeof(multiboot_memory_map_t)) 
@@ -27,16 +33,11 @@ _main(multiboot_info_t* mbd, uint32_t magic)
 			bool available = (mmmt->type == MULTIBOOT_MEMORY_AVAILABLE);
 			tty_set_color(available ? VGA_COLOR_GREEN : VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
-			uint64_t addr = ((uint64_t)(mmmt->addr_high) << 32);
-			addr |= mmmt->addr_low;
-			uint64_t len = ((uint64_t)(mmmt->len_high) << 32);
-			len |= mmmt->len_low;
-        	printf("Addr : %x   \t  Length : %x \t  Size : %x \t", addr, len, mmmt->size);
-			printf(" Type : %x\n", mmmt->type);
-			
+        	printf("Addr : %x   \t  Length : %x \t  Type : %u\n", mmmt->addr, mmmt->len, mmmt->type);
+
 			if (available)
 			{
-				memsize += len;
+				memsize += mmmt->len;
 			}
     }
 
@@ -45,6 +46,6 @@ _main(multiboot_info_t* mbd, uint32_t magic)
 	else
 	{
 		tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
-		printf("Critical error during bootloading : abort\n");
+		printf("Critical error during bootloading : abort\n"); 
 	}
 }
