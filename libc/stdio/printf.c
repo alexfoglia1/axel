@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <kernel/tty.h>
+#include <kernel/vga.h>
 
 
 static bool
@@ -21,13 +23,13 @@ print(const char* data, size_t length)
 	return true;
 }
 
+
 static int
 print_char(const char* data)
 {
 	print(data, 1);
 	return 1;
 }
-
 
 
 static int
@@ -71,6 +73,7 @@ print_signed_integer(const int* data)
 	print((const char*)reversed, i + rev0);
 	return i + rev0;
 }
+
 
 static int
 print_unsigned_integer(const uint32_t* data)
@@ -219,32 +222,32 @@ print_hex(const uint64_t* data, bool lower_case)
 
 
 static int
-print_float(const float* data)
+print_float(const double* data)
 {
-	float val = *data;
+	double val = *data;
 
 	int written = 0;
 	int integer_part = (int)(val);
 	written += print_signed_integer(&integer_part);
 	written += print_char(".");
 	
-	float absval = *data < 0 ? *data * -1 : *data;
+	double absval = *data < 0 ? *data * -1 : *data;
 	int abs_integer_part = (int)(absval);
-	float decimal_part = absval - abs_integer_part;
+	double decimal_part = absval - abs_integer_part;
 
 	while (1)
 	{
 		decimal_part *= 10;
 
-		int next_10times_decimal_part = (uint32_t)(decimal_part * 10);
+        uint64_t next_10times_decimal_part = (uint64_t)(decimal_part * 10);
 		if (next_10times_decimal_part % 10 == 0)
 		{
 			break;
 		}
 	}
 
-	uint32_t idecimal_part = (uint32_t)(decimal_part);
-	written += print_unsigned_integer(&idecimal_part);
+    uint64_t idecimal_part = (uint64_t)(decimal_part);
+    written += print_unsigned_long(&idecimal_part);
 
 	return written;
 }
@@ -322,7 +325,7 @@ printf(const char* restrict format, ...)
 				case 'f':
 				{
 					p_next_char += 1;
-					float arg = (float) (va_arg(parameters, double));
+					double arg = (double) (va_arg(parameters, double));
 					written += print_float(&arg);
 					break;
 				}
