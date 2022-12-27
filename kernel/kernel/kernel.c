@@ -27,10 +27,12 @@ kernel_main()
 	sti();
 
 	printf("Interrupt testing\n");
-	int x = 10;
-	int y = 9;
-	int r = y / (x - y - 1);
-	printf("%d\n", r);
-	//asm volatile("int $0");
+
+
+	asm volatile("mov $0, %edx\n"
+	"mov $0, %eax\n"
+	"mov $0, %ecx\n"
+	"div %ecx");
+
 	printf("Interrupt raised\n");
 }
