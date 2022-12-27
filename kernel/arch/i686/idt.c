@@ -26,7 +26,7 @@ idt_init()
 
     store_idt(&idt);
 
-    printf("Interrupt Descriptor Table initialized\n");
+    printf("INT Descriptor Table initialized\n");
 }
 
 
@@ -35,9 +35,19 @@ idt_add_entry(uint8_t pos, void* isr, uint8_t flags)
 {
     struct idt_entry* descriptor = &idt[pos];
  
-    descriptor->isr_low        = (uint32_t)isr & 0xFFFF;
+    descriptor->isr_low        = (uint32_t)(isr) & 0xFFFF;
     descriptor->kernel_cs      = 0x08;
     descriptor->attributes     = flags;
-    descriptor->isr_high       = (uint32_t)isr >> 16;
+    descriptor->isr_high       = (uint32_t)(isr) >> 16;
     descriptor->reserved       = 0;
+}
+
+
+void*
+idt_get_entry(uint8_t pos)
+{
+    uint32_t addr = idt[pos].isr_low & 0xFFFF;
+    addr |= (idt[pos].isr_high << 16);
+
+    return (void*)(addr);
 }

@@ -1,7 +1,8 @@
 #include <isr/isr.h>
 #include <kernel/gdt.h>
-
 #include <stdio.h>
+
+
 
 struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS] =
 {
@@ -13,14 +14,14 @@ struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS] =
     {&exception_handler_0x05, PRESENT | TRP_GATE},
     {&exception_handler_0x06, PRESENT | TRP_GATE},
     {&exception_handler_0x07, PRESENT | TRP_GATE},
-    {&exception_handler_0x08, PRESENT | TRP_GATE},
-    {&exception_handler_0x09, PRESENT | TRP_GATE},
-    {&exception_handler_0x0A, PRESENT | TRP_GATE},
-    {&exception_handler_0x0B, PRESENT | TRP_GATE},
-    {&exception_handler_0x0C, PRESENT | TRP_GATE},
-    {&exception_handler_0x0D, PRESENT | TRP_GATE},
-    {&exception_handler_0x0E, PRESENT | TRP_GATE},
-    {&exception_handler_0x0F, PRESENT | TRP_GATE},
+    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0x8 = IRQ0 = PIT TICK */ //PIT driver is implementing this
+    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0x9 = IRQ1 = KEYBOARD */ //Not yet impl.
+    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xA = IRQ2 = SLV 8259 */ //Not yet impl.
+    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xB = IRQ3 = COM2 SRQ */ //Not yet impl.
+    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xC = IRQ4 = COM1 SRQ */ //Not yet impl.
+    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xD = IRQ5 = LPT2 DRQ */ //Not yet impl.
+    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xE = IRQ6 = FLOPPY D */ //Not yet impl.
+    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xF = IRQ7 = LPTQ DRQ */ //Not yet impl.
     {&exception_handler_0x10, PRESENT | TRP_GATE},
     {&exception_handler_0x11, PRESENT | TRP_GATE},
     {&exception_handler_0x12, PRESENT | TRP_GATE},
@@ -38,6 +39,16 @@ struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS] =
     {&exception_handler_0x1E, PRESENT | TRP_GATE},
     {&exception_handler_0x1F, PRESENT | TRP_GATE},
 };
+
+__attribute__((noreturn)) void
+generic_irq_ignore()
+{
+     __asm__("pushal");
+    
+    printf("IRQ\n");
+
+    __asm__("popal; leave; iret"); /* BLACK MAGIC! */
+}
 
 
 __attribute__((noreturn)) void
@@ -101,14 +112,6 @@ void exception_handler_0x07()
 {
     printf("0x07 ISR : halt!\n");
     asm volatile("cli8: hlt");
-}
-
-
-__attribute__((noreturn)) void
-exception_handler_0x08()
-{
-    printf("0x08 ISR : halt!\n");
-    asm volatile("cli9: hlt");
 }
 
 

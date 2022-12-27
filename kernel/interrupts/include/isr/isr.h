@@ -16,6 +16,31 @@ struct interrupt_handler_descriptor
     uint8_t attributes;
 };
 
+typedef struct __attribute__((__packed__))
+{
+    uint16_t gs;
+    uint16_t fs;
+    uint16_t es;
+    uint16_t ds;
+    uint32_t ebp;
+    uint32_t edi;
+    uint32_t esi;
+    uint32_t edx;
+    uint32_t ecx;
+    uint32_t ebx;
+    uint32_t eax;
+    //Vector no.
+    uint32_t vec_no;
+    //Hardware error code
+    uint32_t error_code;
+    //Hardware pushed registers
+    void (*eip)(void);
+    uint16_t cs;
+    uint32_t eflag;
+    void *esp;
+    uint16_t ss;
+} interrupt_stack_frame_t;
+
 extern struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS];
 
 //TODO : rename other interrupts than / 0 exception
@@ -27,14 +52,6 @@ __attribute__((noreturn)) void exception_handler_0x04();   //INT 4
 __attribute__((noreturn)) void exception_handler_0x05();   //INT 5
 __attribute__((noreturn)) void exception_handler_0x06();   //INT 6
 __attribute__((noreturn)) void exception_handler_0x07();   //INT 7
-__attribute__((noreturn)) void exception_handler_0x08();   //INT 8
-__attribute__((noreturn)) void exception_handler_0x09();   //INT 9
-__attribute__((noreturn)) void exception_handler_0x0A();   //INT 10
-__attribute__((noreturn)) void exception_handler_0x0B();   //INT 11
-__attribute__((noreturn)) void exception_handler_0x0C();   //INT 12
-__attribute__((noreturn)) void exception_handler_0x0D();   //INT 13
-__attribute__((noreturn)) void exception_handler_0x0E();   //INT 14
-__attribute__((noreturn)) void exception_handler_0x0F();   //INT 15
 __attribute__((noreturn)) void exception_handler_0x10();   //INT 16
 __attribute__((noreturn)) void exception_handler_0x11();   //INT 17
 __attribute__((noreturn)) void exception_handler_0x12();   //INT 18
@@ -52,6 +69,6 @@ __attribute__((noreturn)) void exception_handler_0x1D();   //INT 29
 __attribute__((noreturn)) void exception_handler_0x1E();   //INT 30
 __attribute__((noreturn)) void exception_handler_0x1F();   //INT 31
 
-
+__attribute__((noreturn)) void generic_irq_ignore(); //INT 0x08 - 0x0F
 
 #endif

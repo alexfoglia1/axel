@@ -10,8 +10,8 @@ EXEC_PREFIX?=$(PREFIX)
 BOOTDIR?=$(EXEC_PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
-CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -I../common/include -Iinterrupts/include
+CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -mgeneral-regs-only
+CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -I../common/include -Iinterrupts/include -Idrivers/include
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
@@ -23,6 +23,9 @@ COMMONDIR=../common
 
 #Interrupt service routines
 ISRDIR=interrupts
+
+#Hardware drivers
+DRIVERDIR=drivers
 
 KERNEL_ARCH_CFLAGS=
 KERNEL_ARCH_CPPFLAGS=
@@ -37,6 +40,7 @@ $(ARCHDIR)/asm.o \
 $(ARCHDIR)/gdt.o \
 $(ARCHDIR)/idt.o \
 $(ISRDIR)/isr.o \
+$(DRIVERDIR)/pit.o \
 $(COMMONDIR)/common/utils.o \
 
 

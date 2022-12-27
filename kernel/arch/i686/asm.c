@@ -19,6 +19,22 @@ sti()
 }
 
 
+uint8_t
+inb (int port_no)
+{
+  uint8_t data=0;
+  asm volatile ("inb %%dx, %%al" : "=a" (data) : "d" (port_no));
+  return data;
+}
+
+
+void
+outb (int port_no, int data)
+{
+  asm volatile ("outb %%al, %%dx" :: "a" (data),"d" (port_no));
+}
+
+
 void
 store_gdt(void* gdt_addr, uint16_t limit, int32_t code, int32_t data)
 {

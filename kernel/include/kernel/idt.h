@@ -22,7 +22,8 @@ struct idtr
 } __attribute__((packed));
 
 
-void idt_init();
-void idt_add_entry(uint8_t pos, void* isr, uint8_t flags);
+void  idt_init();
+void  idt_add_entry(uint8_t pos, void* isr, uint8_t flags);
+void* idt_get_entry(uint8_t pos);
 
 #endif

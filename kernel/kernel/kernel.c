@@ -7,10 +7,13 @@
 #include <kernel/asm.h>
 #include <kernel/gdt.h>
 #include <kernel/idt.h>
+#include <isr/isr.h>
+#include <drivers/pit.h>
 
 #define MAJOR_V 0
 #define MINOR_V 1
 #define STAGE_V 'b'
+
 
 void
 kernel_main()
@@ -26,13 +29,7 @@ kernel_main()
 	idt_init();
 	sti();
 
-	printf("Interrupt testing\n");
+	init_pit_timer();
 
-
-	asm volatile("mov $0, %edx\n"
-	"mov $0, %eax\n"
-	"mov $0, %ecx\n"
-	"div %ecx");
-
-	printf("Interrupt raised\n");
+	while(1);
 }

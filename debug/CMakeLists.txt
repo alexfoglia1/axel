@@ -37,8 +37,11 @@ ${CMAKE_SOURCE_DIR}/../libc/string/memmove.c
 ${CMAKE_SOURCE_DIR}/../libc/string/memset.c
 ${CMAKE_SOURCE_DIR}/../libc/string/strlen.c
 
-#---- INT.SRV.   -----#
+#---- INT.SRV.    ----#
 ${CMAKE_SOURCE_DIR}/../kernel/interrupts/isr.c
+
+#---- DRIVERS     ----#
+${CMAKE_SOURCE_DIR}/../kernel/drivers/pit.c
 
 #---- EXEC MAIN   ----#
 ${CMAKE_SOURCE_DIR}/debug/main.c
@@ -48,6 +51,7 @@ target_include_directories(axel-kernel-debug PUBLIC
 
 ${CMAKE_SOURCE_DIR}/../kernel/include
 ${CMAKE_SOURCE_DIR}/../kernel/interrupts/include
+${CMAKE_SOURCE_DIR}/../kernel/drivers/include
 ${CMAKE_SOURCE_DIR}/../libc/include
 ${CMAKE_SOURCE_DIR}/../common/include
 )

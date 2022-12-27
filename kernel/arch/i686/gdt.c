@@ -20,7 +20,7 @@ gdt_init()
 
 	store_gdt(gdt_table, 0xFFFF, 1, 2);	
 
-	printf("Global Descriptor Table initialized\n");
+	printf("GLB Descriptor Table initialized\n");
 }
 
 
