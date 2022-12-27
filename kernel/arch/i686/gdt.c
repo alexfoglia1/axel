@@ -9,7 +9,6 @@ struct gdt_entry gdt_table[GDT_SIZE];
 void
 gdt_init()
 {
-    printf("Initializing Global Descriptor Table\n");
     for (int i = 0; i < GDT_SIZE; i++)
     {
         memset(&gdt_table[i], 0x00, sizeof(struct gdt_entry));
@@ -20,6 +19,8 @@ gdt_init()
 	gdt_add_entry(2, 0x00000000, 0x000FFFFF, PRESENT|KERNEL|DATA|0x02, GRANULARITY|SZBITS);
 
 	store_gdt(gdt_table, 0xFFFF, 1, 2);	
+
+	printf("Global Descriptor Table initialized\n");
 }
 
 
@@ -32,8 +33,5 @@ gdt_add_entry(int32_t pos, uint32_t base, uint32_t limit, uint8_t opt_1, uint8_t
 	gdt_table[pos].opt_1     = opt_1;
 	gdt_table[pos].opt_2     = opt_2 | (uint8_t) ((limit >> 16) & 0x0F);
 	gdt_table[pos].base_high = (uint8_t)((base >> 24) & 0xFF);
-
-    printf("GDT entry %X\tbase(%X)\tlimit(%X)\topt_1(%X)\topt_2(%X)\n",
-           (uint64_t)pos, (uint64_t)base, (uint64_t)limit, (uint64_t)opt_1, (uint64_t)opt_2);
 }
 
