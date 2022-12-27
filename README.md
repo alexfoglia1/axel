@@ -39,15 +39,15 @@ The codebase has the following structure
            include/
                    common: headers containing functions which are intended to be general purpose and accessible by every OS module
     common/
-            common: implementation of general purpose functions
+           common: implementation of general purpose functions
 
 
-    sysroot/: The AXEL-OS system root, it is generated during the build process and it contains kernel binary and a minimal initial filesystem
+    sysroot: The AXEL-OS system root, it is generated during the build process and it contains kernel binary and a minimal initial filesystem
     
 
 In order to debug core kernel functions using GDB, one can use the "debug" project, located in
     
-    debug/
+    debug
 
 This sub-project is a cmake project and depends on the OS sources, except for the x86 specific implementation of the HAL, for which there is the custom stabbed implementation described above.
 Its entry point is located inside
