@@ -17,11 +17,11 @@ idt_init()
         memset(&idt[i], 0x00, sizeof(struct idt_entry));
     }
 
-    idt_add_entry(0, &exception_handler_0x0, 0x8E);
+    idt_add_entry(0, &divide_by_zero_exception, 0x8E);
     for (int i = 1; i < 32; i++)
     {
         
-        idt_add_entry(i, i == 6 ? &divide_by_zero_exception : &exception_handler, 0x8E);
+        idt_add_entry(i, &exception_handler, 0x8E);
     }
 
     store_idt(&idt);
