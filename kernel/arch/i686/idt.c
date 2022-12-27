@@ -1,12 +1,13 @@
 #include <kernel/idt.h>
-#include <isr/isr.h>
 #include <kernel/asm.h>
+#include <isr/isr.h>
 #include <string.h>
 #include <stdio.h>
 #include <common/utils.h>
 
+
 __attribute__((aligned(0x10))) 
-struct idt_entry idt[IDT_SIZE];
+struct idt_entry idt[IDT_SIZE]; // The real IDT pointed by LIDT
 
 
 void
@@ -17,11 +18,10 @@ idt_init()
         memset(&idt[i], 0x00, sizeof(struct idt_entry));
     }
 
-    idt_add_entry(0, &divide_by_zero_exception, 0x8E);
-    for (int i = 1; i < 32; i++)
+    for (int i = 0; i < AVAILABLE_HANDLERS; i++)
     {
-        
-        idt_add_entry(i, &exception_handler, 0x8E);
+        /** isr_vector is declared in isr/isr.h and defined in arch/i386/isr.c **/
+        idt_add_entry(i, isr_vector[i].handler, isr_vector[i].attributes);
     }
 
     store_idt(&idt);
