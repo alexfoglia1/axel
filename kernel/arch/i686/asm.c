@@ -9,8 +9,6 @@ void
 cli()
 {
     asm volatile("cli");
-    
-    printf("Interrupts disabled\n");
 }
 
 
@@ -18,8 +16,6 @@ void
 sti()
 {
     asm volatile("sti");
-
-    printf("Interrupts enabled\n");
 }
 
 
@@ -46,8 +42,6 @@ store_gdt(void* gdt_addr, uint16_t limit, int32_t code, int32_t data)
 				"mov %%ax,%%ss\n"
 				: 
 				: "g"  (gdtr), "r" (code), "r" (data));
-
-    printf("Stored GDT at 0x%X\n", p_32_to_uint_64(gdt_addr));
 }
 
 
@@ -59,7 +53,4 @@ store_idt(void* idt_addr)
     idt_r.limit = (uint16_t)sizeof(struct idt_entry) * IDT_SIZE - 1;
 
 	asm volatile ("lidt %0" : : "m"(idt_r)); // load the new IDT
-    sti();
-
-	printf("Stored IDT at 0x%X\n", p_32_to_uint_64(idt_addr));
 }

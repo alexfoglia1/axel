@@ -20,12 +20,17 @@ kernel_main()
 
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	printf("Starting AXEL %d.%d-%c\n", MAJOR_V, MINOR_V, STAGE_V);
-	cli();
 
+	cli();
 	gdt_init();
 	idt_init();
+	sti();
 
 	printf("Interrupt testing\n");
-	asm volatile("int $0x17");
+	int x = 10;
+	int y = 9;
+	int r = y / (x - y - 1);
+	printf("%d\n", r);
+	//asm volatile("int $0");
 	printf("Interrupt raised\n");
 }

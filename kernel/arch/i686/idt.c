@@ -12,29 +12,21 @@ struct idt_entry idt[IDT_SIZE];
 void
 idt_init()
 {
-    printf("Initializing Interrupt Descriptor Table\n");
     for (int i = 0; i < IDT_SIZE; i++)
     {
         memset(&idt[i], 0x00, sizeof(struct idt_entry));
     }
 
-    for (int i = 0; i < 32; i++)
+    idt_add_entry(0, &exception_handler_0x0, 0x8E);
+    for (int i = 1; i < 32; i++)
     {
-        if (0x10 == i)
-        {
-            idt_add_entry(i, &exception_handler_0x10, 0x8E);
-        }
-        else if (0x17 == i)
-        {
-            idt_add_entry(i, &exception_handler_0x17, 0x8E);
-        }
-        else
-        {
-            idt_add_entry(i, &exception_handler, 0x8E);
-        }
+        
+        idt_add_entry(i, i == 6 ? &divide_by_zero_exception : &exception_handler, 0x8E);
     }
 
     store_idt(&idt);
+
+    printf("Interrupt Descriptor Table initialized\n");
 }
 
 
