@@ -22,7 +22,13 @@ The codebase has the following structure
                       include/
                               isr : headers containing interrupt service routines signatures
     kernel/
-           interrupts/: implementation of interrupt service routines
+           interrupts: implementation of interrupt service routines
+    kernel/
+           drivers/
+                   include/
+                           drivers : headers containing external device driver routines signatures
+    kernel/
+           drivers: implementation of device drivers
  
 
     libc/
