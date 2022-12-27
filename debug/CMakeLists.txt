@@ -47,6 +47,7 @@ ${CMAKE_SOURCE_DIR}/debug/main.c
 target_include_directories(axel-kernel-debug PUBLIC
 
 ${CMAKE_SOURCE_DIR}/../kernel/include
+${CMAKE_SOURCE_DIR}/../kernel/interrupts/include
 ${CMAKE_SOURCE_DIR}/../libc/include
 ${CMAKE_SOURCE_DIR}/../common/include
 )

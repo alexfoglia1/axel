@@ -1,4 +1,4 @@
-#include <kernel/isr.h>
+#include <isr/isr.h>
 #include <stdio.h>
 
 __attribute__((noreturn)) void

@@ -11,33 +11,38 @@ The codebase has the following structure
                    kernel: headers containing the Hardware Abstraction Layer (HAL)
     kernel/
            arch/
-                i686     : x86 specific implementation of the HAL
+                i686: x86 specific implementation of the HAL
     kernel/
            arch/
-                debug    : stabbed implementation of the HAL, it is intended to run on the dev machine for step-by-step debugging of kernel functions
+                debug: stabbed implementation of the HAL, it is intended to run on the dev machine for step-by-step debugging of kernel functions
     kernel/
-           kernel : actual AXEL OS kernel code
+           kernel: actual AXEL OS kernel code
+    kernel/
+           interrupts/
+                      include/
+                              isr : headers containing interrupt service routines signatures
+    kernel/
+           interrupts/: implementation of interrupt service routines
+ 
 
-    
     libc/
-         include  : headers containing the C-standard library interface
+         include: headers containing the C-standard library interface
     libc/
-         stdio    : reimplementation of the C stdio library
+         stdio: reimplementation of the C stdio library
     libc/
-         stdlib   : reimplementation of the C stdlib library
+         stdlib: reimplementation of the C stdlib library
     libc/
-         string   : reimplementation of the C string library
+         string: reimplementation of the C string library
 
     
     common/
            include/
                    common: headers containing functions which are intended to be general purpose and accessible by every OS module
     common/
-            common : implementation of general purpose functions
+            common: implementation of general purpose functions
 
 
-
-    sysroot/ : The AXEL-OS system root, it is generated during the build process and it contains kernel binary and a minimal initial filesystem
+    sysroot/: The AXEL-OS system root, it is generated during the build process and it contains kernel binary and a minimal initial filesystem
     
 
 In order to debug core kernel functions using GDB, one can use the "debug" project, located in
