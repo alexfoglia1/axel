@@ -6,10 +6,10 @@
 #include <stdio.h>
 
 struct pit_time_elapsed time_elapsed;
-
+uint32_t count_0;
 
 uint32_t
-read_pit_count()
+pit_get_count()
 {
     uint32_t count = 0;
 
@@ -30,37 +30,61 @@ read_pit_count()
 
 
 void
-init_pit_timer()
+pit_set_count(uint32_t count)
+{
+    cli();
+
+	outb(PIT_CHANNEL_0_PORT, count & 0xFF);
+	outb(PIT_CHANNEL_0_PORT, (count & 0xFF00) >> 8);
+
+    sti();
+}
+
+
+void
+pit_init_timer()
 {
     time_elapsed.ticks = 0;
-    time_elapsed.seconds = 0;
+    time_elapsed.millis = 0;
+    count_0 = pit_get_count();
+
+    cli();
 
     uint16_t div = PIT_DIVISOR;
     uint8_t div_low  = div & 0xFF;
     uint8_t div_high = div >> 8;
 
-    cli();
-
-    outb(PIT_MDCMD_REG_PORT, 0x37);
+    outb(PIT_MDCMD_REG_PORT, 0x37
+    
+    
+    
+    
+    ); // 0x37 Square wave 0x31 Interrupt on terminal count
     outb(PIT_CHANNEL_0_PORT, div_low);
     outb(PIT_CHANNEL_0_PORT, div_high);
 
-    idt_add_entry(PIT_IRQ_INTERRUPT, &pit_irq0_handler, PRESENT | IRQ_GATE);
-    
     sti();
+
+    //pit_set_count(18);
 }
 
 
 uint32_t
 pit_get_millis()
 {
-    return time_elapsed.ticks * 55;
+    return time_elapsed.millis;
+}
+
+int
+pit_get_seconds()
+{
+    return time_elapsed.millis / 1000;
 }
 
 uint32_t
-pit_get_seconds()
+pit_get_ticks()
 {
-    return time_elapsed.seconds;
+    return time_elapsed.ticks;
 }
 
 
@@ -70,18 +94,13 @@ __attribute__((interrupt))
 void
 pit_irq0_handler(interrupt_stack_frame_t* frame)
 {
-    printf("IRQ0\n");
     time_elapsed.ticks += 1;
-    if (time_elapsed.ticks % PIT_TICKS_PER_SECOND == 0)
-    {
-        time_elapsed.seconds += 1;
-    }
-    printf("Ticks: %u\n", time_elapsed.ticks);
+    time_elapsed.millis = (time_elapsed.ticks * PIT_MILLIS_PER_TICK);
 
     if (frame->vec_no > 40)
     {
-        reset_pic_slave();
+        pic_reset_slave();
     }
 
-    reset_pic_master();
+    pic_reset_master();
 }

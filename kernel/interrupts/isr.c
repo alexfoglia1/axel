@@ -1,5 +1,6 @@
 #include <isr/isr.h>
 #include <kernel/gdt.h>
+#include <drivers/pic.h>
 #include <stdio.h>
 
 
@@ -310,5 +311,12 @@ __attribute__((interrupt))
 void
 generic_irq_ignore(interrupt_stack_frame_t* frame)
 {
-    printf("IRQ\n");
+    printf("IRQ(%u)\n", frame->vec_no);
+
+    if (frame->vec_no > 40)
+    {
+        pic_reset_slave();
+    }
+
+    pic_reset_master();
 }
