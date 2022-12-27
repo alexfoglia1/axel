@@ -90,6 +90,24 @@ tty_putchar(char c)
 		size_t current_tabulation = _column / _tabulation_width;
 		_column = (1 + current_tabulation) * _tabulation_width;
 	}
+	else if ('\b' == c)
+	{
+		_column -= 1;
+
+		if (_column < 0)
+		{
+			_row -= 1;
+			_column = VGA_WIDTH - 1;
+
+			if (_row < 0)
+			{
+				_row = 0;
+			}
+		}
+
+		const size_t index = _row * VGA_WIDTH + _column;
+		_tty[index + 1] = ' ';
+	}
 	else
 	{
 		const size_t index = _row * VGA_WIDTH + _column;
