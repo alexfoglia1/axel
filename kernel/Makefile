@@ -40,6 +40,7 @@ $(ARCHDIR)/asm.o \
 $(ARCHDIR)/gdt.o \
 $(ARCHDIR)/idt.o \
 $(ISRDIR)/isr.o \
+$(DRIVERDIR)/pic.o \
 $(DRIVERDIR)/pit.o \
 $(COMMONDIR)/common/utils.o \
 

@@ -12,9 +12,6 @@
 #define PIT_IRQ_INTERRUPT 8
 #define PIT_TICKS_PER_SECOND 18
 
-#define MASTER_PIC_COMMAND_PORT 0x20
-#define SLAVE_PIC_COMMAND_PORT  0xA0
-
 struct pit_time_elapsed
 {
     uint32_t ticks;
@@ -27,6 +24,9 @@ void init_pit_timer();
 uint32_t pit_get_millis();
 uint32_t pit_get_seconds();
 
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
 void pit_irq0_handler(interrupt_stack_frame_t* frame);
 
 #endif

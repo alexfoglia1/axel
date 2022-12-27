@@ -41,6 +41,7 @@ ${CMAKE_SOURCE_DIR}/../libc/string/strlen.c
 ${CMAKE_SOURCE_DIR}/../kernel/interrupts/isr.c
 
 #---- DRIVERS     ----#
+${CMAKE_SOURCE_DIR}/../kernel/drivers/pic.c
 ${CMAKE_SOURCE_DIR}/../kernel/drivers/pit.c
 
 #---- EXEC MAIN   ----#

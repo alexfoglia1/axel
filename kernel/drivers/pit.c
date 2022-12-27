@@ -1,4 +1,5 @@
 #include <drivers/pit.h>
+#include <drivers/pic.h>
 #include <kernel/idt.h>
 #include <kernel/gdt.h>
 #include <kernel/asm.h>
@@ -63,13 +64,12 @@ pit_get_seconds()
 }
 
 
-
-
+#ifndef __DEBUG_STUB__
 __attribute__((interrupt))
+#endif
 void
 pit_irq0_handler(interrupt_stack_frame_t* frame)
 {
-    //__asm__("pushal");
     printf("IRQ0\n");
     time_elapsed.ticks += 1;
     if (time_elapsed.ticks % PIT_TICKS_PER_SECOND == 0)
@@ -80,11 +80,8 @@ pit_irq0_handler(interrupt_stack_frame_t* frame)
 
     if (frame->vec_no > 40)
     {
-        // Reset slave
-        outb(SLAVE_PIC_COMMAND_PORT, 0x20);
+        reset_pic_slave();
     }
 
-    // Reset master
-    outb(MASTER_PIC_COMMAND_PORT, 0x20);
-    //__asm__("popal; leave; iret"); /* BLACK MAGIC! */
+    reset_pic_master();
 }

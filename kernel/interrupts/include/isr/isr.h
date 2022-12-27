@@ -8,13 +8,6 @@
 #define IRQ_GATE 0xE
 #define TRP_GATE 0xF
 
-typedef void (*interrupt_handler)();
-
-struct interrupt_handler_descriptor
-{
-    interrupt_handler handler;
-    uint8_t attributes;
-};
 
 typedef struct __attribute__((__packed__))
 {
@@ -41,34 +34,119 @@ typedef struct __attribute__((__packed__))
     uint16_t ss;
 } interrupt_stack_frame_t;
 
+
+typedef void (*interrupt_handler)(interrupt_stack_frame_t* frame);
+
+struct interrupt_handler_descriptor
+{
+    interrupt_handler handler;
+    uint8_t attributes;
+};
+
+
 extern struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS];
 
 //TODO : rename other interrupts than / 0 exception
-__attribute__((noreturn)) void divide_by_zero_exception(); //INT 0
-__attribute__((noreturn)) void exception_handler_0x01();   //INT 1
-__attribute__((noreturn)) void exception_handler_0x02();   //INT 2
-__attribute__((noreturn)) void exception_handler_0x03();   //INT 3
-__attribute__((noreturn)) void exception_handler_0x04();   //INT 4
-__attribute__((noreturn)) void exception_handler_0x05();   //INT 5
-__attribute__((noreturn)) void exception_handler_0x06();   //INT 6
-__attribute__((noreturn)) void exception_handler_0x07();   //INT 7
-__attribute__((noreturn)) void exception_handler_0x10();   //INT 16
-__attribute__((noreturn)) void exception_handler_0x11();   //INT 17
-__attribute__((noreturn)) void exception_handler_0x12();   //INT 18
-__attribute__((noreturn)) void exception_handler_0x13();   //INT 19
-__attribute__((noreturn)) void exception_handler_0x14();   //INT 20
-__attribute__((noreturn)) void exception_handler_0x15();   //INT 21
-__attribute__((noreturn)) void exception_handler_0x16();   //INT 22
-__attribute__((noreturn)) void exception_handler_0x17();   //INT 23
-__attribute__((noreturn)) void exception_handler_0x18();   //INT 24
-__attribute__((noreturn)) void exception_handler_0x19();   //INT 25
-__attribute__((noreturn)) void exception_handler_0x1A();   //INT 26
-__attribute__((noreturn)) void exception_handler_0x1B();   //INT 27
-__attribute__((noreturn)) void exception_handler_0x1C();   //INT 28
-__attribute__((noreturn)) void exception_handler_0x1D();   //INT 29
-__attribute__((noreturn)) void exception_handler_0x1E();   //INT 30
-__attribute__((noreturn)) void exception_handler_0x1F();   //INT 31
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void divide_by_zero_exception(interrupt_stack_frame_t* frame); //INT 0
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x01(interrupt_stack_frame_t* frame);   //INT 1
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x02(interrupt_stack_frame_t* frame);   //INT 2
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x03(interrupt_stack_frame_t* frame);   //INT 3
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x04(interrupt_stack_frame_t* frame);   //INT 4
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x05(interrupt_stack_frame_t* frame);   //INT 5
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x06(interrupt_stack_frame_t* frame);   //INT 6
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x07(interrupt_stack_frame_t* frame);   //INT 7
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x10(interrupt_stack_frame_t* frame);   //INT 16
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x11(interrupt_stack_frame_t* frame);   //INT 17
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x12(interrupt_stack_frame_t* frame);   //INT 18
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x13(interrupt_stack_frame_t* frame);   //INT 19
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x14(interrupt_stack_frame_t* frame);   //INT 20
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x15(interrupt_stack_frame_t* frame);   //INT 21
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x16(interrupt_stack_frame_t* frame);   //INT 22
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x17(interrupt_stack_frame_t* frame);   //INT 23
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x18(interrupt_stack_frame_t* frame);   //INT 24
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x19(interrupt_stack_frame_t* frame);   //INT 25
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x1A(interrupt_stack_frame_t* frame);   //INT 26
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x1B(interrupt_stack_frame_t* frame);   //INT 27
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x1C(interrupt_stack_frame_t* frame);   //INT 28
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x1D(interrupt_stack_frame_t* frame);   //INT 29
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x1E(interrupt_stack_frame_t* frame);   //INT 30
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void exception_handler_0x1F(interrupt_stack_frame_t* frame);   //INT 31
 
-__attribute__((noreturn)) void generic_irq_ignore(); //INT 0x08 - 0x0F
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void generic_irq_ignore(interrupt_stack_frame_t* frame); //INT 0x08 - 0x0F
 
 #endif
