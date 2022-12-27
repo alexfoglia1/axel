@@ -1,5 +1,7 @@
 #include <kernel/asm.h>
 #include <kernel/gdt.h>
+#include <kernel/idt.h>
+
 #include <common/utils.h>
 #include <stdio.h>
 
@@ -45,5 +47,19 @@ store_gdt(void* gdt_addr, uint16_t limit, int32_t code, int32_t data)
 				: 
 				: "g"  (gdtr), "r" (code), "r" (data));
 
-    printf("Stored GDT table at 0x%X\n", p_32_to_uint_64(gdt_addr));
+    printf("Stored GDT at 0x%X\n", p_32_to_uint_64(gdt_addr));
+}
+
+
+void
+store_idt(void* idt_addr)
+{
+	struct idtr idt_r;
+    idt_r.base = (uintptr_t)idt_addr;
+    idt_r.limit = (uint16_t)sizeof(struct idt_entry) * IDT_SIZE - 1;
+
+	asm volatile ("lidt %0" : : "m"(idt_r)); // load the new IDT
+    sti();
+
+	printf("Stored IDT at 0x%X\n", p_32_to_uint_64(idt_addr));
 }

@@ -13,6 +13,8 @@ ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/tty.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/vga.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/asm.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/gdt.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/idt.c
+
 
 #---- COMMON      ----#
 ${CMAKE_SOURCE_DIR}/../common/common/utils.c
@@ -34,6 +36,9 @@ ${CMAKE_SOURCE_DIR}/../libc/string/memcpy.c
 ${CMAKE_SOURCE_DIR}/../libc/string/memmove.c
 ${CMAKE_SOURCE_DIR}/../libc/string/memset.c
 ${CMAKE_SOURCE_DIR}/../libc/string/strlen.c
+
+#---- INT.SRV.   -----#
+${CMAKE_SOURCE_DIR}/../kernel/interrupts/isr.c
 
 #---- EXEC MAIN   ----#
 ${CMAKE_SOURCE_DIR}/debug/main.c

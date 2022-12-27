@@ -7,5 +7,6 @@
 void cli();
 void sti();
 void store_gdt(void* gdt_addr, uint16_t limit, int32_t code, int32_t data);
+void store_idt(void* idt_addr);
 
 #endif

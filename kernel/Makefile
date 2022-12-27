@@ -21,6 +21,9 @@ ARCHDIR=arch/i686
 #My own common sources
 COMMONDIR=../common
 
+#Interrupt service routines
+ISRDIR=interrupts
+
 KERNEL_ARCH_CFLAGS=
 KERNEL_ARCH_CPPFLAGS=
 KERNEL_ARCH_LDFLAGS=
@@ -32,6 +35,8 @@ $(ARCHDIR)/vga.o \
 $(ARCHDIR)/tty.o \
 $(ARCHDIR)/asm.o \
 $(ARCHDIR)/gdt.o \
+$(ARCHDIR)/idt.o \
+$(ISRDIR)/isr.o \
 $(COMMONDIR)/common/utils.o \
 
 
