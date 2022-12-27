@@ -42,6 +42,7 @@ $(ARCHDIR)/idt.o \
 $(ISRDIR)/isr.o \
 $(DRIVERDIR)/pic.o \
 $(DRIVERDIR)/pit.o \
+$(DRIVERDIR)/ps2.o \
 $(COMMONDIR)/common/utils.o \
 
 
