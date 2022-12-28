@@ -87,10 +87,12 @@ The iso generation process is automated in the script:
 ## How to launch AXEL                
 
 One can either
+
     
-    1. flash the axel.iso file in a USB drive and boot it on a real machine
-    2. use a virtual environment such as qemu to launch the iso
-    3. On a unix physical machine, just add the axel.kernel compiled file under /boot directory and change the /boot/grub/grub.cfg to boot axel
+1. flash the axel.iso file in a USB drive and boot it on a real machine
+2. use a virtual environment such as qemu to launch the iso
+3. On a unix physical machine, just add the axel.kernel compiled file under /boot directory and change the /boot/grub/grub.cfg to boot axel
+
 
 I personally use the virtual machine QEMU:
 
