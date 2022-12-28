@@ -65,7 +65,7 @@ Inside this source file, one can debug kernel functions one per one, or in an in
 ## How to build AXEL
 
 The hosted development environment is an x86_64 machine running Ubuntu 22.04 LTS.
-An x86 gcc cross compiler and binutils shall be present in your $PATH environment variable to compile AXEL.
+An x86 gcc cross compiler and binutils shall be present in the $PATH environment variable to compile AXEL.
 Refer to [this guide](https://wiki.osdev.org/GCC_Cross-Compiler) to get one.
 
 The build process is automated through:
@@ -86,7 +86,12 @@ The iso generation process is automated in the script:
 
 ## How to launch AXEL                
 
-One can either flash the axel.iso file in a USB drive and boot it on a real machine or use a virtual environment.
+One can either
+    
+    1. flash the axel.iso file in a USB drive and boot it on a real machine
+    2. use a virtual environment such as qemu to launch the iso
+    3. On a unix physical machine, just add the axel.kernel compiled file under /boot directory and change the /boot/grub/grub.cfg to boot axel
+
 I personally use the virtual machine QEMU:
 
     qemu-system-i386 axel.iso
