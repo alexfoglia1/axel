@@ -43,6 +43,10 @@ ${CMAKE_SOURCE_DIR}/../kernel/interrupts/isr.c
 #---- DRIVERS     ----#
 ${CMAKE_SOURCE_DIR}/../kernel/drivers/pic.c
 ${CMAKE_SOURCE_DIR}/../kernel/drivers/pit.c
+${CMAKE_SOURCE_DIR}/../kernel/drivers/ps2.c
+
+#---- KERNEL MAIN ----#
+${CMAKE_SOURCE_DIR}/../kernel/kernel/kernel.c
 
 #---- EXEC MAIN   ----#
 ${CMAKE_SOURCE_DIR}/debug/main.c

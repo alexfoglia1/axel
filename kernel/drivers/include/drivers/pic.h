@@ -15,6 +15,8 @@
 #define PIC_ICW_3_S           0x02
 #define PIC_ICW_4             0x01
 
+#define PIC_EOI               0x20
+
 
 void pic_reset_master();
 void pic_reset_slave();

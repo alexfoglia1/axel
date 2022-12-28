@@ -10,6 +10,8 @@
 #include <isr/isr.h>
 #include <drivers/pic.h>
 #include <drivers/pit.h>
+#include <drivers/ps2.h>
+
 
 #define MAJOR_V 0
 #define MINOR_V 1
@@ -40,5 +42,9 @@ kernel_main()
 	pic_init_irq();
 //  ..........................
 
+//  Initializing PS/2 controller
+    ps2_controller_init();
+//  --------------------------
 
+    while(1);
 }

@@ -92,17 +92,22 @@ tty_putchar(char c)
 	}
 	else if ('\b' == c)
 	{
-		_column -= 1;
-
-		if (_column < 0)
+		if (0 == _column)
 		{
-			_row -= 1;
-			_column = VGA_WIDTH - 1;
-
-			if (_row < 0)
+			if (0 == _row)
 			{
 				_row = 0;
 			}
+			else
+			{
+				_row -= 1;
+			}
+			
+			_column = VGA_WIDTH - 1;
+		}
+		else
+		{
+			_column -= 1;
 		}
 
 		const size_t index = _row * VGA_WIDTH + _column;
