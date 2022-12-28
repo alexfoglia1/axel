@@ -1,6 +1,8 @@
 #ifndef _PIC_H
 #define _PIC_H
 
+#include <stdint.h>
+
 #define PIC_MASTER_CMD_PORT   0x20
 #define PIC_MASTER_DATA_PORT  0x21
 #define PIC_SLAVE_CMD_PORT    0xA0
@@ -26,6 +28,6 @@
 
 void pic_reset_master();
 void pic_reset_slave();
-void pic_init();
+void pic_init(uint8_t ps2_present);
 
 #endif

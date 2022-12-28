@@ -11,6 +11,8 @@
 #include <drivers/pic.h>
 #include <drivers/pit.h>
 #include <drivers/ps2.h>
+#include <drivers/rsdp.h>
+#include <common/utils.h>
 
 
 #define MAJOR_V 0
@@ -27,6 +29,7 @@ kernel_main()
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	printf("Starting AXEL %d.%d-%c\n", MAJOR_V, MINOR_V, STAGE_V);
 
+
 //  Initializing GDT and IDT
 	cli();
 	gdt_init();
@@ -34,28 +37,21 @@ kernel_main()
 	sti();
 //  --------------------------
 
+//  Detecting RSDP
+	rsdp_find();
+//  --------------------------
+
+//  Initializing PS/2 controller
+    ps2_controller_init(rsdp_get_rsdt_address());
+//  --------------------------
+
 //  Initializing PIC IRQs
-	pic_init();
+	pic_init(ps2_controller_found());
 //  ..........................
-
-//  Detecting RSDT
-	//printf("Detecting RSDT");
-	//uint8_t* p_rsdt = 0xC00E0000; // absolute ?
-	//char x = *p_rsdt;
-	//printf("%c\n", x);
-
-	//asm volatile("cli99: hlt");
-
 
 //  Initializing PIT timer
 	pit_init_timer();
 //  --------------------------
 
-
-//  Initializing PS/2 controller
-    ps2_controller_init();
-//  --------------------------
-
-
-    while(1);
+	while(1);
 }

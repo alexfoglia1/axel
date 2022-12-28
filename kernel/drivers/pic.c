@@ -4,7 +4,7 @@
 #include <kernel/asm.h>
 #include <kernel/gdt.h>
 #include <kernel/idt.h>
-
+#include <stdio.h>
 
 void
 pic_reset_master()
@@ -23,9 +23,11 @@ pic_reset_slave()
 
 
 void
-pic_init()
+pic_init(uint8_t ps2_present)
 {
     cli();
+
+    printf("%s\n", "Initializing PIC. . .");
 
     // Masking IRQ 2->7 : Not yet implemented
     outb(PIC_MASTER_DATA_PORT, 0x04); 
@@ -45,14 +47,27 @@ pic_init()
     outb(PIC_SLAVE_DATA_PORT, 0x64);
     outb(PIC_SLAVE_DATA_PORT, 0x128);
 
+    printf("Masked not handled IRQs\n");
 
     // PIT IRQ ENABLING (IRQ0)
     idt_add_entry(PIT_IRQ_INTERRUPT, &pit_irq0_handler, PRESENT | IRQ_GATE);
+    printf("PIT IRQ registered\n");
     // KEYBOARD IRQ ENABLING (IRQ1)
-    idt_add_entry(PS2_KEY_INTERRUPT, &ps2_irq1_keyboard_handler, PRESENT | IRQ_GATE);
+
+    if (ps2_present)
+    {
+        idt_add_entry(PS2_KEY_INTERRUPT, &ps2_irq1_keyboard_handler, PRESENT | IRQ_GATE);
+        printf("Keyboard IRQ registered\n");
+        //TODO mouse
+    }
+    else
+    {
+        outb(PIC_MASTER_DATA_PORT, 0x01); // Masking IRQ1 : Keyboard
+        //TODO mask mouse 
+    }
 
     // TODO other devices
+    printf("PIC initialized\n\n");
 
-    sti();              
-    printf("PIC initialized\n");
+    sti();
 }

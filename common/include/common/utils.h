@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-/** This function is needed because printf %x expects an unsigned long instead of an unsigned int.
-    TODO : fix the printf **/
-uint64_t p_32_to_uint_64(void* v_ptr);
+uint32_t* find_plaintext_in_memory(uint32_t* start_addr, uint32_t* limit, const char* plaintext);
 
 #endif

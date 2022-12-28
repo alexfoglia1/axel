@@ -40,7 +40,7 @@ store_gdt(void* gdt_addr, uint16_t limit, int32_t code, int32_t data)
 {
 	struct gdt_reg gdtr;
 	gdtr.limit = limit;
-	gdtr.base = p_32_to_uint_64(gdt_addr);
+	gdtr.base = (uint32_t)(gdt_addr);
 
 	code = code << 3;
 	data = data << 3;

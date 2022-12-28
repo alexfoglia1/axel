@@ -149,7 +149,7 @@ print_unsigned_long(const uint64_t* data)
 
 
 static int
-print_hex(const uint64_t* data, bool lower_case)
+print_hex(const uint32_t* data, bool lower_case)
 {
 	if (0 == *data)
 	{
@@ -157,14 +157,14 @@ print_hex(const uint64_t* data, bool lower_case)
 		return 1;
 	}
 
-	uint64_t val = *data;
+	uint32_t val = *data;
 	char buf[256];
 	memset(&buf, 0x00, 256);
 
 	size_t i = 0;
 	while (val && i < 256)
 	{
-		uint64_t digit = (val % 16);
+		uint32_t digit = (val % 16);
 		char cdigit;
 		switch (digit)
 		{
@@ -362,14 +362,14 @@ printf(const char* restrict format, ...)
 				case 'x':
 				{
 					p_next_char += 1;					
-					uint64_t arg = (uint64_t) (va_arg(parameters, uint64_t));
+					uint32_t arg = (uint32_t) (va_arg(parameters, uint32_t));
 					written += print_hex(&arg, true);
 					break;
 				}
 				case 'X':
 				{
 					p_next_char += 1;					
-					uint64_t arg = (uint64_t) (va_arg(parameters, uint64_t));
+					uint32_t arg = (uint32_t) (va_arg(parameters, uint32_t));
 					written += print_hex(&arg, false);
 					break;
 				}

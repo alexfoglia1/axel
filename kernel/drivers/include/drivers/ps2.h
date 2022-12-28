@@ -4,13 +4,15 @@
 #include <isr/isr.h>
 
 #define PS2_KEY_INTERRUPT 9
-#define PS2_KEY_PORT   0x60
+#define PS2_DATA_PORT  0x60
 #define PS2_CTRL_PORT  0x64
 
 #define PS2_DSB_PORT_1 0xAD
 #define PS2_ENB_PORT_1 0xAE
 #define PS2_DSB_PORT_2 0xA7
 #define PS2_ENB_PORT_2 0xA8
+#define PS2_TST_PORT_1 0xAB
+#define PS2_TST_PORT_2 0xA9
 
 #define PS2_KEY_ESCAPE_DOWN  1
 #define PS2_KEY_ESCAPE_UP    129
@@ -100,12 +102,29 @@
 #define PS2_KEY_PAGDWN_UP    PS2_NUMPAD_3_UP
 
 
-void ps2_controller_init();
+struct ACPISDTHeader
+{
+  char signature[4];
+  uint32_t length;
+  uint8_t revision;
+  uint8_t checksum;
+  char oemid[6];
+  char oemtableid[8];
+  uint32_t oemrev;
+  uint32_t creatorid;
+  uint32_t creatorrev;
+};
+
+
+void ps2_controller_init(uint32_t* rsdt_addr);
 
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
 #endif
 void ps2_irq1_keyboard_handler(interrupt_stack_frame_t* frame);
+
+uint8_t ps2_controller_found();
+uint8_t ps2_is_dual_channel();
 
 
 #endif
