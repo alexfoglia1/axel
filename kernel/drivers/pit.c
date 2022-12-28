@@ -1,5 +1,4 @@
 #include <drivers/pit.h>
-#include <drivers/pic.h>
 #include <kernel/idt.h>
 #include <kernel/gdt.h>
 #include <kernel/asm.h>
