@@ -27,6 +27,14 @@ kernel_main()
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	printf("Starting AXEL %d.%d-%c\n", MAJOR_V, MINOR_V, STAGE_V);
 
+	printf("Detecting RSDT");
+	uint8_t* p_rsdt = 0x40E; // absolute ?
+	char x = *p_rsdt;
+	printf("%c\n", x);
+
+	while(1);
+
+
 //  Initializing GDT and IDT
 	cli();
 	gdt_init();
@@ -38,13 +46,16 @@ kernel_main()
 	pit_init_timer();
 //  --------------------------
 
-//  Initializing interrupts
-	pic_init_irq();
-//  ..........................
 
 //  Initializing PS/2 controller
     ps2_controller_init();
 //  --------------------------
+
+
+//  Initializing PIC IRQs
+	pic_init();
+//  ..........................
+
 
     while(1);
 }

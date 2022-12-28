@@ -14,14 +14,14 @@ struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS] =
     {&exception_handler_0x05, PRESENT | TRP_GATE},
     {&exception_handler_0x06, PRESENT | TRP_GATE},
     {&exception_handler_0x07, PRESENT | TRP_GATE},
-    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0x8 = IRQ0 = PIT TICK */ //PIT driver is implementing this
-    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0x9 = IRQ1 = KEYBOARD */ //PS2 driver is implementing this
-    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xA = IRQ2 = SLV 8259 */ //Not yet impl.
-    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xB = IRQ3 = COM2 SRQ */ //Not yet impl.
-    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xC = IRQ4 = COM1 SRQ */ //Not yet impl.
-    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xD = IRQ5 = LPT2 DRQ */ //Not yet impl.
-    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xE = IRQ6 = FLOPPY D */ //Not yet impl.
-    {&generic_irq_ignore, PRESENT | IRQ_GATE}, /* INT 0xF = IRQ7 = LPTQ DRQ */ //Not yet impl.
+    {&IRQ0, PRESENT | IRQ_GATE}, /* INT 0x8 = IRQ0 = PIT TICK */ //PIT driver is implementing this
+    {&IRQ1, PRESENT | IRQ_GATE}, /* INT 0x9 = IRQ1 = KEYBOARD */ //PS2 driver is implementing this
+    {&IRQ2, PRESENT | IRQ_GATE}, /* INT 0xA = IRQ2 = SLV 8259 */ //Not yet impl.
+    {&IRQ3, PRESENT | IRQ_GATE}, /* INT 0xB = IRQ3 = COM2 SRQ */ //Not yet impl.
+    {&IRQ4, PRESENT | IRQ_GATE}, /* INT 0xC = IRQ4 = COM1 SRQ */ //Not yet impl.
+    {&IRQ5, PRESENT | IRQ_GATE}, /* INT 0xD = IRQ5 = LPT2 DRQ */ //Not yet impl.
+    {&IRQ6, PRESENT | IRQ_GATE}, /* INT 0xE = IRQ6 = FLOPPY D */ //Not yet impl.
+    {&IRQ7, PRESENT | IRQ_GATE}, /* INT 0xF = IRQ7 = LPTQ DRQ */ //Not yet impl.
     {&exception_handler_0x10, PRESENT | TRP_GATE},
     {&exception_handler_0x11, PRESENT | TRP_GATE},
     {&exception_handler_0x12, PRESENT | TRP_GATE},
@@ -308,15 +308,71 @@ exception_handler_0x1F(interrupt_stack_frame_t* frame)
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
 #endif
-void
-generic_irq_ignore(interrupt_stack_frame_t* frame)
+void IRQ0(interrupt_stack_frame_t* frame)
 {
-    printf("IRQ(%u)\n", frame->vec_no);
-
-    if (frame->vec_no > 40)
-    {
-        pic_reset_slave();
-    }
-
-    pic_reset_master();
+    printf("IRQ0!\n");
 }
+
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ1(interrupt_stack_frame_t* frame)
+{
+    printf("IRQ1!\n");
+}
+
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ2(interrupt_stack_frame_t* frame)
+{
+    printf("IRQ2!\n");
+}
+
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ3(interrupt_stack_frame_t* frame)
+{
+    printf("IRQ3!\n");
+}
+
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ4(interrupt_stack_frame_t* frame)
+{
+    printf("IRQ4!\n");
+}
+
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ5(interrupt_stack_frame_t* frame)
+{
+    printf("IRQ5!\n");
+}
+
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ6(interrupt_stack_frame_t* frame)
+{
+    printf("IRQ6!\n");
+}
+
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ7(interrupt_stack_frame_t* frame)
+{
+    printf("IRQ7!\n");
+}
+

@@ -1,4 +1,5 @@
 #include <drivers/pit.h>
+#include <drivers/pic.h>
 #include <kernel/idt.h>
 #include <kernel/gdt.h>
 #include <kernel/asm.h>
@@ -53,12 +54,7 @@ pit_init_timer()
     uint8_t div_low  = div & 0xFF;
     uint8_t div_high = div >> 8;
 
-    outb(PIT_MDCMD_REG_PORT, 0x37
-    
-    
-    
-    
-    ); // 0x37 Square wave 0x31 Interrupt on terminal count
+    outb(PIT_MDCMD_REG_PORT, 0x37); // 0x37 Square wave 0x31 Interrupt on terminal count
     outb(PIT_CHANNEL_0_PORT, div_low);
     outb(PIT_CHANNEL_0_PORT, div_high);
 
@@ -96,10 +92,5 @@ pit_irq0_handler(interrupt_stack_frame_t* frame)
     time_elapsed.ticks += 1;
     time_elapsed.millis = (time_elapsed.ticks * PIT_MILLIS_PER_TICK);
 
-    if (frame->vec_no > 40)
-    {
-        pic_reset_slave();
-    }
-
-    pic_reset_master();
+    pic_reset_master(); //IRQ0 ACK
 }

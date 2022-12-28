@@ -147,6 +147,35 @@ void exception_handler_0x1F(interrupt_stack_frame_t* frame);   //INT 31
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
 #endif
-void generic_irq_ignore(interrupt_stack_frame_t* frame); //INT 0x08 - 0x0F
+void IRQ0(interrupt_stack_frame_t* frame);
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ1(interrupt_stack_frame_t* frame);
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ2(interrupt_stack_frame_t* frame);
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ3(interrupt_stack_frame_t* frame);
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ4(interrupt_stack_frame_t* frame);
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ5(interrupt_stack_frame_t* frame);
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ6(interrupt_stack_frame_t* frame);
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void IRQ7(interrupt_stack_frame_t* frame);
+
 
 #endif

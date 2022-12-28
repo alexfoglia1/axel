@@ -31,7 +31,7 @@ inb (int port_no)
 void
 outb (int port_no, int data)
 {
-  asm volatile ("outb %%al, %%dx" :: "a" (data),"d" (port_no));
+  asm volatile ("outb %%al, %%dx" :: "a" (data), "d" (port_no));
 }
 
 
@@ -69,4 +69,12 @@ store_idt(void* idt_addr)
     idt_r.limit = (uint16_t)sizeof(struct idt_entry) * IDT_SIZE - 1;
 
 	asm volatile ("lidt %0" : : "m"(idt_r)); // load the new IDT
+}
+
+
+void
+io_wait()
+{
+	extern void asm_io_wait();
+    asm_io_wait();
 }
