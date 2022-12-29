@@ -1,8 +1,11 @@
 #include <drivers/pit.h>
-#include <drivers/pic.h>
+
+#include <controllers/pic.h>
+
 #include <kernel/arch/idt.h>
 #include <kernel/arch/gdt.h>
 #include <kernel/arch/asm.h>
+
 #include <stdio.h>
 
 struct pit_time_elapsed time_elapsed;

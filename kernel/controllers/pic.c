@@ -1,6 +1,7 @@
-#include <drivers/pic.h>
+#include <controllers/pic.h>
+#include <controllers/ps2.h>
+
 #include <drivers/pit.h>
-#include <drivers/ps2.h>
 #include <kernel/arch/asm.h>
 #include <kernel/arch/gdt.h>
 #include <kernel/arch/idt.h>

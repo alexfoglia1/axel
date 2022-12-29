@@ -11,7 +11,7 @@ BOOTDIR?=$(EXEC_PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -mgeneral-regs-only
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -I../common/include -Iinterrupts/include -Idrivers/include
+CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -I../common/include -Iinterrupts/include -Idrivers/include -Icontrollers/include
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
@@ -20,6 +20,9 @@ ARCHDIR=arch/i686
 
 #My own common sources
 COMMONDIR=../common
+
+#Controllers sources
+CONTRDIR=controllers
 
 #Interrupt service routines
 ISRDIR=interrupts
@@ -44,9 +47,10 @@ $(ARCHDIR)/asm_io_wait.o \
 $(ARCHDIR)/asm_cpuid_supported.o \
 $(ARCHDIR)/rsdp.o \
 $(ISRDIR)/isr.o \
-$(DRIVERDIR)/pic.o \
+$(CONTRDIR)/pic.o \
+$(CONTRDIR)/ps2.o \
 $(DRIVERDIR)/pit.o \
-$(DRIVERDIR)/ps2.o \
+$(DRIVERDIR)/keyboard.o \
 $(COMMONDIR)/common/utils.o \
 
 

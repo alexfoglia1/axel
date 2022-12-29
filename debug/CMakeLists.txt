@@ -42,10 +42,12 @@ ${CMAKE_SOURCE_DIR}/../libc/string/strlen.c
 ${CMAKE_SOURCE_DIR}/../kernel/interrupts/isr.c
 
 #---- DRIVERS     ----#
-${CMAKE_SOURCE_DIR}/../kernel/drivers/pic.c
 ${CMAKE_SOURCE_DIR}/../kernel/drivers/pit.c
-${CMAKE_SOURCE_DIR}/../kernel/drivers/ps2.c
+${CMAKE_SOURCE_DIR}/../kernel/drivers/keyboard.c
 
+#---- CONTROLLERS ----#
+${CMAKE_SOURCE_DIR}/../kernel/controllers/pic.c
+${CMAKE_SOURCE_DIR}/../kernel/controllers/ps2.c
 
 #---- KERNEL MAIN ----#
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/kernel.c
@@ -59,6 +61,7 @@ target_include_directories(axel-kernel-debug PUBLIC
 ${CMAKE_SOURCE_DIR}/../kernel/include
 ${CMAKE_SOURCE_DIR}/../kernel/interrupts/include
 ${CMAKE_SOURCE_DIR}/../kernel/drivers/include
+${CMAKE_SOURCE_DIR}/../kernel/controllers/include
 ${CMAKE_SOURCE_DIR}/../libc/include
 ${CMAKE_SOURCE_DIR}/../common/include
 )

@@ -21,7 +21,7 @@ The codebase has the following structure
     kernel/
            interrupts/
                       include/
-                              isr : headers containing interrupt service routines signatures
+                              interrupts : headers containing interrupt service routines signatures
     kernel/
            interrupts: implementation of interrupt service routines
     kernel/
@@ -29,7 +29,14 @@ The codebase has the following structure
                    include/
                            drivers : headers containing external device driver routines signatures
     kernel/
-           drivers: implementation of device drivers
+           drivers: implementation of device drivers (Keyboard, timer, mouse...)
+   
+    kernel/
+           controllers: implementation of IO controllers (PIC, PS2, USB...)
+    kernel/
+           controllers/
+                       include/
+                               controllers: headers containing IO controllers routines signatures
  
 
     libc/

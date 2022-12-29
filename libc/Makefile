@@ -26,7 +26,7 @@ KERNEL_ARCH_OBJS=\
 $(ARCHDIR)/boot.o \
 $(ARCHDIR)/vga.o \
 $(ARCHDIR)/tty.o \
-$(COMMONDIR)/common/utils.o
+$(COMMONDIR)/common/utils.o \
 
 CFLAGS:=$(CFLAGS) $(ARCH_CFLAGS)
 CPPFLAGS:=$(CPPFLAGS) $(ARCH_CPPFLAGS)

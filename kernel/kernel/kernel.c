@@ -14,9 +14,11 @@
 
 #include <interrupts/isr.h>
 
-#include <drivers/pic.h>
+#include <controllers/ps2.h>
+#include <controllers/pic.h>
+
 #include <drivers/pit.h>
-#include <drivers/ps2.h>
+#include <drivers/keyboard.h> // todo : per keyboard init
 
 #include <common/utils.h>
 
