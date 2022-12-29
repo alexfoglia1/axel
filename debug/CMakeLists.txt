@@ -48,6 +48,7 @@ ${CMAKE_SOURCE_DIR}/../kernel/drivers/keyboard.c
 #---- CONTROLLERS ----#
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/pic.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/ps2.c
+${CMAKE_SOURCE_DIR}/../kernel/controllers/mmu.c
 
 #---- KERNEL MAIN ----#
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/kernel.c
