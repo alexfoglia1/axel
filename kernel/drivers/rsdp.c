@@ -51,7 +51,6 @@ rsdp_find()
         printf("%s\t%s\t%b\n\n", signature, oemid, rsdp_desc->rev);
         
         uint16_t checksum = (uint16_t)(cks_sum(rsdp_desc) & 0x0000FFFF);
-        uint8_t msb = (uint8_t)((checksum >> 8) & 0xFF);
         uint8_t lsb = (uint8_t)(checksum & 0xFF);
 
         if (0x00 == lsb)
