@@ -48,11 +48,18 @@ print_multiboot_info(multiboot_info_t* mbd)
 	else
 	{
 		printf("START\tLENGTH\tSIZE\tTYPE\n");
-		for (uint32_t i = 0; i < mbd->mmap_length; i += sizeof(multiboot_memory_map_t)) 
+        for (uint32_t i = 0; i < mbd->mmap_length; i++)
 		{
+#ifdef __DEBUG_STUB__
+            uint8_t* p_mmmt_byte0 = (uint8_t*) (0x7FFF00000000 | (mbd->mmap_addr));
+            uint8_t* p_mmmt_bytei = (uint8_t*) (p_mmmt_byte0 + (i * sizeof(multiboot_memory_map_t)));
+            multiboot_memory_map_t* mmmt = (multiboot_memory_map_t*) (p_mmmt_bytei);
+#else
+            for (uint32_t i = 0; i < mbd->mmap_length; i += sizeof(multiboot_memory_map_t))
+            {
 			multiboot_memory_map_t* mmmt = 
 				(multiboot_memory_map_t*) (mbd->mmap_addr + i);
-
+#endif
 			printf("%X\t%X\t%X\t%s\n", (uint32_t)mmmt->addr, (uint32_t)mmmt->len, (uint32_t)mmmt->size,
 				 					  MULTIBOOT_MEMORY_AVAILABLE == mmmt->type ? "AVAILABLE" :
 									  MULTIBOOT_MEMORY_RESERVED  == mmmt->type ? "RESERVED" :

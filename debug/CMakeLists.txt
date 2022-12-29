@@ -51,6 +51,7 @@ ${CMAKE_SOURCE_DIR}/../kernel/controllers/ps2.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/mmu.c
 
 #---- KERNEL MAIN ----#
+${CMAKE_SOURCE_DIR}/../kernel/kernel/paging.c
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/kernel.c
 
 #---- EXEC MAIN   ----#
