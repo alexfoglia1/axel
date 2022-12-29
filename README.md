@@ -8,7 +8,8 @@ The codebase has the following structure
 
     kernel/
            include/
-                   kernel: headers containing the Hardware Abstraction Layer (HAL)
+                   kernel/
+                          arch: headers containing the Hardware Abstraction Layer (HAL)
     kernel/
            arch/
                 i686: x86 specific implementation of the HAL
