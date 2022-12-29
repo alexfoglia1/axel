@@ -49,7 +49,6 @@ $(ARCHDIR)/rsdp.o \
 $(ISRDIR)/isr.o \
 $(CONTRDIR)/pic.o \
 $(CONTRDIR)/ps2.o \
-$(CONTRDIR)/mmu.o \
 $(DRIVERDIR)/pit.o \
 $(DRIVERDIR)/keyboard.o \
 $(COMMONDIR)/common/utils.o \

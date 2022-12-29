@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 project(axel-kernel-debug)
 
 add_compile_definitions(__DEBUG_STUB__)
+add_compile_definitions(__ADDR_64BIT__)
 add_compile_definitions(__is_libk)
 
 add_executable(
@@ -48,7 +49,6 @@ ${CMAKE_SOURCE_DIR}/../kernel/drivers/keyboard.c
 #---- CONTROLLERS ----#
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/pic.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/ps2.c
-${CMAKE_SOURCE_DIR}/../kernel/controllers/mmu.c
 
 #---- KERNEL MAIN ----#
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/paging.c

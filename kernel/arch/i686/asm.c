@@ -81,6 +81,18 @@ io_wait()
 }
 
 
+void
+mmu_enable_paging(uint32_t* pd)
+{
+	asm volatile ("mov %0, %%cr3" : : "r" (pd));
+    uint32_t cr0;
+    asm volatile ("mov %%cr0, %0" : "=r" (cr0));
+    cr0 |= 0x80000000;
+    asm volatile ("mov %0, %%cr0" : : "r" (cr0));
+}
+
+
+
 int
 cpuid_supported()
 {

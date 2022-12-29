@@ -74,7 +74,7 @@ ps2_controller_init(uint32_t* rsdt_addr)
         }
         else
         {
-            printf("%s\n", "CRITICAL ERROR : CANNOT VALIDATE RSDT CHECKSUM");
+            printf("%s\n", "KERNEL PANIC : CANNOT VALIDATE RSDT CHECKSUM");
             abort();
         }
     }

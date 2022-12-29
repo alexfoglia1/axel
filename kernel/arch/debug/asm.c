@@ -41,3 +41,10 @@ cpuid_supported()
 {
     return 1; // Dev. machine is x86_64 : cpuid is supported
 }
+
+
+void
+mmu_enable_paging(uint32_t* pd)
+{
+    return;
+}

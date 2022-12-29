@@ -3,6 +3,8 @@
 #include <errno.h>
 #include <stdbool.h>
 
+#include <kernel/paging.h>
+
 #include <kernel/arch/cpuid.h>
 #include <kernel/arch/tty.h>
 #include <kernel/arch/multiboot.h>
@@ -10,7 +12,6 @@
 #include <kernel/arch/gdt.h>
 #include <kernel/arch/idt.h>
 #include <kernel/arch/rsdp.h>
-#include <kernel/arch/cpuid.h>
 
 #include <interrupts/isr.h>
 
@@ -18,7 +19,7 @@
 #include <controllers/pic.h>
 
 #include <drivers/pit.h>
-#include <drivers/keyboard.h> // todo : per keyboard init
+#include <drivers/keyboard.h>
 
 #include <common/utils.h>
 
@@ -39,7 +40,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
 	{
 		tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
-        printf("CRITICAL ERROR : INVALID BOOTLOADER\n");
+        printf("KERNEL PANIC : INVALID BOOTLOADER\n");
 		abort();
     }
 	else
@@ -135,6 +136,30 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     keyboard_init();
 //  --------------------------
 
+//  Initializing paging
+    printf("Initializing paging:\t");
+    paging_init(mbd->mem_upper);
+    paging_enable();
+    // Todo : maybe we want to initialize heap memory here...
+    paging_map_memory(mbd);
+
+    if (0x01 == paging_is_active())
+    {
+        tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+        printf("[OK]\n");
+    }
+    else
+    {
+        tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+        printf("[KO]\n");
+    }
+
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+//  --------------------------
+    uint32_t* page = paging_alloc_page();
+    uint32_t* phys = virtual_to_physical(page);
+
+    printf("virt(%x), phys(%x)\n", page, phys);
 	sti();
 
 	while (1);
