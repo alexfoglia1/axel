@@ -47,7 +47,7 @@ rsdp_find()
         memcpy(oemid, rsdp_desc->oemid, 6);
         oemid[6] = '\0';
 
-        printf("RSDP\tOEMID\tREV\n");
+        printf("\nRSDP\tOEMID\tREV\n");
         printf("%s\t%s\t%b\n\n", signature, oemid, rsdp_desc->rev);
         
         uint16_t checksum = (uint16_t)(cks_sum(rsdp_desc) & 0x0000FFFF);

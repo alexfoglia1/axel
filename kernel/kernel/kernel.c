@@ -27,7 +27,7 @@ kernel_main()
 	tty_init();
 
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	printf("Starting AXEL %d.%d-%c\n", MAJOR_V, MINOR_V, STAGE_V);
+	printf("Starting AXEL %d.%d-%c\n\n", MAJOR_V, MINOR_V, STAGE_V);
 
 	cli();
 //  Initializing GDT and IDT
