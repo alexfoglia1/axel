@@ -39,6 +39,7 @@ $(ARCHDIR)/tty.o \
 $(ARCHDIR)/asm.o \
 $(ARCHDIR)/gdt.o \
 $(ARCHDIR)/idt.o \
+$(ARCHDIR)/mem.o \
 $(ARCHDIR)/asm_io_wait.o \
 $(ISRDIR)/isr.o \
 $(DRIVERDIR)/pic.o \

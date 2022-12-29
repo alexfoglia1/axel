@@ -4,7 +4,7 @@
 #include <kernel/multiboot.h>
 #include <stdint.h>
 
-typedef enum : uint8_t
+typedef enum
 {
     AVAILABLE = 0x00,
     RESERVED,
