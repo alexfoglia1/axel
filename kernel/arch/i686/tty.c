@@ -129,6 +129,9 @@ tty_putchar(char c)
 			}
 		}
 	}
+
+	const size_t index = _row * VGA_WIDTH + _column;
+	_tty[index] = '_';
 }
 
 

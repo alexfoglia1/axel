@@ -13,8 +13,6 @@ static uint8_t is_dual_channel;
 void
 ps2_controller_init(uint32_t* rsdt_addr)
 {
-    cli();
-
     printf("\n%s\n", "Initializing PS/2 controller. . .");
     printf("%s\n", "Check if PS/2 controller is present. . . ");
 
@@ -126,7 +124,6 @@ ps2_controller_init(uint32_t* rsdt_addr)
         else
         {
             printf("%s\n", "CRITICAL ERROR : CANNOT VALIDATE RSDT CHECKSUM");
-            sti();
             abort();
         }
     }
@@ -231,8 +228,6 @@ ps2_controller_init(uint32_t* rsdt_addr)
     printf("Present\tChannels\n");
     printf("%s\t%s\n\n", ps2_present == 0x01 ? "Yes" : "No", is_dual_channel ? "2" :
                                                              ps2_present == 0x01 ? "1" : "0");
-
-    sti();
 }
 
 
@@ -392,7 +387,5 @@ ps2_irq1_keyboard_handler(interrupt_stack_frame_t* frame)
         printf("%c", to_print); // TODO : printing is not ps2 driver responsability
     }
 
-    pic_reset_slave();
-    pic_reset_master();
     outb(PIC_MASTER_CMD_PORT, PIC_EOI);
 }
