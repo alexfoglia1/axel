@@ -51,3 +51,9 @@ idt_get_entry(uint8_t pos)
 
     return (void*)(addr);
 }
+
+void*
+idt_get_addr()
+{
+    return &idt[0];
+}

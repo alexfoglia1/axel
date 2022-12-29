@@ -29,7 +29,6 @@ kernel_main()
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	printf("Starting AXEL %d.%d-%c\n", MAJOR_V, MINOR_V, STAGE_V);
 
-
 //  Initializing GDT and IDT
 	cli();
 	gdt_init();
@@ -53,5 +52,9 @@ kernel_main()
 	pit_init_timer();
 //  --------------------------
 
-	while(1);
+	while (1)
+	{
+		uint8_t read = inb(PS2_DATA_PORT);
+		printf("%b\n", read);
+	}
 }

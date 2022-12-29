@@ -229,8 +229,9 @@ ps2_controller_init(uint32_t* rsdt_addr)
 
     printf("\nPS/2 Controller init result\n");
     printf("Present\tChannels\n");
-    printf("%s\t%s\n\n", ps2_present == 0x01 ? "Yes" : "No", is_dual_channel ? "2" : "1");
-    
+    printf("%s\t%s\n\n", ps2_present == 0x01 ? "Yes" : "No", is_dual_channel ? "2" :
+                                                             ps2_present == 0x01 ? "1" : "0");
+
     sti();
 }
 

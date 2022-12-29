@@ -59,8 +59,6 @@ pit_init_timer()
     outb(PIT_CHANNEL_0_PORT, div_high);
 
     sti();
-
-    //pit_set_count(18);
 }
 
 

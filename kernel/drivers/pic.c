@@ -54,7 +54,7 @@ pic_init(uint8_t ps2_present)
     printf("PIT IRQ registered\n");
     // KEYBOARD IRQ ENABLING (IRQ1)
 
-    if (ps2_present)
+    if (1) //(ps2_present) potrebbe essere USB...
     {
         idt_add_entry(PS2_KEY_INTERRUPT, &ps2_irq1_keyboard_handler, PRESENT | IRQ_GATE);
         printf("Keyboard IRQ registered\n");
@@ -65,7 +65,7 @@ pic_init(uint8_t ps2_present)
         outb(PIC_MASTER_DATA_PORT, 0x01); // Masking IRQ1 : Keyboard
         //TODO mask mouse 
     }
-
+    
     // TODO other devices
     printf("PIC initialized\n\n");
 
