@@ -78,3 +78,11 @@ io_wait()
 	extern void asm_io_wait();
     asm_io_wait();
 }
+
+
+int
+cpuid_supported()
+{
+	extern int asm_cpuid_supported();
+	return asm_cpuid_supported();
+}
