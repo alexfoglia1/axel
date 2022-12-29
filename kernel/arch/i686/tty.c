@@ -5,6 +5,7 @@
 
 #include <kernel/tty.h>
 #include <kernel/vga.h>
+#include <kernel/asm.h>
 
 
 static const size_t 	VGA_WIDTH = 80;
@@ -65,7 +66,7 @@ tty_scroll()
 		_tty[(VGA_HEIGHT - 1) * VGA_WIDTH + x] = vga_entry(' ', _color);
 	}
 }
- 
+
 
 void
 tty_putchar(char c)
@@ -111,7 +112,7 @@ tty_putchar(char c)
 		}
 
 		const size_t index = _row * VGA_WIDTH + _column;
-		_tty[index + 1] = ' ';
+		_tty[index] = ' ';
 	}
 	else
 	{
@@ -130,8 +131,7 @@ tty_putchar(char c)
 		}
 	}
 
-	const size_t index = _row * VGA_WIDTH + _column;
-	_tty[index] = '_';
+	tty_update_cursor_position();
 }
 
 
@@ -150,3 +150,67 @@ tty_putstring(const char* data)
 {
 	tty_putchars(data, strlen(data));
 }
+
+
+void
+tty_row_up(void)
+{
+	if (_row > 0)
+	{
+		_row -= 1;
+	}
+	tty_update_cursor_position();
+}
+
+
+void
+tty_row_down(void)
+{
+	if (_row < VGA_HEIGHT)
+	{
+		_row += 1;
+	}
+	tty_update_cursor_position();
+}
+
+
+void
+tty_column_right(void)
+{
+	if (_column < VGA_WIDTH)
+	{
+		_column += 1;
+	}
+	tty_update_cursor_position();
+}
+
+
+void
+tty_column_left(void)
+{
+	if (_column > 0)
+	{
+		_column -= 1;
+	}
+	tty_update_cursor_position();
+}
+
+
+void tty_reset_column(void)
+{
+	_column = 0;
+
+	tty_update_cursor_position();
+}
+
+
+void
+tty_update_cursor_position(void)
+{
+	const size_t index = _row * VGA_WIDTH + _column;
+	outb(0x3D4, 0x0F);
+	outb(0x3D5, (uint8_t) (index & 0xFF));
+	outb(0x3D4, 0x0E);
+	outb(0x3D5, (uint8_t) ((index >> 8) & 0xFF));
+}
+

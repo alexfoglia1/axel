@@ -8,7 +8,7 @@ find_plaintext_in_memory(uint32_t* start_addr, uint32_t* limit, const char* plai
 	uint8_t* p_byte = (uint8_t*)(start_addr);
 	uint8_t* p_end  = (uint8_t*)(limit);
 	uint32_t n_bytes = strlen(plaintext);
-	uint32_t* return_address = 0; // Initialize to NULL
+	uint32_t* return_address = 0;
 	
 	uint8_t found = 0;
 	while ((p_byte <= p_end) && (0 == found))

@@ -25,10 +25,6 @@ pic_reset_slave()
 void
 pic_init(uint8_t ps2_present)
 {
-    cli();
-
-    printf("%s\n", "Initializing PIC. . .");
-
     // Masking IRQ 2->7 : Not yet implemented
     outb(PIC_MASTER_DATA_PORT, 0x04); 
     outb(PIC_MASTER_DATA_PORT, 0x08);
@@ -47,17 +43,13 @@ pic_init(uint8_t ps2_present)
     outb(PIC_SLAVE_DATA_PORT, 0x64);
     outb(PIC_SLAVE_DATA_PORT, 0x128);
 
-    printf("Masked not handled IRQs\n");
-
     // PIT IRQ ENABLING (IRQ0)
     idt_add_entry(PIT_IRQ_INTERRUPT, &pit_irq0_handler, PRESENT | IRQ_GATE);
-    printf("PIT IRQ registered\n");
     // KEYBOARD IRQ ENABLING (IRQ1)
 
     if (1) //(ps2_present) potrebbe essere USB...
     {
         idt_add_entry(PS2_KEY_INTERRUPT, &ps2_irq1_keyboard_handler, PRESENT | IRQ_GATE);
-        printf("Keyboard IRQ registered\n");
         //TODO mouse
     }
     else
@@ -66,8 +58,7 @@ pic_init(uint8_t ps2_present)
         //TODO mask mouse 
     }
     
+    printf("IRQS initialized\n");
     // TODO other devices
-    printf("PIC initialized\n\n");
 
-    sti();
 }

@@ -1,6 +1,7 @@
 #include <drivers/ps2.h>
 #include <drivers/pic.h>
 #include <kernel/asm.h>
+#include <kernel/tty.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,9 +14,6 @@ static uint8_t is_dual_channel;
 void
 ps2_controller_init(uint32_t* rsdt_addr)
 {
-    printf("\n%s\n", "Initializing PS/2 controller. . .");
-    printf("%s\n", "Check if PS/2 controller is present. . . ");
-
     ps2_present = 0;
     is_dual_channel = 0;
     if (0x00 == rsdt_addr)
@@ -34,17 +32,20 @@ ps2_controller_init(uint32_t* rsdt_addr)
         };
         struct RSDT* rsdt = (struct RSDT*)(rsdt_addr);
 
-        printf("ACPI Signature:\t%s\n", header->signature);
-        printf("ACPI Length:\t%u\n", header->length);
-        printf("ACPI Revision:\t%b\n", header->revision);
-        printf("ACPI Checksum:\t%b\n", header->checksum);
-        printf("ACPI OEM ID:\t%s\n", header->oemid);
-        printf("ACPI OEM TABLE ID:\t%s\n", header->oemtableid);
-        printf("ACPI OEM REV:\t%u\n", header->oemrev);
-        printf("ACPI Creator ID:\t0x%X\n", header->creatorid);
-        printf("ACPI Creator REV:\t%u\n", header->creatorrev);
+        char signature[5];
+        memcpy(signature, header->signature, 4);
+        signature[4] = '\0';
 
-        printf("RSDT Checksum Validation. . .\n");
+        char oemid[7];
+        memcpy(oemid, header->oemid, 6);
+        oemid[6] = '\0';
+
+        char tbl_id[9];
+        memcpy(tbl_id, header->oemtableid, 8);
+        tbl_id[8] = '\0';
+
+        printf("ACPI\tREV\tOEM ID\tOEM TID\tOEM REV\tCR. ID\tCR.REV\n");
+        printf("%s\t%b\t%s\t%s\t%u\t%X\t%u\n", signature, header->revision, oemid, tbl_id, header->oemrev, header->creatorid, header->creatorrev);
 
         uint8_t cks_sum = 0;
         for (uint32_t i = 0; i < header->length; i++)
@@ -52,11 +53,8 @@ ps2_controller_init(uint32_t* rsdt_addr)
             cks_sum += ((char *) header)[i];
         }
 
-        printf("RSDT Checksum:\t%b\n", cks_sum);
         if (0x00 == cks_sum)
         {
-            printf("%s\n", "RSDT Validated");
-
             int entries = (header->length - sizeof(struct ACPISDTHeader)) / 4;
             ps2_present = 1;
             for (int i = 0; i < entries; i++)
@@ -130,9 +128,6 @@ ps2_controller_init(uint32_t* rsdt_addr)
 
     if (ps2_present)
     {
-        printf("%s\n", "PS/2 Controller found");
-        
-        // TODO : dare un nome a questi comandi
         outb(PS2_CTRL_PORT, PS2_DSB_PORT_1);
         outb(PS2_CTRL_PORT, PS2_DSB_PORT_2);
 
@@ -153,8 +148,6 @@ ps2_controller_init(uint32_t* rsdt_addr)
         {
             if (is_dual_channel)
             {
-                printf("PS/2 Dual Channel detected\n");
-
                 outb(PS2_CTRL_PORT, PS2_TST_PORT_1);
                 uint8_t test_port_1 = inb(PS2_DATA_PORT);
                 outb(PS2_CTRL_PORT, PS2_TST_PORT_2);
@@ -162,27 +155,22 @@ ps2_controller_init(uint32_t* rsdt_addr)
 
                 if (test_port_1 != 0x00)
                 {
-                    printf("PS/2 Port 1 is damaged\n");
                     is_dual_channel = 0;
                     ps2_present = 0;
                 }
                 else
                 {
                     outb(PS2_CTRL_PORT, PS2_ENB_PORT_1);
-                    printf("PS/2 Port 1 enabled\n");
                 }
                 
                 if (test_port_2 != 0x00)
                 {
-                    printf("PS/2 Port 2 is damaged\n");
                     if (test_port_1 == 0x00)
                     {
-                        printf("PS/2 forced to mono channel\n");
                         is_dual_channel = 0;
                     }
                     else
                     {
-                        printf("Both PS/2 channels damaged : PS/2 Controller damaged\n");
                         is_dual_channel = 0;
                         ps2_present = 0;
                     }
@@ -190,41 +178,34 @@ ps2_controller_init(uint32_t* rsdt_addr)
                 else
                 {
                     outb(PS2_CTRL_PORT, PS2_ENB_PORT_2);
-                    printf("PS/2 Port 2 enabled\n");
                 }
             }
             else
             {
-                printf("PS/2 Mono Channel detected\n");
-
                 outb(PS2_CTRL_PORT, PS2_TST_PORT_1);
                 uint8_t test_port_1 = inb(PS2_DATA_PORT);
                 if (test_port_1 != 0x00)
                 {
-                    printf("PS/2 Port 1 is damaged : PS/2 Controller damaged\n");
                     is_dual_channel = 0;
                     ps2_present = 0;
                 }
                 else
                 {
                     outb(PS2_CTRL_PORT, PS2_ENB_PORT_1);
-                    printf("PS/2 Port 1 enabled\n");
                 }
             }
         }
         else
         {
-            printf("%s\n", "PS/2 Controller is damaged\n");
             is_dual_channel = 0;
             ps2_present = 0;
         }
     }
     else
     {
-        printf("%s\n", "PS/2 Controller not found");
     }
 
-    printf("\nPS/2 Controller init result\n");
+    printf("\nPS/2 Controller\n");
     printf("Present\tChannels\n");
     printf("%s\t%s\n\n", ps2_present == 0x01 ? "Yes" : "No", is_dual_channel ? "2" :
                                                              ps2_present == 0x01 ? "1" : "0");
@@ -376,6 +357,21 @@ ps2_irq1_keyboard_handler(interrupt_stack_frame_t* frame)
             break;
         case PS2_KEY_SPACE_DOWN:
             to_print = ' ';
+            break;
+        case PS2_KEY_UPP_DOWN:
+            tty_row_up();
+            break;
+        case PS2_KEY_DWN_DOWN:
+            tty_row_down();
+            break;
+        case PS2_KEY_RIGHT_DOWN:
+            tty_column_right();
+            break;
+        case PS2_KEY_LEFT_DOWN:
+            tty_column_left();
+            break;
+        case PS2_KEY_START_DOWN:
+            tty_reset_column();
             break;
         default:
             //check for errors or non-character keys defined in drivers/ps2.h and not yet handled

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <string.h>
 
 static uint32_t* rsdt_addr = (uint32_t*)(0x00);
 
@@ -27,43 +28,40 @@ rsdp_find()
 {
     uint32_t* p_mem = (uint32_t*)0xE0000;
 	uint32_t* p_lim = (uint32_t*)0xFFFFF;
+
 	uint32_t* rsdp_addr = find_plaintext_in_memory(p_mem, p_lim, "RSD PTR");
 
     if (0 == rsdp_addr)
     {
         printf("\n%s\n", "NO RSDP FOUND - ACPI DISABLED");
-        abort();
     }
     else
     {
-        printf("\nRSDP at 0x%X\n", rsdp_addr);
-
         struct RSDPDescriptor* rsdp_desc = (struct RSDPDescriptor*)(rsdp_addr);
-        printf("RSDP Signature:\t%s\n", rsdp_desc->signature);
-        printf("RSDP Checksum:\t%b\n", rsdp_desc->checksum);
-        printf("RSDP OEMID:\t%s\n", rsdp_desc->oemid);
-        printf("RSDP Revision:\t%b\n", rsdp_desc->rev);
-        printf("RSDP RSDT addr:\t0x%X\n", rsdp_desc->rsdt_addr);
 
-        printf("RSDP Checksum Validation. . .\n");
+        char signature[9];
+        memcpy(signature, rsdp_desc->signature, 8);
+        signature[8] = '\0';
+
+        char oemid[7];
+        memcpy(oemid, rsdp_desc->oemid, 6);
+        oemid[6] = '\0';
+
+        printf("RSDP\tOEMID\tREV\n");
+        printf("%s\t%s\t%b\n\n", signature, oemid, rsdp_desc->rev);
         
         uint16_t checksum = (uint16_t)(cks_sum(rsdp_desc) & 0x0000FFFF);
         uint8_t msb = (uint8_t)((checksum >> 8) & 0xFF);
         uint8_t lsb = (uint8_t)(checksum & 0xFF);
-        printf("%s\t%s\t%s\n", "VAL", "MSB", "LSB");
-        printf("%w\t%b\t%b\n", checksum, msb, lsb);
 
         if (0x00 == lsb)
         {
-            printf("%s\n", "RSDP Validated");
             rsdt_addr = (uint32_t*)(rsdp_desc->rsdt_addr);
         }
         else
         {
-            printf("%s\n", "CRITICAL ERROR : CANNOT VALIDATE RSDP CHECKSUM");
-            abort();
+            printf("%s\n", "ERROR : CANNOT VALIDATE RSDP CHECKSUM");
         }
-
     }
 }
 
