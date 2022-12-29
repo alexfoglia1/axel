@@ -53,10 +53,12 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	printf("Detecting CPU Model:\t");
 	
 	tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+	int registers[3];
+	cpuid_get_model(&registers[0], &registers[1], &registers[2]);
 	printf("[");
 	for (int i = 0; i < 3; i++)
 	{
-		int model = cpuid_get_model(i);
+		int model = registers[i];
 		const char* str_model = (const char*)(&model);
 		printf("%c%c%c%c", str_model[0], str_model[1], str_model[2], str_model[3]);
 	}
