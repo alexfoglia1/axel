@@ -1,4 +1,4 @@
-#include <kernel/gdt.h>
+#include <kernel/arch/gdt.h>
 
 
 void

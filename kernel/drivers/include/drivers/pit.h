@@ -2,7 +2,7 @@
 #define _PIT_H
 
 #include <stdint.h>
-#include <isr/isr.h>
+#include <interrupts/isr.h>
 
 #define PIT_CHANNEL_0_PORT 0x40
 #define PIT_CHANNEL_1_PORT 0x41

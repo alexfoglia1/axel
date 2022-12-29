@@ -1,5 +1,5 @@
-#include <kernel/idt.h>
-#include <isr/isr.h>
+#include <kernel/arch/idt.h>
+#include <interrupts/isr.h>
 #include <string.h>
 
 

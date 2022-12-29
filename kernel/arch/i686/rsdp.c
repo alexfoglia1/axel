@@ -1,5 +1,6 @@
-#include <drivers/rsdp.h>
+#include <kernel/arch/rsdp.h>
 #include <common/utils.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -28,9 +29,9 @@ void
 rsdp_find()
 {
     uint32_t* p_mem = (uint32_t*)0xE0000;
-	uint32_t* p_lim = (uint32_t*)0xFFFFF;
+    uint32_t* p_lim = (uint32_t*)0xFFFFF;
 
-	uint32_t* rsdp_addr = find_plaintext_in_memory(p_mem, p_lim, "RSD PTR");
+    uint32_t* rsdp_addr = find_plaintext_in_memory(p_mem, p_lim, "RSD PTR");
 
     if (0 == rsdp_addr)
     {
@@ -40,14 +41,6 @@ rsdp_find()
     {
         struct RSDPDescriptor* rsdp_desc = (struct RSDPDescriptor*)(rsdp_addr);
 
-        char signature[9];
-        memcpy(signature, rsdp_desc->signature, 8);
-        signature[8] = '\0';
-
-        char oemid[7];
-        memcpy(oemid, rsdp_desc->oemid, 6);
-        oemid[6] = '\0';
-        
         uint16_t checksum = (uint16_t)(cks_sum(rsdp_desc) & 0x0000FFFF);
         uint8_t lsb = (uint8_t)(checksum & 0xFF);
 

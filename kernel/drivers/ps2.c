@@ -1,7 +1,7 @@
 #include <drivers/ps2.h>
 #include <drivers/pic.h>
-#include <kernel/asm.h>
-#include <kernel/tty.h>
+#include <kernel/arch/asm.h>
+#include <kernel/arch/tty.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

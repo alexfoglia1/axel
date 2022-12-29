@@ -15,7 +15,7 @@ ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/asm.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/gdt.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/idt.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/cpuid.c
-
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/rsdp.c
 
 #---- COMMON      ----#
 ${CMAKE_SOURCE_DIR}/../common/common/utils.c
@@ -45,7 +45,7 @@ ${CMAKE_SOURCE_DIR}/../kernel/interrupts/isr.c
 ${CMAKE_SOURCE_DIR}/../kernel/drivers/pic.c
 ${CMAKE_SOURCE_DIR}/../kernel/drivers/pit.c
 ${CMAKE_SOURCE_DIR}/../kernel/drivers/ps2.c
-${CMAKE_SOURCE_DIR}/../kernel/drivers/rsdp.c
+
 
 #---- KERNEL MAIN ----#
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/kernel.c

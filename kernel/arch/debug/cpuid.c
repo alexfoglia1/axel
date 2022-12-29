@@ -1,4 +1,4 @@
-#include <kernel/cpuid.h>
+#include <kernel/arch/cpuid.h>
 #include <cpuid.h> // gcc __cpuid
 
 

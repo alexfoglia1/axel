@@ -1,4 +1,4 @@
-#include <kernel/asm.h>
+#include <kernel/arch/asm.h>
 
 
 void
@@ -33,4 +33,11 @@ void
 store_gdt(void* gdt_addr, uint16_t limit, int32_t code, int32_t data)
 {
     return;
+}
+
+
+int
+cpuid_supported()
+{
+    return 1; // Dev. machine is x86_64 : cpuid is supported
 }

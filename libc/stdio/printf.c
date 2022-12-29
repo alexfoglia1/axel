@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <kernel/tty.h>
-#include <kernel/vga.h>
+#include <kernel/arch/tty.h>
+#include <kernel/arch/vga.h>
 
 
 static bool

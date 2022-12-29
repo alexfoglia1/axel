@@ -39,15 +39,14 @@ $(ARCHDIR)/tty.o \
 $(ARCHDIR)/asm.o \
 $(ARCHDIR)/gdt.o \
 $(ARCHDIR)/idt.o \
-$(ARCHDIR)/mem.o \
 $(ARCHDIR)/cpuid.o \
 $(ARCHDIR)/asm_io_wait.o \
 $(ARCHDIR)/asm_cpuid_supported.o \
+$(ARCHDIR)/rsdp.o \
 $(ISRDIR)/isr.o \
 $(DRIVERDIR)/pic.o \
 $(DRIVERDIR)/pit.o \
 $(DRIVERDIR)/ps2.o \
-$(DRIVERDIR)/rsdp.o \
 $(COMMONDIR)/common/utils.o \
 
 

@@ -1,5 +1,5 @@
-#include <isr/isr.h>
-#include <kernel/gdt.h>
+#include <kernel/arch/gdt.h>
+#include <interrupts/isr.h>
 #include <drivers/pic.h>
 #include <stdio.h>
 

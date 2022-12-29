@@ -1,6 +1,6 @@
-#include <kernel/idt.h>
-#include <kernel/asm.h>
-#include <isr/isr.h>
+#include <kernel/arch/idt.h>
+#include <kernel/arch/asm.h>
+#include <interrupts/isr.h>
 #include <string.h>
 #include <stdio.h>
 #include <common/utils.h>

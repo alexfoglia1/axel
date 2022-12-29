@@ -3,9 +3,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <kernel/tty.h>
-#include <kernel/vga.h>
-#include <kernel/asm.h>
+#include <kernel/arch/tty.h>
+#include <kernel/arch/vga.h>
+#include <kernel/arch/asm.h>
 
 
 static const size_t 	VGA_WIDTH = 80;

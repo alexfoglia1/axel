@@ -1,5 +1,6 @@
-#include <kernel/gdt.h>
-#include <kernel/asm.h>
+#include <kernel/arch/gdt.h>
+#include <kernel/arch/asm.h>
+
 #include <string.h>
 #include <stdio.h>
 

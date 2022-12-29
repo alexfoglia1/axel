@@ -1,4 +1,4 @@
-#include <kernel/tty.h>
+#include <kernel/arch/tty.h>
 #include <string.h>
 
 #define VGA_WIDTH    80

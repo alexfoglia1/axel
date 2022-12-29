@@ -1,9 +1,9 @@
 #include <drivers/pic.h>
 #include <drivers/pit.h>
 #include <drivers/ps2.h>
-#include <kernel/asm.h>
-#include <kernel/gdt.h>
-#include <kernel/idt.h>
+#include <kernel/arch/asm.h>
+#include <kernel/arch/gdt.h>
+#include <kernel/arch/idt.h>
 #include <stdio.h>
 
 void

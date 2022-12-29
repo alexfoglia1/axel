@@ -1,4 +1,4 @@
-#include <kernel/vga.h>
+#include <kernel/arch/vga.h>
 
 
 uint8_t

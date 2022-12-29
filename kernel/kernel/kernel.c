@@ -3,18 +3,21 @@
 #include <errno.h>
 #include <stdbool.h>
 
-#include <kernel/cpuid.h>
-#include <kernel/tty.h>
-#include <kernel/multiboot.h>
-#include <kernel/asm.h>
-#include <kernel/gdt.h>
-#include <kernel/idt.h>
-#include <isr/isr.h>
+#include <kernel/arch/cpuid.h>
+#include <kernel/arch/tty.h>
+#include <kernel/arch/multiboot.h>
+#include <kernel/arch/asm.h>
+#include <kernel/arch/gdt.h>
+#include <kernel/arch/idt.h>
+#include <kernel/arch/rsdp.h>
+#include <kernel/arch/cpuid.h>
+
+#include <interrupts/isr.h>
+
 #include <drivers/pic.h>
 #include <drivers/pit.h>
 #include <drivers/ps2.h>
-#include <drivers/rsdp.h>
-#include <kernel/cpuid.h>
+
 #include <common/utils.h>
 
 
