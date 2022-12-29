@@ -1,6 +1,8 @@
 #ifndef _KEYBOARD_H
 #define _KEYBOARD_H
 
+#include <interrupts/isr.h>
+
 #define KBD_KEY_ESCAPE_DOWN  1
 #define KBD_KEY_ESCAPE_UP    129
 #define KBD_KEY_F1_DOWN      59
@@ -87,5 +89,14 @@
 #define KBD_KEY_PAGUPP_UP    KBD_NUMPAD_9_UP
 #define KBD_KEY_PAGDWN_DOWN  KBD_NUMPAD_3_DOWN
 #define KBD_KEY_PAGDWN_UP    KBD_NUMPAD_3_UP
+
+
+void keyboard_init();
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void ps2_irq1_keyboard_handler(interrupt_stack_frame_t* frame);
+
 
 #endif

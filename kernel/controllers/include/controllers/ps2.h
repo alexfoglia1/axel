@@ -76,12 +76,6 @@ struct FADT
 
 
 void ps2_controller_init(uint32_t* rsdt_addr);
-
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void ps2_irq1_keyboard_handler(interrupt_stack_frame_t* frame);
-
 uint8_t ps2_controller_found();
 uint8_t ps2_is_dual_channel();
 

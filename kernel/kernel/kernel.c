@@ -131,6 +131,10 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	pit_init_timer();
 //  --------------------------
 
+//  Initializing Keyboard
+    keyboard_init();
+//  --------------------------
+
 	sti();
 
 	while (1);
