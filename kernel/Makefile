@@ -40,6 +40,7 @@ $(ARCHDIR)/asm.o \
 $(ARCHDIR)/gdt.o \
 $(ARCHDIR)/idt.o \
 $(ARCHDIR)/mem.o \
+$(ARCHDIR)/cpuid.o \
 $(ARCHDIR)/asm_io_wait.o \
 $(ISRDIR)/isr.o \
 $(DRIVERDIR)/pic.o \

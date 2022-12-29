@@ -89,3 +89,50 @@ tty_putstring(const char* data)
 {
     tty_putchars(data, strlen(data));
 }
+
+
+void
+tty_row_up()
+{
+    if (_r > 0)
+    {
+        _r -= 1;
+    }
+}
+
+
+void
+tty_row_down()
+{
+    if (_r < VGA_HEIGHT - 1)
+    {
+        _r += 1;
+    }
+}
+
+
+void
+tty_column_right()
+{
+    if (_c < VGA_WIDTH - 1)
+    {
+        _c += 1;
+    }
+}
+
+
+void
+tty_column_left()
+{
+    if (_c > 0)
+    {
+        _c -= 1;
+    }
+}
+
+
+void
+tty_reset_column()
+{
+    _c = 0;
+}

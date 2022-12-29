@@ -19,8 +19,6 @@ gdt_init()
 	gdt_add_entry(2, 0x00000000, 0x000FFFFF, PRESENT|KERNEL|DATA|0x02, GRANULARITY|SZBITS);
 
 	store_gdt(gdt_table, 0xFFFF, 1, 2);	
-
-	printf("GLB Descriptor Table initialized\n");
 }
 
 

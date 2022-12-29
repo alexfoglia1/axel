@@ -7,6 +7,7 @@
 
 static uint32_t* rsdt_addr = (uint32_t*)(0x00);
 
+
 uint32_t
 cks_sum(struct RSDPDescriptor* rsdp_desc)
 {
@@ -46,9 +47,6 @@ rsdp_find()
         char oemid[7];
         memcpy(oemid, rsdp_desc->oemid, 6);
         oemid[6] = '\0';
-
-        printf("\nRSDP\tOEMID\tREV\n");
-        printf("%s\t%s\t%b\n\n", signature, oemid, rsdp_desc->rev);
         
         uint16_t checksum = (uint16_t)(cks_sum(rsdp_desc) & 0x0000FFFF);
         uint8_t lsb = (uint8_t)(checksum & 0xFF);

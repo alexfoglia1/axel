@@ -58,7 +58,5 @@ pic_init(uint8_t ps2_present)
         //TODO mask mouse 
     }
     
-    printf("IRQS initialized\n");
     // TODO other devices
-
 }

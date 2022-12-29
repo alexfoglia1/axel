@@ -25,8 +25,6 @@ idt_init()
     }
 
     store_idt(&idt);
-
-    printf("INT Descriptor Table initialized\n");
 }
 
 

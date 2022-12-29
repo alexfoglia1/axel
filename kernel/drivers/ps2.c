@@ -44,9 +44,6 @@ ps2_controller_init(uint32_t* rsdt_addr)
         memcpy(tbl_id, header->oemtableid, 8);
         tbl_id[8] = '\0';
 
-        printf("ACPI\tREV\tOEM ID\tOEM TID\tOEM REV\tCR. ID\tCR.REV\n");
-        printf("%s\t%b\t%s\t%s\t%u\t%X\t%u\n", signature, header->revision, oemid, tbl_id, header->oemrev, header->creatorid, header->creatorrev);
-
         uint8_t cks_sum = 0;
         for (uint32_t i = 0; i < header->length; i++)
         {
@@ -201,14 +198,6 @@ ps2_controller_init(uint32_t* rsdt_addr)
             ps2_present = 0;
         }
     }
-    else
-    {
-    }
-
-    printf("\nPS/2 Controller\n");
-    printf("Present\tChannels\n");
-    printf("%s\t%s\n\n", ps2_present == 0x01 ? "Yes" : "No", is_dual_channel ? "2" :
-                                                             ps2_present == 0x01 ? "1" : "0");
 }
 
 
@@ -216,6 +205,13 @@ uint8_t
 ps2_controller_found()
 {
     return ps2_present;
+}
+
+
+uint8_t
+ps2_is_dual_channel()
+{
+    return is_dual_channel;
 }
 
 
