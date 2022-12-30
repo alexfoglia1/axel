@@ -17,8 +17,8 @@ struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS] =
     {&IRQ0, PRESENT | IRQ_GATE}, /* INT 0x8 = IRQ0 = PIT TICK */ //PIT driver is implementing this
     {&IRQ1, PRESENT | IRQ_GATE}, /* INT 0x9 = IRQ1 = KEYBOARD */ //PS2 driver is implementing this
     {&IRQ2, PRESENT | IRQ_GATE}, /* INT 0xA = IRQ2 = SLV 8259 */ //Not yet impl.
-    {&IRQ3, PRESENT | IRQ_GATE}, /* INT 0xB = IRQ3 = COM2 SRQ */ //Not yet impl.
-    {&IRQ4, PRESENT | IRQ_GATE}, /* INT 0xC = IRQ4 = COM1 SRQ */ //Not yet impl.
+    {&IRQ3, PRESENT | IRQ_GATE}, /* INT 0xB = IRQ3 = COM2 SRQ */ //COM driver is implementing this
+    {&IRQ4, PRESENT | IRQ_GATE}, /* INT 0xC = IRQ4 = COM1 SRQ */ //COM driver is implementing this
     {&IRQ5, PRESENT | IRQ_GATE}, /* INT 0xD = IRQ5 = LPT2 DRQ */ //Not yet impl.
     {&IRQ6, PRESENT | IRQ_GATE}, /* INT 0xE = IRQ6 = FLOPPY D */ //Not yet impl.
     {&IRQ7, PRESENT | IRQ_GATE}, /* INT 0xF = IRQ7 = LPTQ DRQ */ //Not yet impl.

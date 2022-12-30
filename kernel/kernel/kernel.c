@@ -17,6 +17,7 @@
 
 #include <controllers/ps2.h>
 #include <controllers/pic.h>
+#include <controllers/com.h>
 
 #include <drivers/pit.h>
 #include <drivers/keyboard.h>
@@ -118,6 +119,36 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
+//  Initializing UART COM PORTS
+    printf("Detecting COM1:\t\t");
+	uint8_t com1_init_res = com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
+	if (com1_init_res == 0x01)
+    {
+        tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+        printf("[OK]\n");
+    }
+    else
+    {
+        tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+        printf("[KO]\n");
+    }
+	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+
+    printf("Detecting COM2:\t\t");
+    uint8_t com2_init_res = com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
+	if (com2_init_res == 0x01)
+    {
+        tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+        printf("[OK]\n");
+    }
+    else
+    {
+        tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+        printf("[KO]\n");
+    }
+	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+//  ..........................
+
 //  Initializing PIC IRQs
 	printf("Initializing IRQ:\t\t");
 
@@ -156,11 +187,9 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
-    uint32_t* page = paging_alloc_page();
-    uint32_t* phys = virtual_to_physical(page);
 
-    printf("virt(%x), phys(%x)\n", page, phys);
 	sti();
 
+	com_send_message(COM1_PORT, "Hello, Serial!\n");
 	while (1);
 }
