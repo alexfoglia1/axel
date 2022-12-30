@@ -29,6 +29,9 @@
 #define MINOR_V 1
 #define STAGE_V 'b'
 
+
+#define __klog__(port, msg)(com_send_message(port, msg))
+
 void
 kernel_main(multiboot_info_t* mbd, uint32_t magic)
 {
@@ -94,36 +97,12 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-//  Detecting RSDP
-	rsdp_find();
-//  --------------------------
-
-//  Initializing PS/2 controller
-	printf("Detecting PS/2 Channels:\t");
-
-    ps2_controller_init(rsdp_get_rsdt_address());
-
-	if (ps2_controller_found())
-	{
-		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-		printf("[%s]\n", ps2_is_dual_channel() == 0x01 ? "2" : "1");
-		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	}
-	else
-	{
-		tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
-		printf("[0]\n");
-		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	}
-
-	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-//  --------------------------
-
 //  Initializing UART COM PORTS
     printf("Detecting COM1:\t\t");
 	uint8_t com1_init_res = com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
 	if (com1_init_res == 0x01)
     {
+		__klog__(COM1_PORT, "COM1 Detected");
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
     }
@@ -140,14 +119,46 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
+		__klog__(COM1_PORT, "COM2 Detected");
     }
     else
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("[KO]\n");
+		__klog__(COM1_PORT, "COM2 Not detected");
     }
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  ..........................
+
+//  Detecting RSDP
+	rsdp_find();
+//  --------------------------
+
+//  Initializing PS/2 controller
+	printf("Detecting PS/2 Channels:\t");
+
+    ps2_controller_init(rsdp_get_rsdt_address());
+
+	if (ps2_controller_found())
+	{
+		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+		printf("[%s]\n", ps2_is_dual_channel() == 0x01 ? "2" : "1");
+		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+
+		__klog__(COM1_PORT, "PS/2 available");
+	}
+	else
+	{
+		tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+		printf("[0]\n");
+		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+
+		__klog__(COM1_PORT, "PS/2 not available");
+	}
+
+	__klog__(COM1_PORT, "Prova");
+	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+//  --------------------------
 
 //  Initializing PIC IRQs
 	printf("Initializing IRQ:\t\t");

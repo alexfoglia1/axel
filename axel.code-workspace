@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+        "files.exclude": {
+            "**/*.d": true,
+			"**/*.o": true,
+			"**/*.sh": true,
+			"*.iso": true,
+			"*isodir*": true,
+			"*sysroot*": true,
+			"**/build*": true,
+			
+        }
+}
