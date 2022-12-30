@@ -6,5 +6,6 @@ isodir
 sysroot
 *build*
 *.user
+*.code-workspace
 axel.iso
 axel.img
