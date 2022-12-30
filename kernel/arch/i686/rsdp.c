@@ -46,8 +46,6 @@ rsdp_find()
         uint16_t checksum = (uint16_t)(cks_sum(rsdp_desc) & 0x0000FFFF);
         uint8_t lsb = (uint8_t)(checksum & 0xFF);
 
-         
-
         if (0x00 == lsb)
         {
             rsdt_addr = (uint32_t*)(rsdp_desc->rsdt_addr);
@@ -57,7 +55,7 @@ rsdp_find()
             printf("%s\n", "ERROR : CANNOT VALIDATE RSDP CHECKSUM");
         }
 
-        __slog__(COM1_PORT, "RSDP checksum: %w, lsb: %b\n", (uint32_t)rsdp_addr, lsb);
+        __slog__(COM1_PORT, "RSDP checksum: %w, lsb: %b\n", (uint32_t)checksum, lsb);
     }
 }
 

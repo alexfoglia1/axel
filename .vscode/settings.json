@@ -2,6 +2,7 @@
     "cmake.configureOnOpen": false,
     "files.associations": {
         "utils.h": "c",
-        "com.h": "c"
+        "com.h": "c",
+        "asm.h": "c"
     }
 }
