@@ -30,8 +30,6 @@
 #define STAGE_V 'b'
 
 
-#define __klog__(port, msg)(com_send_message(port, msg))
-
 void
 kernel_main(multiboot_info_t* mbd, uint32_t magic)
 {
@@ -102,7 +100,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	uint8_t com1_init_res = com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
 	if (com1_init_res == 0x01)
     {
-		__klog__(COM1_PORT, "COM1 Detected");
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
     }
@@ -119,13 +116,11 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
-		__klog__(COM1_PORT, "COM2 Detected");
     }
     else
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("[KO]\n");
-		__klog__(COM1_PORT, "COM2 Not detected");
     }
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  ..........................
@@ -144,19 +139,14 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
 		printf("[%s]\n", ps2_is_dual_channel() == 0x01 ? "2" : "1");
 		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-
-		__klog__(COM1_PORT, "PS/2 available");
 	}
 	else
 	{
 		tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
 		printf("[0]\n");
 		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-
-		__klog__(COM1_PORT, "PS/2 not available");
 	}
 
-	__klog__(COM1_PORT, "Prova");
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
@@ -201,9 +191,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
 	sti();
 
-	char buf[32];
-	sprintf(buf, "Prova %d %s\n", 10, "dieci");
-	printf("%s\n", buf);
+	__slog__(COM1_PORT, "Test serial logger %d %s\n", 10, "Dieci");
 
 	while (1);
 }

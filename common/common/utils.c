@@ -1,6 +1,10 @@
 #include <common/utils.h>
+
 #include <string.h>
 #include <stdio.h>
+
+
+char* __slog_buf__[SERIAL_LOG_BUFLEN];
 
 
 uint32_t*
