@@ -26,7 +26,7 @@ extern char __slog_prm__[SERIAL_LOG_BUFLEN - SERIAL_LOG_TSTMP_BUFLEN];
             while(0)
 
 uint32_t* find_plaintext_in_memory(uint32_t* start_addr, uint32_t* limit, const char* plaintext);
-uint64_t  print_multiboot_info(multiboot_info_t* mbr);
+uint64_t  parse_multiboot_info(multiboot_info_t* mbr);
 void cmos_datetime_to_str(cmos_rtc_datetime datetime, char* buf);
 
 

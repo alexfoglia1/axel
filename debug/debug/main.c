@@ -4,6 +4,7 @@
 #include <kernel/arch/multiboot.h>
 
 #include <controllers/cmos.h>
+#include <controllers/com.h>
 
 #include <common/utils.h>
 
@@ -14,19 +15,9 @@ main(int argc, char** argv)
 {
     /** Call and debug kernel functions which are bugged :) **/
 
-    cmos_rtc_datetime datetime;
-    datetime.day = 1;
-    datetime.month = 7;
-    datetime.year = 23;
-
-    datetime.hour = 7;
-    datetime.min = 1;
-    datetime.sec = 0;
-
-    char strtime[128];
-    cmos_datetime_to_str(datetime, strtime);
+    com_init(COM1_PORT, 38400, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
     int x = 0;
-#if 0
+
     multiboot_info_t mbr;
     memset(&mbr, 0x00, sizeof(multiboot_info_t));
 
@@ -52,7 +43,7 @@ main(int argc, char** argv)
 
     mbr.mmap_addr = (uint32_t)(&maps);
     kernel_main(&mbr, MULTIBOOT_BOOTLOADER_MAGIC);
-#endif
+
 
     return 0;
 }

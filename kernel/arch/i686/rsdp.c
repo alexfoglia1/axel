@@ -33,6 +33,8 @@ rsdp_find()
 
     uint32_t* rsdp_addr = find_plaintext_in_memory(p_mem, p_lim, "RSD PTR");
 
+    __slog__(COM1_PORT, "RSDP String at 0x%X\n", (uint32_t)rsdp_addr);
+
     if (0 == rsdp_addr)
     {
         printf("\n%s\n", "NO RSDP FOUND - ACPI DISABLED");
@@ -44,6 +46,8 @@ rsdp_find()
         uint16_t checksum = (uint16_t)(cks_sum(rsdp_desc) & 0x0000FFFF);
         uint8_t lsb = (uint8_t)(checksum & 0xFF);
 
+         
+
         if (0x00 == lsb)
         {
             rsdt_addr = (uint32_t*)(rsdp_desc->rsdt_addr);
@@ -52,6 +56,8 @@ rsdp_find()
         {
             printf("%s\n", "ERROR : CANNOT VALIDATE RSDP CHECKSUM");
         }
+
+        __slog__(COM1_PORT, "RSDP checksum: %w, lsb: %b\n", (uint32_t)rsdp_addr, lsb);
     }
 }
 

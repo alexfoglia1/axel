@@ -35,11 +35,19 @@ void
 kernel_main(multiboot_info_t* mbd, uint32_t magic)
 {
 	errno = ENOERR;
-	tty_init();
 
+	//  Initialize COM1 immediately, to permit log capabilities since boot
+	uint8_t com1_init_res = com_init(COM1_PORT, 110, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
+	uint8_t com2_init_res = com_init(COM2_PORT, 110, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
+	__slog__(COM1_PORT, "System boot\n");
+	//  -------------------------------------------------------------------------------------------
+
+	tty_init();
+	
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	printf("Starting AXEL %d.%d-%c\n\n", MAJOR_V, MINOR_V, STAGE_V);
 
+	__slog__(COM1_PORT, "Multiboot magic: %X\n", magic);
 	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
 	{
 		tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
@@ -48,9 +56,9 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     }
 	else
 	{
-		uint64_t mem_size = print_multiboot_info(mbd);
+		uint64_t mem_size = parse_multiboot_info(mbd);
 
-		printf("\nAvailable Memory:\t\t");
+		printf("Available Memory:\t\t");
 		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
 		printf("[%U KiB]\n", mem_size / 1024);
 		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
@@ -96,13 +104,15 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-//  Initializing UART COM PORTS
+//  Displaying Initialization of UART COM PORTS
     printf("Detecting COM1:\t\t");
-	uint8_t com1_init_res = com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
+	
 	if (com1_init_res == 0x01)
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
+
+		__slog__(COM1_PORT, "COM 1 Detected\n");
     }
     else
     {
@@ -112,16 +122,19 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
     printf("Detecting COM2:\t\t");
-    uint8_t com2_init_res = com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
 	if (com2_init_res == 0x01)
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
+
+		__slog__(COM1_PORT, "COM 2 Detected\n");
     }
     else
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("[KO]\n");
+
+		__slog__(COM1_PORT, "COM 2 Not Detected\n");
     }
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  ..........................
@@ -170,12 +183,13 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  --------------------------
 
 //  Initializing paging
+#ifndef __DEBUG_STUB__
     printf("Initializing paging:\t");
     paging_init(mbd->mem_upper);
     paging_enable();
     // Todo : maybe we want to initialize heap memory here...
     paging_map_memory(mbd);
-
+#endif
     if (0x01 == paging_is_active())
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
@@ -191,8 +205,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  --------------------------
 
 	sti();
-
-	__slog__(COM1_PORT, "Hello, Serial Logger!\n");
 
 	while (1);
 }

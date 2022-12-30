@@ -43,7 +43,7 @@ find_plaintext_in_memory(uint32_t* start_addr, uint32_t* limit, const char* plai
 
 
 uint64_t
-print_multiboot_info(multiboot_info_t* mbd)
+parse_multiboot_info(multiboot_info_t* mbd)
 {
 
 	uint64_t total_size_bytes = 0;
@@ -53,7 +53,6 @@ print_multiboot_info(multiboot_info_t* mbd)
     }
 	else
 	{
-		printf("START\tLENGTH\tSIZE\tTYPE\n");
 #ifdef __ADDR_64BIT__
         for (uint32_t i = 0; i < mbd->mmap_length; i++)
         {
@@ -66,7 +65,7 @@ print_multiboot_info(multiboot_info_t* mbd)
             multiboot_memory_map_t* mmmt =
 				(multiboot_memory_map_t*) (mbd->mmap_addr + i);
 #endif
-			printf("%X\t%X\t%X\t%s\n", (uint32_t)mmmt->addr, (uint32_t)mmmt->len, (uint32_t)mmmt->size,
+			__slog__(COM1_PORT, "Mem Start: %X\ Length: %X Size: %X Type: %s\n", (uint32_t)mmmt->addr, (uint32_t)mmmt->len, (uint32_t)mmmt->size,
 				 					  MULTIBOOT_MEMORY_AVAILABLE == mmmt->type ? "AVAILABLE" :
 									  MULTIBOOT_MEMORY_RESERVED  == mmmt->type ? "RESERVED" :
 									  MULTIBOOT_MEMORY_ACPI_RECLAIMABLE == mmmt->type ? "ACPI RECL." :

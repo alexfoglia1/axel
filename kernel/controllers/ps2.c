@@ -4,6 +4,8 @@
 #include <kernel/arch/asm.h>
 #include <kernel/arch/tty.h>
 
+#include <common/utils.h>
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +47,8 @@ ps2_controller_init(uint32_t* rsdt_addr)
         char tbl_id[9];
         memcpy(tbl_id, header->oemtableid, 8);
         tbl_id[8] = '\0';
+
+        __slog__(COM1_PORT, "RSDT signature(%s), oemid(%s), tbl_id(%s)\n", signature, oemid, tbl_id);
 
         uint8_t cks_sum = 0;
         for (uint32_t i = 0; i < header->length; i++)
