@@ -5,8 +5,8 @@
 
 
 char __slog_buf__[SERIAL_LOG_BUFLEN];
-char __slog_tst__[SERIAL_LOG_TSTMP_BUFLEN];
 char __slog_prm__[SERIAL_LOG_BUFLEN - SERIAL_LOG_TSTMP_BUFLEN];
+char __slog_tst__[SERIAL_LOG_TSTMP_BUFLEN];
 
 
 uint32_t*
