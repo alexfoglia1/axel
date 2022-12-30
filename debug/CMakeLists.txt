@@ -50,6 +50,7 @@ ${CMAKE_SOURCE_DIR}/../kernel/drivers/keyboard.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/pic.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/ps2.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/com.c
+${CMAKE_SOURCE_DIR}/../kernel/controllers/cmos.c
 
 #---- KERNEL MAIN ----#
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/paging.c

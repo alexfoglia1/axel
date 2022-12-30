@@ -18,6 +18,7 @@
 #include <controllers/ps2.h>
 #include <controllers/pic.h>
 #include <controllers/com.h>
+#include <controllers/cmos.h>
 
 #include <drivers/pit.h>
 #include <drivers/keyboard.h>
@@ -191,7 +192,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
 	sti();
 
-	__slog__(COM1_PORT, "Test serial logger %d %s\n", 10, "Dieci");
+	__slog__(COM1_PORT, "Hello, Serial Logger!\n");
 
 	while (1);
 }

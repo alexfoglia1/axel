@@ -72,7 +72,7 @@ void
 com_1_irq_handler(interrupt_stack_frame_t* frame)
 {
     char rx = inb(COM1_PORT + 5) & 0x01;
-    printf("[COM1] >> %c\N", rx);
+    printf("[COM1] >> %c\n", rx);
 }
 
 
@@ -82,5 +82,5 @@ __attribute__((interrupt))
 void com_2_irq_handler(interrupt_stack_frame_t* frame)
 {
     char rx = inb(COM2_PORT + 5) & 0x01;
-    printf("[COM2] >> %c\N", rx);
+    printf("[COM2] >> %c\n", rx);
 }

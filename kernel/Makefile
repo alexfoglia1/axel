@@ -50,6 +50,7 @@ $(ISRDIR)/isr.o \
 $(CONTRDIR)/pic.o \
 $(CONTRDIR)/ps2.o \
 $(CONTRDIR)/com.o \
+$(CONTRDIR)/cmos.o \
 $(DRIVERDIR)/pit.o \
 $(DRIVERDIR)/keyboard.o \
 $(COMMONDIR)/common/utils.o \

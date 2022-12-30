@@ -13,6 +13,6 @@
 			"*isodir*": true,
 			"*sysroot*": true,
 			"**/build*": true,
-			
+			 
         }
 }

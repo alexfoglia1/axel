@@ -3,6 +3,10 @@
 
 #include <kernel/arch/multiboot.h>
 
+#include <controllers/cmos.h>
+
+#include <common/utils.h>
+
 extern void kernel_main(multiboot_info_t* mbr, uint32_t magic);
 
 int
@@ -10,10 +14,18 @@ main(int argc, char** argv)
 {
     /** Call and debug kernel functions which are bugged :) **/
 
-    char buf[32];
-    sprintf(buf, "Prova: %d %f", 17, 17.176);
-    int x = 0;
+    cmos_rtc_datetime datetime;
+    datetime.day = 1;
+    datetime.month = 7;
+    datetime.year = 23;
 
+    datetime.hour = 7;
+    datetime.min = 1;
+    datetime.sec = 0;
+
+    char strtime[128];
+    cmos_datetime_to_str(datetime, strtime);
+    int x = 0;
 #if 0
     multiboot_info_t mbr;
     memset(&mbr, 0x00, sizeof(multiboot_info_t));
