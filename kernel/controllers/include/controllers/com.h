@@ -1,6 +1,8 @@
 #ifndef COM_H
 #define COM_H
 
+#include <interrupts/isr.h>
+
 #define COM1_PORT 0x3F8
 #define COM2_PORT 0x2F8
 
@@ -28,8 +30,23 @@
 #define COM_CMD_SET_TEST_OFF 0x0F
 #define COM_CMD_TEST_ECHO    0xAE
 
+#define COM1_INTERRUPT       0x0C
+#define COM2_INTERRUPT       0x0B
+
+
 #include <stdint.h>
 
 uint8_t com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits);
+void com_send_message(int com_port, const char* message);
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void com_1_irq_handler(interrupt_stack_frame_t* frame);
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void com_2_irq_handler(interrupt_stack_frame_t* frame);
 
 #endif

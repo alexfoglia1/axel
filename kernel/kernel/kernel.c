@@ -190,5 +190,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
 	sti();
 
+	com_send_message(COM1_PORT, "Hello, Serial!\n");
 	while (1);
 }
