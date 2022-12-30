@@ -11,7 +11,7 @@ BOOTDIR?=$(EXEC_PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -mgeneral-regs-only
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -I../common/include -Iinterrupts/include -Idrivers/include -Icontrollers/include
+CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -Icommon/include -Iinterrupts/include -Idrivers/include -Icontrollers/include
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
@@ -19,7 +19,7 @@ LIBS:=$(LIBS) -nostdlib -lk -lgcc
 ARCHDIR=arch/i686
 
 #My own common sources
-COMMONDIR=../common
+COMMONDIR=common
 
 #Controllers sources
 CONTRDIR=controllers

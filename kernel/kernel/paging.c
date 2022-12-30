@@ -147,7 +147,7 @@ virtual_to_physical(uint32_t* va)
     uint32_t virtual_page = (uint32_t)(va) / PAGE_TABLE_SIZE;
     uint32_t pt_idx = virtual_page / PAGE_TABLE_ENTRY_SIZE;
 
-    return (uint32_t*)(page_table[virtual_page] & PAGE_MASK);
+    return (uint32_t*)(page_table[pt_idx] & PAGE_MASK);
 }
 
 

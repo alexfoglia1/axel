@@ -1,15 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <common/utils.h>
 
 __attribute__((__noreturn__))
 void
 abort(void)
 {
-#if defined(__is_kernel)
-	__slog__(COM1_PORT, "Kernel Panic");
-#endif
-
 #if defined(__is_libk)
 	printf("SYSTEM HALT\n");
 #else
