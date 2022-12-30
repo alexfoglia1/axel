@@ -5,14 +5,16 @@
 		}
 	],
 	"settings": {
-        "files.exclude": {
+        "files.exclude":
+		{
             "**/*.d": true,
 			"**/*.o": true,
+			"**/*.a": true,
 			"**/*.sh": true,
-			"*.iso": true,
+			"**/*.iso": true,
 			"*isodir*": true,
 			"*sysroot*": true,
 			"**/build*": true,
-			 
+			
         }
 }

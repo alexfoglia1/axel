@@ -35,7 +35,7 @@ rsdp_find()
 
     __slog__(COM1_PORT, "RSDP String at 0x%X\n", (uint32_t)rsdp_addr);
 
-    if (0 == rsdp_addr)
+    if (0x00 == rsdp_addr)
     {
         printf("\n%s\n", "NO RSDP FOUND - ACPI DISABLED");
     }
