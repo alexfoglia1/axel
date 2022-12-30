@@ -201,6 +201,9 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
 	sti();
 
-	com_send_message(COM1_PORT, "Hello, Serial!\n");
+	char buf[32];
+	sprintf(buf, "Prova %d %s\n", 10, "dieci");
+	printf("%s\n", buf);
+
 	while (1);
 }

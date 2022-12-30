@@ -10,6 +10,11 @@ main(int argc, char** argv)
 {
     /** Call and debug kernel functions which are bugged :) **/
 
+    char buf[32];
+    sprintf(buf, "Prova: %d %f", 17, 17.176);
+    int x = 0;
+
+#if 0
     multiboot_info_t mbr;
     memset(&mbr, 0x00, sizeof(multiboot_info_t));
 
@@ -35,6 +40,7 @@ main(int argc, char** argv)
 
     mbr.mmap_addr = (uint32_t)(&maps);
     kernel_main(&mbr, MULTIBOOT_BOOTLOADER_MAGIC);
+#endif
 
     return 0;
 }

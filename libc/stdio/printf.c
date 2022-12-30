@@ -4,8 +4,20 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+
 #include <kernel/arch/tty.h>
 #include <kernel/arch/vga.h>
+
+
+static char* __print_to__   = 0x00;
+static int __print_to_idx__ = 0;
+
+void
+__redirect_printf__(char* print_to)
+{
+    __print_to__ = print_to;
+    __print_to_idx__ = 0;
+}
 
 
 static bool
@@ -15,9 +27,17 @@ print(const char* data, size_t length)
 
 	for (size_t i = 0; i < length; i++)
 	{
-		if (EOF == putchar(bytes[i]))
+        if (0x00 == __print_to__)
 		{
-			return false;
+			if (EOF == putchar(bytes[i]))
+			{
+				return false;
+			}
+		}
+		else
+		{
+            __print_to__[__print_to_idx__] = data[i];
+            __print_to_idx__ += 1;
 		}
 	}
 	return true;
