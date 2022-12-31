@@ -1,4 +1,5 @@
 #include <common/utils.h>
+#include <drivers/pit.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -104,4 +105,11 @@ cmos_datetime_to_str(cmos_rtc_datetime datetime, char* buf)
 	sprintf(ss, "%s%b", datetime.sec < 10 ? "0" : "", datetime.sec);
 
 	sprintf(buf, "[%s/%s/%s %s:%s:%s]", dd, mo, yr, hh, mm, ss);
+}
+
+
+void sleep(uint32_t millis)
+{
+	uint32_t millis0 = pit_get_millis();
+	while (pit_get_millis - millis0 < millis);
 }

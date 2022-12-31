@@ -23,8 +23,9 @@ sti()
 uint8_t
 inb (int port_no)
 {
-  uint8_t data=0;
+  uint8_t data = 0x00;
   asm volatile ("inb %%dx, %%al" : "=a" (data) : "d" (port_no));
+
   return data;
 }
 
@@ -33,6 +34,23 @@ void
 outb (int port_no, int data)
 {
   asm volatile ("outb %%al, %%dx" :: "a" (data), "d" (port_no));
+}
+
+
+uint16_t
+inw (int port_no)
+{
+	uint16_t data = 0x00;
+	asm volatile ("inw %%dx, %%ax" : "=a" (data) : "d" (port_no));
+
+	return data;
+}
+
+
+void
+outw(int port_no, int data)
+{
+	asm volatile ("outw %%ax, %%dx" :: "a" (data), "d" (port_no));
 }
 
 

@@ -73,8 +73,8 @@ struct FADT
 
 
 void acpi_init();
-//void acpi_shutdown();
-uint8_t acpi_present();
+void acpi_shutdown();
+uint8_t acpi_is_enabled();
 uint8_t acpi_ps2_present();
 
 #endif

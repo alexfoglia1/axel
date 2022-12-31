@@ -1,5 +1,8 @@
 #include <controllers/acpi.h>
+
 #include <common/utils.h>
+
+#include <kernel/arch/asm.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +10,13 @@
 #include <string.h>
 
 static uint32_t* rsdt_addr;
+static uint16_t SLP_TYPa;
+static uint16_t SLP_TYPb;
+static uint8_t acpi_enabled;
+static uint8_t dsdt_found;
 static uint8_t ps2_present;
+static struct FADT* fadt;
+
 
 
 static uint32_t
@@ -38,7 +47,6 @@ acpi_find_rsdt()
 
     if (0x00 == rsdp_addr)
     {
-        printf("\n%s\n", "NO RSDP FOUND - ACPI DISABLED");
         ps2_present = 1; // NO ACPI, NO RSDT AND NO FADT : PS/2 CONTROLLER IS PRESENT (https://wiki.osdev.org/%228042%22_PS/2_Controller)
     }
     else
@@ -112,6 +120,8 @@ acpi_find_fadt()
                     uint8_t* pBootArchFlags = (uint8_t*)(&p_fadt->BootArchitectureFlags);
                     uint8_t boot_arch_flags = *pBootArchFlags;
                     uint8_t bit_1 = (boot_arch_flags >> 6 & 0x01);
+                    
+                    fadt = p_fadt;
 
                     // FACP Exists : ps2_present = true iff bit_1 is set
                     ps2_present = (0x01 == bit_1);
@@ -128,22 +138,118 @@ acpi_find_fadt()
     }
 }
 
+
+static
+void acpi_find_dsdt()
+{
+    if (fadt != 0x00)
+    {
+        char *S5Addr = (char *) fadt->Dsdt + 36; // skip header
+        uint32_t dsdtLength = (*(uint32_t*)(fadt->Dsdt+1)) - 36;
+        while (0 < dsdtLength--)
+        {
+            if ( memcmp(S5Addr, "_S5_", 4) == 0)
+                break;
+            S5Addr++;
+        }
+        // check if \_S5 was found
+        if (dsdtLength > 0)
+        {
+            // check for valid AML structure
+            if ( ( *(S5Addr-1) == 0x08 || ( *(S5Addr-2) == 0x08 && *(S5Addr-1) == '\\') ) && *(S5Addr+4) == 0x12 )
+            {
+                S5Addr += 5;
+                S5Addr += ((*S5Addr &0xC0)>>6) +2;   // calculate PkgLength size
+
+                if (*S5Addr == 0x0A)
+                    S5Addr++;   // skip byteprefix
+                
+                SLP_TYPa = *(S5Addr)<<10;
+                S5Addr++;
+                SLP_TYPb = *(S5Addr)<<10;
+                dsdt_found = 0x01;
+            }
+        }
+    }
+}
+
+
+static
+void acpi_enable()
+{
+   if (fadt != 0x00)
+   { 
+        uint16_t PM1a_CNT = inw((fadt->PM1aControlBlock));
+        if (0x00 == ((PM1a_CNT) & 0x01))
+        {
+            // check if acpi can be enabled
+            if (fadt->SMI_CommandPort != 0 && fadt->AcpiEnable != 0)
+            {
+                outb(fadt->SMI_CommandPort, fadt->AcpiEnable); // send acpi enable command
+                printf("acpi enabling : sent outb port %b, value %b\n", fadt->SMI_CommandPort, fadt->AcpiEnable);
+                // give 3 seconds time to enable acpi
+                int i;
+                for (i=0; i<300; i++ )
+                {
+                    uint16_t rx = (inw((unsigned int) PM1a_CNT) & 0x01);
+                    printf("acpi enabling: received %w\n", rx);
+                    if ( rx == 1 )
+                    break;
+                    sleep(10);
+                }
+                if (fadt->PM1bControlBlock != 0)
+                {
+                     printf("acpi enabling pm1B\n");
+                    for (; i<300; i++ )
+                    {
+                        if ( (inw((unsigned int) fadt->PM1bControlBlock) & 0x01) == 1 )
+                            break;
+                    sleep(10);
+                    }
+                }
+                if (i<300)
+                {
+                    printf("enabled acpi");
+                    __slog__(COM1_PORT, "enabled acpi\n");
+                    acpi_enabled = 0x01;
+                }
+                else
+                {
+                    __slog__(COM1_PORT, "couldn't enable acpi.\n");
+                    acpi_enabled = 0x00;
+                }
+            }
+            else
+            {
+                __slog__(COM1_PORT, "no known way to enable acpi.\n");
+                acpi_enabled = 0x00;
+            }
+        }
+        else
+        {
+            __slog__(COM1_PORT, "ACPI was yet enabled\n");
+            acpi_enabled = 0x01;
+        }
+   }
+}
+
+
 // Public exposed ACPI interface
 void
 acpi_init()
 {
     ps2_present = 0x00;
     rsdt_addr = 0x00;
+    fadt = 0x00;
+    acpi_enabled = 0x00;
+    SLP_TYPa = 0x00;
+    SLP_TYPb = 0x00;
+    dsdt_found = 0x00;
 
     acpi_find_rsdt();
     acpi_find_fadt();
-}
-
-
-uint8_t
-acpi_present()
-{
-    return rsdt_addr != 0x00;
+    acpi_find_dsdt();
+    acpi_enable();
 }
 
 
@@ -153,3 +259,39 @@ acpi_ps2_present()
     return ps2_present;
 }
 
+
+uint8_t
+acpi_is_enabled()
+{
+    return acpi_enabled;
+}
+
+
+void
+acpi_shutdown()
+{
+    if (0x00 == rsdt_addr)
+    {
+        __slog__(COM1_PORT, "Requested ACPI shutdown but no ACPI is present\n");
+    }
+    else if (0x00 == acpi_is_enabled())
+    {
+        __slog__(COM1_PORT, "Requested ACPI shutdown but no ACPI is enabled\n");
+    }
+    else if (0x00 == dsdt_found)
+    {
+        __slog__(COM1_PORT, "Requested ACPI shutdown but no DSDT was found\n");
+    }
+    else
+    {
+        
+        outw((unsigned int) fadt->PM1aControlBlock, SLP_TYPa | (1 << 13) );
+        __slog__(COM1_PORT, "ACPI shutdown outw(port=%u, data=%w)\n", fadt->PM1aControlBlock, SLP_TYPa | (1 << 13));
+        if ( fadt->PM1bControlBlock != 0 )
+        {
+            __slog__(COM1_PORT, "ACPI shutdown outw(port=%u, data=%w)\n", fadt->PM1bControlBlock, SLP_TYPb | (1 << 13));
+            outw((unsigned int) fadt->PM1bControlBlock, SLP_TYPb | (1 << 13) );
+        }
+        __slog__(COM1_PORT, "ACPI shutdown\n");
+    }
+}

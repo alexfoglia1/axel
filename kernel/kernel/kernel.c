@@ -143,19 +143,19 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	printf("Initializing ACPI:\t\t");
 
 	acpi_init();
-	if (acpi_present() == 0x01)
+	if (acpi_is_enabled() == 0x01)
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
 
-		__slog__(COM1_PORT, "ACPI detected\n");
+		__slog__(COM1_PORT, "ACPI enabled\n");
     }
     else
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("[KO]\n");
 
-		__slog__(COM1_PORT, "ACPI not detected\n");
+		__slog__(COM1_PORT, "ACPI not enabled\n");
     }
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
@@ -202,10 +202,10 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  Initializing paging
 #ifndef __DEBUG_STUB__
     printf("Initializing paging:\t");
-    paging_init(mbd->mem_upper);
-    paging_enable();
+    //paging_init(mbd->mem_upper);
+    //paging_enable();
     // Todo : maybe we want to initialize heap memory here...
-    paging_map_memory(mbd);
+    //paging_map_memory(mbd);
 #endif
     if (0x01 == paging_is_active())
     {

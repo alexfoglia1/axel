@@ -2,6 +2,7 @@
 
 #include <controllers/ps2.h>
 #include <controllers/pic.h>
+#include <controllers/acpi.h>
 
 #include <interrupts/isr.h>
 
@@ -195,6 +196,13 @@ ps2_irq1_keyboard_handler(interrupt_stack_frame_t* frame)
             break;
         case KBD_KEY_CAPS_UP:
             is_caps = (is_caps == 0x01) ? 0x00 : 0x01;
+            break;
+        case KBD_KEY_ESCAPE_DOWN:
+            if (is_shift_holded)
+            {
+                printf("Requested Shutdown\n");
+                acpi_shutdown();
+            }
             break;
         default:
             //check for errors or non-character keys defined in drivers/keyboard.h and not yet handled
