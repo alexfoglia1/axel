@@ -45,15 +45,15 @@ $(ARCHDIR)/idt.o \
 $(ARCHDIR)/cpuid.o \
 $(ARCHDIR)/asm_io_wait.o \
 $(ARCHDIR)/asm_cpuid_supported.o \
-$(ARCHDIR)/rsdp.o \
 $(ISRDIR)/isr.o \
 $(CONTRDIR)/pic.o \
 $(CONTRDIR)/ps2.o \
 $(CONTRDIR)/com.o \
 $(CONTRDIR)/cmos.o \
+$(CONTRDIR)/acpi.o \
 $(DRIVERDIR)/pit.o \
 $(DRIVERDIR)/keyboard.o \
-$(COMMONDIR)/common/utils.o \
+$(COMMONDIR)/utils.o \
 
 
 CFLAGS:=$(CFLAGS) $(KERNEL_ARCH_CFLAGS)

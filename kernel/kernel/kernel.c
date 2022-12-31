@@ -11,13 +11,13 @@
 #include <kernel/arch/asm.h>
 #include <kernel/arch/gdt.h>
 #include <kernel/arch/idt.h>
-#include <kernel/arch/rsdp.h>
 
 #include <interrupts/isr.h>
 
 #include <controllers/ps2.h>
 #include <controllers/pic.h>
 #include <controllers/com.h>
+#include <controllers/acpi.h>
 #include <controllers/cmos.h>
 
 #include <drivers/pit.h>
@@ -139,16 +139,33 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  ..........................
 
-//  Detecting RSDP
-	rsdp_find();
+//  Initializing ACPI
+	printf("Initializing ACPI:\t\t");
+
+	acpi_init();
+	if (acpi_present() == 0x01)
+    {
+        tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+        printf("[OK]\n");
+
+		__slog__(COM1_PORT, "ACPI detected\n");
+    }
+    else
+    {
+        tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+        printf("[KO]\n");
+
+		__slog__(COM1_PORT, "ACPI not detected\n");
+    }
+	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
 //  Initializing PS/2 controller
 	printf("Detecting PS/2 Channels:\t");
 
-    ps2_controller_init(rsdp_get_rsdt_address());
+    ps2_controller_init(acpi_ps2_present());
 
-	if (ps2_controller_found())
+	if (ps2_is_confirmed())
 	{
 		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
 		printf("[%s]\n", ps2_is_dual_channel() == 0x01 ? "2" : "1");
@@ -167,7 +184,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  Initializing PIC IRQs
 	printf("Initializing IRQ:\t\t");
 
-	pic_init(ps2_controller_found());
+	pic_init(ps2_is_confirmed());
 
 	tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
 	printf("[OK]\n");

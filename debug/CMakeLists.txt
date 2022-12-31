@@ -16,10 +16,9 @@ ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/asm.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/gdt.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/idt.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/cpuid.c
-${CMAKE_SOURCE_DIR}/../kernel/arch/debug/rsdp.c
 
 #---- COMMON      ----#
-${CMAKE_SOURCE_DIR}/../common/common/utils.c
+${CMAKE_SOURCE_DIR}/../kernel/common/utils.c
 
 #---- LIBC ERRNO  ----#
 ${CMAKE_SOURCE_DIR}/../libc/errno/errno.c
@@ -51,6 +50,7 @@ ${CMAKE_SOURCE_DIR}/../kernel/controllers/pic.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/ps2.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/com.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/cmos.c
+${CMAKE_SOURCE_DIR}/../kernel/controllers/acpi.c
 
 #---- KERNEL MAIN ----#
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/paging.c
@@ -66,8 +66,8 @@ ${CMAKE_SOURCE_DIR}/../kernel/include
 ${CMAKE_SOURCE_DIR}/../kernel/interrupts/include
 ${CMAKE_SOURCE_DIR}/../kernel/drivers/include
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/include
+${CMAKE_SOURCE_DIR}/../kernel/common/include
 ${CMAKE_SOURCE_DIR}/../libc/include
-${CMAKE_SOURCE_DIR}/../common/include
 )
 
 add_compile_options(-Wl,nostdlib -Wl,nodefaultlibs)
