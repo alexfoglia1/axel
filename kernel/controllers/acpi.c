@@ -1,297 +1,317 @@
 #include <controllers/acpi.h>
+#include <controllers/com.h>
 
 #include <common/utils.h>
 
+#include <drivers/pit.h>
+
 #include <kernel/arch/asm.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <string.h>
 
-static uint32_t* rsdt_addr;
+static uint32_t *SMI_CMD;
+static uint8_t ACPI_ENABLE;
+static uint8_t ACPI_DISABLE;
+static uint32_t *PM1a_CNT;
+static uint32_t *PM1b_CNT;
 static uint16_t SLP_TYPa;
 static uint16_t SLP_TYPb;
+static uint16_t SLP_EN;
+static uint16_t SCI_EN;
+static uint8_t PM1_CNT_LEN;
 static uint8_t acpi_enabled;
-static uint8_t dsdt_found;
-static uint8_t ps2_present;
-static struct FADT* fadt;
 
+
+static uint32_t*
+acpi_check_rsd_ptr(uint32_t* ptr)
+{
+   char *sig = "RSD PTR ";
+   struct RSDPtr *rsdp = (struct RSDPtr *) ptr;
+   uint8_t *bptr;
+   uint8_t check = 0;
+   int i;
+
+   if (0x00 == memcmp(sig, rsdp, 8))
+   {
+      bptr = (uint8_t *) ptr;
+      for (i=0; i<sizeof(struct RSDPtr); i++)
+      {
+         check += *bptr;
+         bptr++;
+      }
+
+      if (0x00 == check)
+      {
+         return (uint32_t*) rsdp->RsdtAddress;
+      }
+   }
+
+   return 0x00;
+}
 
 
 static uint32_t
-acpi_rsdp_cks_sum(struct RSDPDescriptor* rsdp_desc)
+*acpi_get_rsd_ptr(void)
 {
-    uint8_t* rsdp_bytes = (uint8_t*)(rsdp_desc);
-    size_t   rsdp_size = sizeof(struct RSDPDescriptor);
-    
-    uint32_t sum = 0;
-    for (size_t i = 0; i < rsdp_size; i++)
-    {
-        sum += rsdp_bytes[i];
-    }
+   uint32_t *addr;
+   uint32_t *rsdp;
 
-    return sum;
+   for (addr = (uint32_t *) 0x000E0000; (int) addr<0x00100000; addr += 0x10/sizeof(addr))
+   {
+      rsdp = acpi_check_rsd_ptr(addr);
+      if (rsdp != 0x00)
+      {
+         __slog__(COM1_PORT, "RSDP String at 0x%X\n", (uint32_t)addr);
+
+         return rsdp;
+      }
+   }
+
+   int ebda = *((short *) 0x40E);
+   ebda = ebda*0x10 &0x000FFFFF;
+
+   for (addr = (uint32_t *) ebda; (int) addr<ebda+1024; addr+= 0x10/sizeof(addr))
+   {
+      rsdp = acpi_check_rsd_ptr(addr);
+      if (rsdp != 0x00)
+      {
+         return rsdp;
+      }
+   }
+
+   return 0x00;
 }
 
 
-static void
-acpi_find_rsdt()
+
+int acpi_check_header(uint32_t *ptr, char *sig)
 {
-    uint32_t* p_mem = (uint32_t*)0xE0000;
-    uint32_t* p_lim = (uint32_t*)0xFFFFF;
+   if (0x00 == memcmp(ptr, sig, 4))
+   {
+      char *checkPtr = (char *) ptr;
+      int len = *(ptr + 1);
+      char check = 0;
 
-    uint32_t* rsdp_addr = find_plaintext_in_memory(p_mem, p_lim, "RSD PTR");
+      while (len)
+      {
+         check += *checkPtr;
+         checkPtr += 1;
+         
+         len -= 1;
+      }
 
-    __slog__(COM1_PORT, "RSDP String at 0x%X\n", (uint32_t)rsdp_addr);
+      if (0x00 == check)
+      {
+         return 0;
+      }
+   }
 
-    if (0x00 == rsdp_addr)
-    {
-        ps2_present = 1; // NO ACPI, NO RSDT AND NO FADT : PS/2 CONTROLLER IS PRESENT (https://wiki.osdev.org/%228042%22_PS/2_Controller)
-    }
-    else
-    {
-        struct RSDPDescriptor* rsdp_desc = (struct RSDPDescriptor*)(rsdp_addr);
-
-        uint16_t checksum = (uint16_t)(acpi_rsdp_cks_sum(rsdp_desc) & 0x0000FFFF);
-        uint8_t lsb = (uint8_t)(checksum & 0xFF);
-
-        if (0x00 == lsb)
-        {
-            rsdt_addr = (uint32_t*)(rsdp_desc->rsdt_addr);
-        }
-        else
-        {
-            printf("%s\n", "ERROR : CANNOT VALIDATE RSDP CHECKSUM");
-        }
-
-        __slog__(COM1_PORT, "RSDP checksum: %w, lsb: %b\n", (uint32_t)checksum, lsb);
-    }
+   return -1;
 }
 
 
-static void
-acpi_find_fadt()
+
+void acpi_enable(void)
 {
-    if (rsdt_addr != 0x00)
-    {
-        ps2_present = 0x01;
 
-        struct ACPISDTHeader* header = (struct ACPISDTHeader*)(rsdt_addr);
+   acpi_enabled = 0x00;
 
-        struct RSDT
-        {
-            struct ACPISDTHeader h;
-            uint32_t ptr_to_other_sdt[(header->length - sizeof(struct ACPISDTHeader)) / 4];
-        };
-        struct RSDT* rsdt = (struct RSDT*)(rsdt_addr);
+   if (0x00 == (inw((uint32_t) PM1a_CNT) & SCI_EN))
+   {
+      if (SMI_CMD != 0 && ACPI_ENABLE != 0)
+      {
+         outb((uint32_t) SMI_CMD, ACPI_ENABLE);
 
-        char signature[5];
-        memcpy(signature, header->signature, 4);
-        signature[4] = '\0';
+         int i;
+         for (i = 0; i < 300; i++ )
+         {
+            if (0x01 == (inw((uint32_t) PM1a_CNT) & SCI_EN))
+               break;
+            sleep(10);
+         }
 
-        char oemid[7];
-        memcpy(oemid, header->oemid, 6);
-        oemid[6] = '\0';
-
-        char tbl_id[9];
-        memcpy(tbl_id, header->oemtableid, 8);
-        tbl_id[8] = '\0';
-
-        __slog__(COM1_PORT, "RSDT signature(%s), oemid(%s), tbl_id(%s)\n", signature, oemid, tbl_id);
-
-        uint8_t cks_sum = 0;
-        for (uint32_t i = 0; i < header->length; i++)
-        {
-            cks_sum += ((char *) header)[i];
-        }
-
-        if (0x00 == cks_sum)
-        {
-            __slog__(COM1_PORT, "RSDT checksum ok\n");
-
-            int entries = (header->length - sizeof(struct ACPISDTHeader)) / 4;
-            for (int i = 0; i < entries; i++)
+         if (PM1b_CNT != 0)
+         {
+            for (; i < 300; i++)
             {
-                struct ACPISDTHeader *h = (struct ACPISDTHeader *) rsdt->ptr_to_other_sdt[i];
-                if (!memcmp(h->signature, "FACP", 4))
-                {
-                    struct FADT* p_fadt = (struct FADT*)((uint8_t*)h + sizeof(struct ACPISDTHeader));
-                    uint8_t* pBootArchFlags = (uint8_t*)(&p_fadt->BootArchitectureFlags);
-                    uint8_t boot_arch_flags = *pBootArchFlags;
-                    uint8_t bit_1 = (boot_arch_flags >> 6 & 0x01);
-                    
-                    fadt = p_fadt;
-
-                    // FACP Exists : ps2_present = true iff bit_1 is set
-                    ps2_present = (0x01 == bit_1);
-                    __slog__(COM1_PORT, "Found facp, ps2_present(%b)\n", ps2_present);
-                }
-                
+               if (0x01 == (inw((uint32_t) PM1b_CNT) & SCI_EN))
+                  break;
+               sleep(10);
             }
-        }
-        else
-        {
-            printf("%s\n", "KERNEL PANIC : CANNOT VALIDATE RSDT CHECKSUM");
-            abort();
-        }
-    }
-}
+         }
 
-
-static
-void acpi_find_dsdt()
-{
-    if (fadt != 0x00)
-    {
-        char *S5Addr = (char *) fadt->Dsdt + 36; // skip header
-        uint32_t dsdtLength = (*(uint32_t*)(fadt->Dsdt+1)) - 36;
-        while (0 < dsdtLength--)
-        {
-            if ( memcmp(S5Addr, "_S5_", 4) == 0)
-                break;
-            S5Addr++;
-        }
-        // check if \_S5 was found
-        if (dsdtLength > 0)
-        {
-            // check for valid AML structure
-            if ( ( *(S5Addr-1) == 0x08 || ( *(S5Addr-2) == 0x08 && *(S5Addr-1) == '\\') ) && *(S5Addr+4) == 0x12 )
-            {
-                S5Addr += 5;
-                S5Addr += ((*S5Addr &0xC0)>>6) +2;   // calculate PkgLength size
-
-                if (*S5Addr == 0x0A)
-                    S5Addr++;   // skip byteprefix
-                
-                SLP_TYPa = *(S5Addr)<<10;
-                S5Addr++;
-                SLP_TYPb = *(S5Addr)<<10;
-                dsdt_found = 0x01;
-            }
-        }
-    }
-}
-
-
-static
-void acpi_enable()
-{
-   if (fadt != 0x00)
-   { 
-        uint16_t PM1a_CNT = inw((fadt->PM1aControlBlock));
-        if (0x00 == ((PM1a_CNT) & 0x01))
-        {
-            // check if acpi can be enabled
-            if (fadt->SMI_CommandPort != 0 && fadt->AcpiEnable != 0)
-            {
-                outb(fadt->SMI_CommandPort, fadt->AcpiEnable); // send acpi enable command
-                printf("acpi enabling : sent outb port %b, value %b\n", fadt->SMI_CommandPort, fadt->AcpiEnable);
-                // give 3 seconds time to enable acpi
-                int i;
-                for (i=0; i<300; i++ )
-                {
-                    uint16_t rx = (inw((unsigned int) PM1a_CNT) & 0x01);
-                    printf("acpi enabling: received %w\n", rx);
-                    if ( rx == 1 )
-                    break;
-                    sleep(10);
-                }
-                if (fadt->PM1bControlBlock != 0)
-                {
-                     printf("acpi enabling pm1B\n");
-                    for (; i<300; i++ )
-                    {
-                        if ( (inw((unsigned int) fadt->PM1bControlBlock) & 0x01) == 1 )
-                            break;
-                    sleep(10);
-                    }
-                }
-                if (i<300)
-                {
-                    printf("enabled acpi");
-                    __slog__(COM1_PORT, "enabled acpi\n");
-                    acpi_enabled = 0x01;
-                }
-                else
-                {
-                    __slog__(COM1_PORT, "couldn't enable acpi.\n");
-                    acpi_enabled = 0x00;
-                }
-            }
-            else
-            {
-                __slog__(COM1_PORT, "no known way to enable acpi.\n");
-                acpi_enabled = 0x00;
-            }
-        }
-        else
-        {
-            __slog__(COM1_PORT, "ACPI was yet enabled\n");
+         if (i < 300)
+         {
+            __slog__(COM1_PORT, "ACPI Enabled\n");
             acpi_enabled = 0x01;
-        }
+         }
+         else
+         {
+            __slog__(COM1_PORT, "Cannot enable ACPI\n");
+            acpi_enabled = 0x00;
+         }
+      }
+      else
+      {
+         __slog__(COM1_PORT, "ACPI Cannot be enabled on this computer\n");
+         acpi_enabled = 0x00;
+      }
+   }
+   else
+   {
+      __slog__(COM1_PORT, "ACPI was already enabled\n");
+      acpi_enabled = 0x01;
    }
 }
 
 
-// Public exposed ACPI interface
 void
 acpi_init()
 {
-    ps2_present = 0x00;
-    rsdt_addr = 0x00;
-    fadt = 0x00;
-    acpi_enabled = 0x00;
-    SLP_TYPa = 0x00;
-    SLP_TYPb = 0x00;
-    dsdt_found = 0x00;
+   acpi_enabled = 0x00;
+   SMI_CMD = 0x00;
+   ACPI_ENABLE = 0x00;
+   ACPI_DISABLE = 0x00;
+   PM1a_CNT = 0x00;
+   PM1b_CNT = 0x00;
+   SLP_TYPa = 0x00;
+   SLP_TYPb = 0x00;
+   SLP_EN = 0x00;
+   SCI_EN = 0x00;
+   PM1_CNT_LEN = 0x00;
 
-    acpi_find_rsdt();
-    acpi_find_fadt();
-    acpi_find_dsdt();
-    acpi_enable();
+   uint32_t *ptr = acpi_get_rsd_ptr();
+
+   if (ptr != 0x00 && acpi_check_header(ptr, "RSDT") == 0)
+   {
+      int entrys = *(ptr + 1);
+      entrys = (entrys - 36) /4;
+      ptr += 36/4; 
+
+      while (entrys > 0)
+      {
+         if (acpi_check_header((uint32_t *) *ptr, "FACP") == 0)
+         {
+            entrys = -2;
+            struct FACP *facp = (struct FACP *) *ptr;
+
+            if (acpi_check_header((uint32_t *) facp->DSDT, "DSDT") == 0)
+            {
+               char *S5Addr = (char *) facp->DSDT +36;
+               int dsdtLength = *(facp->DSDT+1) - 36;
+               while (dsdtLength)
+               {
+                  if (0x00 == memcmp(S5Addr, "_S5_", 4))
+                  {
+                     break;
+                  }
+
+                  S5Addr += 1;
+                  dsdtLength -= 1;
+               }
+
+               if (dsdtLength > 0)
+               {
+                  if ((*(S5Addr-1) == 0x08 || ( *(S5Addr-2) == 0x08 && *(S5Addr-1) == '\\')) && *(S5Addr+4) == 0x12)
+                  {
+                     S5Addr += 5;
+                     S5Addr += ((*S5Addr &0xC0)>>6) +2;  
+
+                     if (0x0A == *S5Addr)
+                     {
+                        S5Addr++;
+                     }
+
+                     SLP_TYPa = *(S5Addr)<<10;
+                     S5Addr++;
+
+                     if (0x0A == *S5Addr)
+                     {
+                        S5Addr++;
+                     }
+
+                     SLP_TYPb = *(S5Addr)<<10;
+                     SMI_CMD = facp->SMI_CMD;
+                     ACPI_ENABLE = facp->ACPI_ENABLE;
+                     ACPI_DISABLE = facp->ACPI_DISABLE;
+                     PM1a_CNT = facp->PM1a_CNT_BLK;
+                     PM1b_CNT = facp->PM1b_CNT_BLK;
+                     PM1_CNT_LEN = facp->PM1_CNT_LEN;
+                     SLP_EN = 1<<13;
+                     SCI_EN = 0x01;
+
+                     __slog__(COM1_PORT, "ACPI Is initialized\n");
+                     return;
+                  }
+                  else
+                  {
+                     __slog__(COM1_PORT, "DSDT S5 Section wrong format\n");
+                  }
+               }
+               else
+               {
+                  __slog__(COM1_PORT, "DSDT S5 Section not present\n");
+               }
+            }
+            else
+            {
+               __slog__(COM1_PORT, "DSDT Invalid\n");
+            }
+         }
+
+         ptr++;
+         entrys -= 1;
+      }
+
+      __slog__(COM1_PORT, "No valid FACP\n");
+   }
+   else
+   {
+      __slog__(COM1_PORT, "No ACPI available on this PC\n");
+   }
+
+   SCI_EN = 0x00;
 }
 
 
-uint8_t
-acpi_ps2_present()
+void
+acpi_shutdown(void)
 {
-    return ps2_present;
+   if (0x00 == acpi_is_initialized())
+   {
+      __slog__(COM1_PORT, "Requested shutdown but ACPI was not initialized\n");
+   }
+   else
+   {
+      if (0x00 == acpi_enabled)
+      {
+         __slog__(COM1_PORT, "Requested shutdown but ACPI is not enabled\n");
+      }
+      else
+      {
+         __slog__(COM1_PORT, "System Shutdown");
+
+         outw((uint32_t) PM1a_CNT, SLP_TYPa | SLP_EN );
+         if ( PM1b_CNT != 0 )
+         {
+            outw((uint32_t) PM1b_CNT, SLP_TYPb | SLP_EN );
+         }
+      }
+   }
 }
 
 
 uint8_t
 acpi_is_enabled()
 {
-    return acpi_enabled;
+   return acpi_enabled;
 }
 
 
-void
-acpi_shutdown()
+uint8_t
+acpi_is_initialized()
 {
-    if (0x00 == rsdt_addr)
-    {
-        __slog__(COM1_PORT, "Requested ACPI shutdown but no ACPI is present\n");
-    }
-    else if (0x00 == acpi_is_enabled())
-    {
-        __slog__(COM1_PORT, "Requested ACPI shutdown but no ACPI is enabled\n");
-    }
-    else if (0x00 == dsdt_found)
-    {
-        __slog__(COM1_PORT, "Requested ACPI shutdown but no DSDT was found\n");
-    }
-    else
-    {
-        
-        outw((unsigned int) fadt->PM1aControlBlock, SLP_TYPa | (1 << 13) );
-        __slog__(COM1_PORT, "ACPI shutdown outw(port=%u, data=%w)\n", fadt->PM1aControlBlock, SLP_TYPa | (1 << 13));
-        if ( fadt->PM1bControlBlock != 0 )
-        {
-            __slog__(COM1_PORT, "ACPI shutdown outw(port=%u, data=%w)\n", fadt->PM1bControlBlock, SLP_TYPb | (1 << 13));
-            outw((unsigned int) fadt->PM1bControlBlock, SLP_TYPb | (1 << 13) );
-        }
-        __slog__(COM1_PORT, "ACPI shutdown\n");
-    }
+   return (0x00 == SCI_EN) ? 0x00 : 0x01;
 }

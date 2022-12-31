@@ -15,8 +15,8 @@
 #define PS2_TST_PORT_2 0xA9
 
 
-void ps2_controller_init(uint8_t acpi_ps2_present);
-uint8_t ps2_is_confirmed();
+void ps2_controller_init();
+uint8_t ps2_is_present();
 uint8_t ps2_is_dual_channel();
 
 #endif

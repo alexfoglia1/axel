@@ -10,39 +10,6 @@ char __slog_prm__[SERIAL_LOG_BUFLEN - SERIAL_LOG_TSTMP_BUFLEN];
 char __slog_tst__[SERIAL_LOG_TSTMP_BUFLEN];
 
 
-uint32_t*
-find_plaintext_in_memory(uint32_t* start_addr, uint32_t* limit, const char* plaintext)
-{
-	uint8_t* p_byte = (uint8_t*)(start_addr);
-	uint8_t* p_end  = (uint8_t*)(limit);
-	uint32_t n_bytes = strlen(plaintext);
-	uint32_t* return_address = 0;
-	
-	uint8_t found = 0;
-	while ((p_byte <= p_end) && (0 == found))
-	{
-		uint8_t current_check = 1;
-		for (uint32_t i = 0; i < n_bytes; i++)
-		{
-			if (p_byte[i] != plaintext[i])
-			{
-				current_check = 0;
-			}
-		}
-		
-		found = (current_check == 1);
-		if (found)
-		{
-			return_address = (uint32_t*)(p_byte);
-		}
-		
-		p_byte += 1;
-	}
-
-	return return_address;	
-}
-
-
 uint64_t
 parse_multiboot_info(multiboot_info_t* mbd)
 {
@@ -111,5 +78,5 @@ cmos_datetime_to_str(cmos_rtc_datetime datetime, char* buf)
 void sleep(uint32_t millis)
 {
 	uint32_t millis0 = pit_get_millis();
-	while (pit_get_millis - millis0 < millis);
+	while (pit_get_millis() - millis0 < millis);
 }

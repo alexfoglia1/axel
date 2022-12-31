@@ -143,19 +143,30 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	printf("Initializing ACPI:\t\t");
 
 	acpi_init();
-	if (acpi_is_enabled() == 0x01)
+	if (0x01 == acpi_is_initialized())
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
 
-		__slog__(COM1_PORT, "ACPI enabled\n");
+		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+		printf("Enabling ACPI:\t\t");
+
+		acpi_enable();
+		if  (0x01 == acpi_is_enabled())
+		{
+			tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+        	printf("[OK]\n");
+		}
+		else
+		{
+		    tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+        	printf("[KO]\n");
+		}
     }
     else
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("[KO]\n");
-
-		__slog__(COM1_PORT, "ACPI not enabled\n");
     }
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
@@ -163,9 +174,9 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  Initializing PS/2 controller
 	printf("Detecting PS/2 Channels:\t");
 
-    ps2_controller_init(acpi_ps2_present());
+    ps2_controller_init();
 
-	if (ps2_is_confirmed())
+	if (ps2_is_present())
 	{
 		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
 		printf("[%s]\n", ps2_is_dual_channel() == 0x01 ? "2" : "1");
@@ -184,28 +195,19 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  Initializing PIC IRQs
 	printf("Initializing IRQ:\t\t");
 
-	pic_init(ps2_is_confirmed());
+	pic_init(ps2_is_present());
 
 	tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
 	printf("[OK]\n");
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-//  ..........................
-
-//  Initializing PIT timer
-	pit_init_timer();
-//  --------------------------
-
-//  Initializing Keyboard
-    keyboard_init();
-//  --------------------------
 
 //  Initializing paging
 #ifndef __DEBUG_STUB__
     printf("Initializing paging:\t");
-    //paging_init(mbd->mem_upper);
-    //paging_enable();
+    paging_init(mbd->mem_upper);
+    paging_enable();
     // Todo : maybe we want to initialize heap memory here...
-    //paging_map_memory(mbd);
+    paging_map_memory(mbd);
 #endif
     if (0x01 == paging_is_active())
     {
@@ -219,6 +221,19 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     }
 
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+//  --------------------------
+
+//  ..........................
+
+//  Initializing Device Drivers
+	printf("Loading device drivers:\t");
+
+	pit_init_timer();
+    keyboard_init();
+
+	tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+    printf("[OK]\n");
+	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
 	sti();

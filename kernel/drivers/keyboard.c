@@ -200,7 +200,6 @@ ps2_irq1_keyboard_handler(interrupt_stack_frame_t* frame)
         case KBD_KEY_ESCAPE_DOWN:
             if (is_shift_holded)
             {
-                printf("Requested Shutdown\n");
                 acpi_shutdown();
             }
             break;
