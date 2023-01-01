@@ -11,7 +11,7 @@ char __slog_tst__[SERIAL_LOG_TSTMP_BUFLEN];
 
 
 uint64_t
-parse_multiboot_info(multiboot_info_t* mbd)
+parse_memory_size(multiboot_info_t* mbd)
 {
 
 	uint64_t total_size_bytes = 0;

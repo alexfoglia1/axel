@@ -58,7 +58,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     }
 	else
 	{
-		uint64_t mem_size = parse_multiboot_info(mbd);
+		uint64_t mem_size = parse_memory_size(mbd);
 
 		printf("Available Memory:\t\t");
 		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
