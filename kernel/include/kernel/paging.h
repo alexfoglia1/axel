@@ -3,7 +3,7 @@
 
 #include <kernel/arch/multiboot.h>
 
-#include <interrupts/isr.h>
+#include <interrupts/isr.h> // for interrupt stack frame t
 
 #include <stdint.h>
 
@@ -20,7 +20,7 @@
 #define PAGE_USER               0x00000004
 #define PAGE_MASK               0xFFFFF000
 
-#define PAGE_FAULT_INT          14
+#define PAGEFAULT_IRQ_INTERRUPT_NO  0x0E
 
 void paging_init(uint32_t physical_start_addr);
 void paging_enable();
@@ -33,7 +33,7 @@ uint8_t paging_is_active();
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
 #endif
-void paging_fault_handler(interrupt_stack_frame_t* frame);
+void paging_fault_irq_handler(interrupt_stack_frame_t* frame);
 
 
 #endif

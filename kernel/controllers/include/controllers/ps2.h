@@ -3,7 +3,6 @@
 
 #include <interrupts/isr.h>
 
-#define PS2_KEY_INTERRUPT 9
 #define PS2_DATA_PORT  0x60
 #define PS2_CTRL_PORT  0x64
 

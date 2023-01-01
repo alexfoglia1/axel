@@ -190,3 +190,11 @@ com_tx_buffer(int com_port)
     return COM_TX_BYTES;
 }
 
+
+void
+com_register_interrupts()
+{
+    pic_add_irq(COM1_IRQ_INTERRUPT_NO, &com_1_irq_handler);
+    pic_add_irq(COM2_IRQ_INTERRUPT_NO, &com_2_irq_handler);
+}
+

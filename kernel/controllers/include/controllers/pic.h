@@ -22,12 +22,12 @@
 #define PIC_ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
 #define PIC_ICW4_SFNM	0x10		/* Special fully nested (not) */
  
-
 #define PIC_EOI               0x20 // End of Interrupt
 
 
 void pic_reset_master();
 void pic_reset_slave();
 void pic_init(uint8_t ps2_present);
+void pic_add_irq(uint8_t interrupt_no, void* isr);
 
 #endif

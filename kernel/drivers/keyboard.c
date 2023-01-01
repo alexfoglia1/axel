@@ -1,24 +1,31 @@
 #include <drivers/keyboard.h>
 
-#include <controllers/ps2.h>
 #include <controllers/pic.h>
 #include <controllers/acpi.h>
 
-#include <interrupts/isr.h>
+#include <common/utils.h>
 
 #include <kernel/arch/asm.h>
 #include <kernel/arch/tty.h>
 
 #include <stdio.h> // Todo : printing is not keyboard driver responsability
 
-uint8_t is_caps;
-uint8_t is_shift_holded;
+static uint8_t is_caps;
+static uint8_t is_shift_holded;
+static uint8_t data_port;
 
 void
-keyboard_init()
+keyboard_init(uint8_t in_port)
 {
+    __slog__(COM1_PORT, "Initializing keyboard\n");
+
     is_caps = 0;
     is_shift_holded = 0;
+    data_port = in_port;
+
+    pic_add_irq(KBD_IRQ_INTERRUPT_NO, &keyboard_irq_handler);
+
+    __slog__(COM1_PORT, "Keyboard initialized\n");
 }
 
 
@@ -26,9 +33,9 @@ keyboard_init()
 __attribute__((interrupt))
 #endif
 void
-ps2_irq1_keyboard_handler(interrupt_stack_frame_t* frame)
+keyboard_irq_handler(interrupt_stack_frame_t* frame)
 {
-    uint8_t key = inb(PS2_DATA_PORT);
+    uint8_t key = inb(data_port);
 
     char to_print = '\0';
     switch (key)

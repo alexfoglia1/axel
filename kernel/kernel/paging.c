@@ -1,8 +1,9 @@
 #include <kernel/paging.h>
-
 #include <kernel/arch/asm.h>
-#include <kernel/arch/idt.h>
-#include <kernel/arch/gdt.h>
+
+#include <controllers/pic.h>
+
+#include <common/utils.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -20,19 +21,25 @@ uint8_t  paging_active;
 void
 paging_init(uint32_t physical_addr_start)
 {
+    __slog__(COM1_PORT, "Initializing paging\n");
+
     page_directory = (uint32_t*) PAGE_DIRECTORY_VADDR;
     page_table     = (uint32_t*) PAGE_TABLE_VADDR;
     paging_stack_loc = PAGING_STACK_ADDR;
     paging_stack_max = PAGING_STACK_ADDR;
     paging_active = 0;
     loc = (physical_addr_start + PAGE_MEM_DIM) & PAGE_MASK;
+
+    __slog__(COM1_PORT, "Paging initialized, page directory at(0x%X), page table at(0x%X)\n", page_directory, page_table);
 }
 
 
 void
 paging_enable()
 {
-    idt_add_entry(PAGE_FAULT_INT, &paging_fault_handler, PRESENT | TRP_GATE);
+    __slog__(COM1_PORT, "Enabling paging\n");
+
+    pic_add_irq(PAGEFAULT_IRQ_INTERRUPT_NO, &paging_fault_irq_handler);
 
     uint32_t* pd = (uint32_t*)paging_alloc_page();
     memset(pd, 0x00, PAGE_TABLE_SIZE);
@@ -61,6 +68,8 @@ paging_enable()
     memset(&page_table[pt_idx * PAGE_TABLE_ENTRY_SIZE], 0x00, PAGE_TABLE_SIZE);
 
     paging_active = 0x01;
+
+    __slog__(COM1_PORT, "Paging is active\n");
 }
 
 
@@ -82,6 +91,8 @@ paging_alloc_page()
         else
         {
             paging_stack_loc -= sizeof(uint32_t);
+            
+            __slog__(COM1_PORT, "Allocated page, stack lock(0x%X)\n", paging_stack_loc);
         }
     }
 
@@ -92,25 +103,34 @@ paging_alloc_page()
 void
 paging_map(uint32_t va, uint32_t pa, uint32_t flags)
 {
+    __slog__(COM1_PORT, "Mapping va(0x%X),pa(0x%X)\n");
+
     uint32_t virtual_page = va / PAGE_TABLE_SIZE;
     uint32_t pt_idx = virtual_page / PAGE_TABLE_ENTRY_SIZE;
 
+    __slog__(COM1_PORT, "Virtual page of va(0x%X)=(0x%X), page directory index of virtual page=(%u)\n", va, virtual_page, pt_idx);
     if (0 == page_directory[pt_idx])
     {
-        /** The page directory entry of this virtual address is empty **/
-        page_directory[pt_idx] = (uint32_t)(paging_alloc_page()) | PAGE_PRESENT | PAGE_WRITE;
+        __slog__(COM1_PORT, "No page table entry found for va(0x%X)\n", va);
 
-        /** Clear the page table entry of this virtual address **/
+        uint32_t page_addr = (uint32_t)(paging_alloc_page());
+        page_directory[pt_idx] = page_addr | PAGE_PRESENT | PAGE_WRITE;
         memset(&page_table[pt_idx * PAGE_TABLE_ENTRY_SIZE], 0x00, PAGE_TABLE_SIZE);
+
+        __slog__(COM1_PORT, "Page directory allocated for va(0x%X) at(0x%X), page_directory[%u] is now(0x%X)\n", va, page_addr, pt_idx, page_directory[pt_idx]);
     }
 
     page_table[virtual_page] = (pa & PAGE_MASK) | flags;
+
+    __slog__(COM1_PORT, "Stored pa(0x%X) in page_table[0x%X]\n", pa, virtual_page);
 }
 
 
 void
 paging_map_memory(multiboot_info_t* mbd)
 {
+    __slog__(COM1_PORT, "Start mapping physical memory using multiboot memory map\n");
+
     for (uint32_t i = 0; i < mbd->mmap_length; i += sizeof(multiboot_memory_map_t))
     {
         multiboot_memory_map_t* mmmt =
@@ -121,6 +141,7 @@ paging_map_memory(multiboot_info_t* mbd)
         {
             uint32_t addr = (uint32_t)(mmmt->addr  & 0xFFFFFFFF);
             uint32_t length = (uint32_t)(mmmt->len & 0xFFFFFFFF);
+            __slog__(COM1_PORT, "Found an available memory area at(0x%X) of size(%u) bytes\n", addr, length);
             for (uint32_t j = addr; j < addr + length; j += PAGE_MEM_DIM)
             {
                 if (paging_stack_loc < paging_stack_max)
@@ -138,6 +159,8 @@ paging_map_memory(multiboot_info_t* mbd)
             }
         }
     }
+
+    __slog__(COM1_PORT, "Physical memory mapped\n");
 }
 
 
@@ -162,7 +185,7 @@ void
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
 #endif
-paging_fault_handler(interrupt_stack_frame_t* frame)
+paging_fault_irq_handler(interrupt_stack_frame_t* frame)
 {
     // TODO : handle page fault
     printf("KERNEL PANIC : PAGE FAULT\n");

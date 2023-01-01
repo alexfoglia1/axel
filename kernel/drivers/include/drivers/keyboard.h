@@ -1,7 +1,7 @@
 #ifndef _KEYBOARD_H
 #define _KEYBOARD_H
 
-#include <interrupts/isr.h>
+#include <interrupts/isr.h> // for interrupt stack frame t
 
 #define KBD_KEY_ESCAPE_DOWN  1
 #define KBD_KEY_ESCAPE_UP    129
@@ -90,13 +90,14 @@
 #define KBD_KEY_PAGDWN_DOWN  KBD_NUMPAD_3_DOWN
 #define KBD_KEY_PAGDWN_UP    KBD_NUMPAD_3_UP
 
+#define KBD_IRQ_INTERRUPT_NO 0x09
 
-void keyboard_init();
+void keyboard_init(uint8_t in_port);
 
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
 #endif
-void ps2_irq1_keyboard_handler(interrupt_stack_frame_t* frame);
+void keyboard_irq_handler(interrupt_stack_frame_t* frame);
 
 
 #endif

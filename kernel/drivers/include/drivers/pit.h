@@ -2,15 +2,17 @@
 #define _PIT_H
 
 #include <stdint.h>
-#include <interrupts/isr.h>
 
-#define PIT_CHANNEL_0_PORT 0x40
-#define PIT_CHANNEL_1_PORT 0x41
-#define PIT_CHANNEL_2_PORT 0x42
-#define PIT_MDCMD_REG_PORT 0x43
-#define PIT_DIVISOR 11931
-#define PIT_IRQ_INTERRUPT 8
+#include <interrupts/isr.h> // for interrupt stack frame t
+
+#define PIT_CHANNEL_0_PORT  0x40
+#define PIT_CHANNEL_1_PORT  0x41
+#define PIT_CHANNEL_2_PORT  0x42
+#define PIT_MDCMD_REG_PORT  0x43
+#define PIT_DIVISOR         11931
 #define PIT_MILLIS_PER_TICK 10
+
+#define PIT_IRQ_INTERRUPT_NO 0x08
 
 struct pit_time_elapsed
 {
@@ -19,7 +21,7 @@ struct pit_time_elapsed
 };
 
 
-void pit_init_timer();
+void pit_init();
 
 uint32_t pit_get_count();
 void pit_set_count(uint32_t count);
