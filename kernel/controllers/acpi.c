@@ -20,8 +20,10 @@ static uint16_t SLP_TYPa;
 static uint16_t SLP_TYPb;
 static uint16_t SLP_EN;
 static uint16_t SCI_EN;
+static uint16_t BOOT_ARCH_FLAGS;
 static uint8_t PM1_CNT_LEN;
 static uint8_t acpi_enabled;
+static uint16_t BOOT_ARCH_FLAGS;
 
 
 static uint32_t*
@@ -197,6 +199,12 @@ acpi_init()
             entrys = -2;
             struct FACP *facp = (struct FACP *) *ptr;
 
+            uint8_t* p_facp_byte_0 = (uint8_t*) facp;
+            uint8_t* p_boot_arch_flags = (p_facp_byte_0 + 109);
+            uint16_t* p16_boot_arch_flags = (uint16_t*)(p_boot_arch_flags);
+            BOOT_ARCH_FLAGS = *(p16_boot_arch_flags);
+
+
             if (acpi_check_header((uint32_t *) facp->DSDT, "DSDT") == 0)
             {
                char *S5Addr = (char *) facp->DSDT +36;
@@ -314,4 +322,11 @@ uint8_t
 acpi_is_initialized()
 {
    return (0x00 == SCI_EN) ? 0x00 : 0x01;
+}
+
+
+uint16_t
+acpi_get_boot_arch_flags()
+{
+   return BOOT_ARCH_FLAGS;
 }

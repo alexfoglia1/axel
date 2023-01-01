@@ -35,7 +35,6 @@ void acpi_shutdown();
 
 uint8_t acpi_is_initialized();
 uint8_t acpi_is_enabled();
-
-
+uint16_t acpi_get_boot_arch_flags();
 
 #endif
