@@ -19,6 +19,7 @@
 #include <controllers/com.h>
 #include <controllers/acpi.h>
 #include <controllers/cmos.h>
+#include <controllers/ide.h>
 
 #include <drivers/pit.h>
 #include <drivers/keyboard.h>
@@ -240,6 +241,12 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  --------------------------
 
 	sti();
+
+//  Initializing IDE/ATA
+	printf("\nScanning IDE/ATA devices:\n");
+	ide_init(IDE_BAR_0_ADDR, IDE_BAR_1_ADDR, IDE_BAR_2_ADDR, IDE_BAR_3_ADDR, 0x0000);
+
+	
 
 	while (1);
 }
