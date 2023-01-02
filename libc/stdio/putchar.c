@@ -1,15 +1,14 @@
 #include <stdio.h>
-
+#include <kernel/arch/tty.h>
 
 int
 putchar(int ic)
 {
-	// TODO: Implement stdio and the write system call.
-	asm volatile ("mov $0x00, %%eax \n\
-				   mov $0x01, %%ebx \n\
+	uint32_t* _ic = &ic;
+	asm volatile ("mov $0, %%eax \n\
+				   mov $1, %%ebx \n\
 				   mov %0, %%ecx \n\
-				   int $0x21"
-				   :: "r" (&ic));
-
+				   int $33"
+				   :: "m" (_ic));
 	return sizeof(int);
 }

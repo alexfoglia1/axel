@@ -37,15 +37,24 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 {
 	errno = ENOERR;
 
-	//  Initialize COM1 immediately, to permit log capabilities since boot
-	//  Note that com_init doesn't register COM IRQS, this shall be done after IDT initialization, otherwise idt_init() will erase the corresponding entry
+//  Initialize COM1 immediately, to permit log capabilities since boot
+//  Note that com_init doesn't register COM IRQS, this shall be done after IDT initialization, otherwise idt_init() will erase the corresponding entry
 
 	uint8_t com1_init_res = com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
 	uint8_t com2_init_res = com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
-	__slog__(COM1_PORT, "System boot\n");
-	//  -------------------------------------------------------------------------------------------
+	__slog__(COM1_PORT, "System boot, COM ports initialized\n");
+//  -------------------------------------------------------------------------------------------
 
+//  Initializing vga memory 
 	tty_init();
+	__slog__(COM1_PORT, "Initialized TTY\n");
+//  -------------------------
+
+//  Initializing GDT and IDT
+	gdt_init();
+	idt_init();
+	__slog__(COM1_PORT, "Initialized descriptors tables\n");
+//  -------------------------
 	
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 	printf("Starting AXEL %d.%d-%c\n\n", MAJOR_V, MINOR_V, STAGE_V);
@@ -96,15 +105,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-//  Initializing GDT and IDT
-	printf("Initializing Descriptors:\t");
 
-	gdt_init();
-	idt_init();
-
-	tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-	printf("[OK]\n");
-	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
 //  Displaying Initialization of UART COM PORTS
