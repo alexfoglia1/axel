@@ -80,9 +80,13 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
 //  Detecting CPU Model
 	printf("Detecting CPU Model:\t");
-	
+
+#ifndef __DEBUG_STUB__
 	extern int cpuid_supported();
 	int cpuid_available = cpuid_supported();
+#else
+    int cpuid_available = 1;
+#endif
 
 	if (cpuid_available == 0)
 	{

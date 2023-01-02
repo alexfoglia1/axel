@@ -58,12 +58,14 @@ paging_enable()
     pt[PAGE_TABLE_ENTRY_SIZE - 1] = (uint32_t)pd | PAGE_PRESENT | PAGE_WRITE;
     pd[PAGE_TABLE_ENTRY_SIZE - 1] = (uint32_t)pd | PAGE_PRESENT | PAGE_WRITE;
 
+#ifndef __DEBUG_STUB__
     current_directory = pd;
     asm volatile ("mov %0, %%cr3" : : "r" (pd));
     uint32_t cr0;
     asm volatile ("mov %%cr0, %0" : "=r" (cr0));
     cr0 |= 0x80000000;
     asm volatile ("mov %0, %%cr0" : : "r" (cr0));
+#endif
 
     uint32_t pt_idx = (PAGING_STACK_ADDR>>12) / PAGE_TABLE_ENTRY_SIZE;
 
@@ -134,12 +136,17 @@ paging_map_memory(multiboot_info_t* mbd)
 {
     __slog__(COM1_PORT, "Start mapping physical memory using multiboot memory map\n");
 
+#ifdef __ADDR_64BIT__
+    for (uint32_t i = 0; i < mbd->mmap_length; i++)
+    {
+        uint8_t* p_mmmt_byte0 = (uint8_t*) (0x7FFF00000000 | (mbd->mmap_addr));
+        uint8_t* p_mmmt_bytei = (uint8_t*) (p_mmmt_byte0 + (i * sizeof(multiboot_memory_map_t)));
+        multiboot_memory_map_t* mmmt = (multiboot_memory_map_t*) (p_mmmt_bytei);
+#else
     for (uint32_t i = 0; i < mbd->mmap_length; i += sizeof(multiboot_memory_map_t))
     {
-        multiboot_memory_map_t* mmmt =
-            (multiboot_memory_map_t*) (mbd->mmap_addr + i);
-
-
+        multiboot_memory_map_t* mmmt = (multiboot_memory_map_t*) (mbd->mmap_addr + i);
+#endif
         if (MULTIBOOT_MEMORY_AVAILABLE == mmmt->type)
         {
             uint32_t addr = (uint32_t)(mmmt->addr  & 0xFFFFFFFF);

@@ -12,7 +12,7 @@ axel-kernel-debug
 #---- ARCHITECTURE SPECIFIC SOURCES ----#
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/tty.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/vga.c
-${CMAKE_SOURCE_DIR}/../kernel/arch/debug/asm.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/io.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/gdt.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/idt.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/cpuid.c
@@ -30,6 +30,10 @@ ${CMAKE_SOURCE_DIR}/../libc/stdio/puts.c
 
 #---- LIBC STDLIB ----#
 ${CMAKE_SOURCE_DIR}/../libc/stdlib/abort.c
+
+#---- LIBC UNISTD ----#
+${CMAKE_SOURCE_DIR}/../libc/unistd/read.c
+${CMAKE_SOURCE_DIR}/../libc/unistd/write.c
 
 #---- LIBC STRING ----#
 ${CMAKE_SOURCE_DIR}/../libc/string/memcmp.c
@@ -51,6 +55,11 @@ ${CMAKE_SOURCE_DIR}/../kernel/controllers/ps2.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/com.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/cmos.c
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/acpi.c
+${CMAKE_SOURCE_DIR}/../kernel/controllers/ide.c
+
+#---- SYSCALLS   ----#
+${CMAKE_SOURCE_DIR}/../kernel/syscall/sys_write.c
+${CMAKE_SOURCE_DIR}/../kernel/syscall/sys_read.c
 
 #---- KERNEL MAIN ----#
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/paging.c
@@ -67,6 +76,7 @@ ${CMAKE_SOURCE_DIR}/../kernel/interrupts/include
 ${CMAKE_SOURCE_DIR}/../kernel/drivers/include
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/include
 ${CMAKE_SOURCE_DIR}/../kernel/common/include
+${CMAKE_SOURCE_DIR}/../kernel/syscall/include
 ${CMAKE_SOURCE_DIR}/../libc/include
 )
 

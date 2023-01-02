@@ -79,6 +79,7 @@ void ide_read_buffer(unsigned char channel, unsigned char reg, unsigned int buff
     */
    if (reg > 0x07 && reg < 0x0C)
       ide_write(channel, ATA_REG_CONTROL, 0x80 | channels[channel].nIEN);
+#ifndef __DEBUG_STUB__
    asm("pushw %es; movw %ds, %ax; movw %ax, %es");
    if (reg < 0x08)
       insl(channels[channel].base  + reg - 0x00, buffer, quads);
@@ -89,6 +90,7 @@ void ide_read_buffer(unsigned char channel, unsigned char reg, unsigned int buff
    else if (reg < 0x16)
       insl(channels[channel].bmide + reg - 0x0E, buffer, quads);
    asm("popw %es;");
+#endif
    if (reg > 0x07 && reg < 0x0C)
       ide_write(channel, ATA_REG_CONTROL, channels[channel].nIEN);
 }
