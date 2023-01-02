@@ -59,6 +59,5 @@ main(int argc, char** argv)
     mbr.mmap_addr = (uint32_t)(&maps);
     kernel_main(&mbr, MULTIBOOT_BOOTLOADER_MAGIC);
 
-
     return 0;
 }

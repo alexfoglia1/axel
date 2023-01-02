@@ -81,7 +81,7 @@ paging_enable()
 uint32_t*
 paging_alloc_page()
 {
-    if (0 == paging_active)
+    if (0x00 == paging_active)
     {
         loc += PAGE_MEM_DIM;
         return (uint32_t*)loc;

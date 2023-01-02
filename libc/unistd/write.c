@@ -4,6 +4,7 @@
 int
 write(int desc, uint8_t* buffer, size_t count)
 {
+#ifndef __DEBUG_STUB__
     for (size_t i = 0; i < count; i++)
     {
         uint8_t* _ic = &buffer[i];
@@ -14,4 +15,7 @@ write(int desc, uint8_t* buffer, size_t count)
 				   int $33"
 				   :: "m" (desc), "m" (_ic));
     }
+#endif
+
+    return count;
 }
