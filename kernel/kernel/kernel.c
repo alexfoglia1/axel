@@ -211,13 +211,13 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
 //  Initializing paging
-
+#ifndef __DEBUG_STUB__
     printf("Initializing paging:\t");
     paging_init(mbd->mem_upper);
     paging_enable();
     // Todo : maybe we want to initialize heap memory here...
     paging_map_memory(mbd);
-
+#endif
     if (0x01 == paging_is_active())
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
