@@ -47,5 +47,6 @@ struct gdt_reg
 
 void gdt_add_entry(int32_t pos, uint32_t base, uint32_t limit, uint8_t opt_1, uint8_t opt_2);
 void gdt_init();
+void store_gdt(void* gdt_addr, uint16_t limit, int32_t code, int32_t data);
 
 #endif

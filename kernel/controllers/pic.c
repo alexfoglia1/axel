@@ -5,7 +5,7 @@
 #include <drivers/pit.h>
 #include <drivers/keyboard.h>
 
-#include <kernel/arch/asm.h>
+#include <kernel/arch/io.h>
 #include <kernel/arch/gdt.h>
 #include <kernel/arch/idt.h>
 

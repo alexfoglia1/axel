@@ -1,6 +1,6 @@
-.global asm_cpuid_supported
-.type asm_cpuid_supported, @function
-asm_cpuid_supported:
+.global cpuid_supported
+.type cpuid_supported, @function
+cpuid_supported:
     pushfl     
     pushfl
     xor $0x00200000,(%esp)

@@ -5,7 +5,7 @@
 
 #include <drivers/pit.h>
 
-#include <kernel/arch/asm.h>
+#include <kernel/arch/io.h>
 
 #include <stddef.h>
 #include <stdio.h>

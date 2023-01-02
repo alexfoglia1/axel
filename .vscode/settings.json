@@ -3,6 +3,6 @@
     "files.associations": {
         "utils.h": "c",
         "com.h": "c",
-        "asm.h": "c"
+        "io.h": "c"
     }
 }

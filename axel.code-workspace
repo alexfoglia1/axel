@@ -19,7 +19,11 @@
 			
 		},
 		"files.associations": {
-			"unistd.h": "c"
+			"unistd.h": "c",
+			"idt.h": "c",
+			"io.h": "c",
+			"gdt.h": "c",
+			"isr.h": "c"
 		}
 	}
 

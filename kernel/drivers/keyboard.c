@@ -5,7 +5,7 @@
 
 #include <common/utils.h>
 
-#include <kernel/arch/asm.h>
+#include <kernel/arch/io.h>
 #include <kernel/arch/tty.h>
 
 #include <stdio.h> // Todo : printing is not keyboard driver responsability

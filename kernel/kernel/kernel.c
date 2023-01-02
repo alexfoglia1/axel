@@ -8,7 +8,7 @@
 #include <kernel/arch/cpuid.h>
 #include <kernel/arch/tty.h>
 #include <kernel/arch/multiboot.h>
-#include <kernel/arch/asm.h>
+#include <kernel/arch/io.h>
 #include <kernel/arch/gdt.h>
 #include <kernel/arch/idt.h>
 
@@ -81,6 +81,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  Detecting CPU Model
 	printf("Detecting CPU Model:\t");
 	
+	extern int cpuid_supported();
 	int cpuid_available = cpuid_supported();
 
 	if (cpuid_available == 0)

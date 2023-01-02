@@ -1,5 +1,4 @@
 #include <kernel/arch/gdt.h>
-#include <kernel/arch/asm.h>
 
 #include <common/utils.h>
 
@@ -40,5 +39,31 @@ gdt_add_entry(int32_t pos, uint32_t base, uint32_t limit, uint8_t opt_1, uint8_t
 	gdt_table[pos].opt_1     = opt_1;
 	gdt_table[pos].opt_2     = opt_2 | (uint8_t) ((limit >> 16) & 0x0F);
 	gdt_table[pos].base_high = (uint8_t)((base >> 24) & 0xFF);
+}
+
+
+void
+store_gdt(void* gdt_addr, uint16_t limit, int32_t code, int32_t data)
+{
+	struct gdt_reg gdtr;
+	gdtr.limit = limit;
+	gdtr.base = (uint32_t)(gdt_addr);
+
+	code = code << 3;
+	data = data << 3;
+
+	asm volatile("lgdt %0\n"
+				"pushl %1\n"
+				"pushl $CSpoint\n"
+				"lret\n"
+				"CSpoint:\n"
+				"mov %2,%%eax\n"
+				"mov %%ax,%%ds\n"
+				"mov %%ax,%%es\n"
+				"mov %%ax,%%fs\n"
+				"mov %%ax,%%gs\n"
+				"mov %%ax,%%ss\n"
+				: 
+				: "g"  (gdtr), "r" (code), "r" (data));
 }
 

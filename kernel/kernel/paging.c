@@ -1,5 +1,5 @@
 #include <kernel/paging.h>
-#include <kernel/arch/asm.h>
+#include <kernel/arch/io.h>
 
 #include <controllers/pic.h>
 
@@ -60,7 +60,10 @@ paging_enable()
 
     current_directory = pd;
     asm volatile ("mov %0, %%cr3" : : "r" (pd));
-    mmu_enable_paging(pd);
+    uint32_t cr0;
+    asm volatile ("mov %%cr0, %0" : "=r" (cr0));
+    cr0 |= 0x80000000;
+    asm volatile ("mov %0, %%cr0" : : "r" (cr0));
 
     uint32_t pt_idx = (PAGING_STACK_ADDR>>12) / PAGE_TABLE_ENTRY_SIZE;
 

@@ -1,6 +1,6 @@
 #include <controllers/ide.h>
 
-#include <kernel/arch/asm.h>
+#include <kernel/arch/io.h>
 
 #include <stdio.h>
 
@@ -256,5 +256,7 @@ ide_init(uint32_t bar0, uint32_t bar1, uint32_t bar2, uint32_t bar3, uint32_t ba
             ide_devices[i].Size / 1024 / 1024 / 2,               /* Size */
             ide_devices[i].Model);
       }
-      
+   
+
 }
+

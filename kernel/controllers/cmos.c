@@ -1,6 +1,6 @@
 #include <controllers/cmos.h>
 
-#include <kernel/arch/asm.h>
+#include <kernel/arch/io.h>
 
 static uint8_t second;
 static uint8_t minute;

@@ -6,7 +6,7 @@
 
 #include <interrupts/isr.h> // for interrupt_stack_frame_t
 
-#include <kernel/arch/asm.h>
+#include <kernel/arch/io.h>
 
 #include <unistd.h>
 

@@ -42,12 +42,11 @@ KERNEL_ARCH_OBJS=\
 $(ARCHDIR)/boot.o \
 $(ARCHDIR)/vga.o \
 $(ARCHDIR)/tty.o \
-$(ARCHDIR)/asm.o \
+$(ARCHDIR)/io.o \
 $(ARCHDIR)/gdt.o \
 $(ARCHDIR)/idt.o \
 $(ARCHDIR)/cpuid.o \
-$(ARCHDIR)/asm_io_wait.o \
-$(ARCHDIR)/asm_cpuid_supported.o \
+$(ARCHDIR)/cpuid_supported.o \
 $(ISRDIR)/isr.o \
 $(SYSCALLDIR)/sys_write.o \
 $(SYSCALLDIR)/sys_read.o \

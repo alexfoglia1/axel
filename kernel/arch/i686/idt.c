@@ -1,5 +1,4 @@
 #include <kernel/arch/idt.h>
-#include <kernel/arch/asm.h>
 
 #include <interrupts/isr.h>
 
@@ -59,8 +58,20 @@ idt_get_entry(uint8_t pos)
     return (void*)(addr);
 }
 
+
 void*
 idt_get_addr()
 {
     return &idt[0];
+}
+
+
+void
+store_idt(void* idt_addr)
+{
+	struct idtr idt_r;
+    idt_r.base = (uintptr_t)idt_addr;
+    idt_r.limit = (uint16_t)sizeof(struct idt_entry) * IDT_SIZE - 1;
+
+	asm volatile ("lidt %0" : : "m"(idt_r));
 }

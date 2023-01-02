@@ -1,6 +1,6 @@
 #include <controllers/com.h>
 
-#include <kernel/arch/asm.h>
+#include <kernel/arch/io.h>
 
 #include <stdio.h>
 #include <string.h>

@@ -3,7 +3,7 @@
 #include <controllers/pic.h>
 #include <controllers/com.h>
 
-#include <kernel/arch/asm.h>
+#include <kernel/arch/io.h>
 
 #include <common/utils.h>
 
