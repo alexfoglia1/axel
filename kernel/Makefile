@@ -51,6 +51,7 @@ $(ARCHDIR)/asm_cpuid_supported.o \
 $(ISRDIR)/isr.o \
 $(SYSCALLDIR)/write.o \
 $(SYSCALLDIR)/read.o \
+$(CONTRDIR)/pic.o \
 $(CONTRDIR)/ps2.o \
 $(CONTRDIR)/com.o \
 $(CONTRDIR)/cmos.o \
