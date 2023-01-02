@@ -110,7 +110,6 @@ mmu_enable_paging(uint32_t* pd)
 }
 
 
-
 int
 cpuid_supported()
 {

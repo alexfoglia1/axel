@@ -6,6 +6,9 @@
 #define EOF (-1)
 #define EOS (0)
 
+#define READ_INTERRUPT  0x20
+#define WRITE_INTERRUPT 0x21
+
 #ifdef __cplusplus
 extern "C" {
 #endif

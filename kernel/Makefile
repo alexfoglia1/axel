@@ -11,7 +11,7 @@ BOOTDIR?=$(EXEC_PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -mgeneral-regs-only
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -Icommon/include -Iinterrupts/include -Idrivers/include -Icontrollers/include
+CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -Icommon/include -Iinterrupts/include -Idrivers/include -Icontrollers/include -Isyscall/include
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
@@ -20,6 +20,9 @@ ARCHDIR=arch/i686
 
 #My own common sources
 COMMONDIR=common
+
+#Syscall sources
+SYSCALLDIR=syscall
 
 #Controllers sources
 CONTRDIR=controllers
@@ -46,7 +49,8 @@ $(ARCHDIR)/cpuid.o \
 $(ARCHDIR)/asm_io_wait.o \
 $(ARCHDIR)/asm_cpuid_supported.o \
 $(ISRDIR)/isr.o \
-$(CONTRDIR)/pic.o \
+$(SYSCALLDIR)/write.o \
+$(SYSCALLDIR)/read.o \
 $(CONTRDIR)/ps2.o \
 $(CONTRDIR)/com.o \
 $(CONTRDIR)/cmos.o \
