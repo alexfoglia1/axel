@@ -30,6 +30,14 @@ The codebase has the following structure
                            drivers : headers containing external device driver routines signatures
     kernel/
            drivers: implementation of device drivers (Keyboard, timer, mouse...)
+
+    kernel/
+           syscall/
+                   include/
+                           syscall : system calls signatures
+    kernel/
+           syscall: system call interrupts routines
+
    
     kernel/
            controllers: implementation of IO controllers (PIC, PS2, USB...)
@@ -54,6 +62,8 @@ The codebase has the following structure
          stdlib: reimplementation of the C stdlib library
     libc/
          string: reimplementation of the C string library
+    libc/
+         unistd: reimplementation of the C unistd library, which contains an interface to system calls
 
 
     sysroot: The AXEL-OS system root, it is generated during the build process and it contains kernel binary and a minimal initial filesystem
