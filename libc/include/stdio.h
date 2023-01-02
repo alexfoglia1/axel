@@ -9,8 +9,6 @@
 #define READ_INTERRUPT  0x20
 #define WRITE_INTERRUPT 0x21
 
-#define SYSCALL_TTY_WRITE 0x00
-
 #ifdef __cplusplus
 extern "C" {
 #endif
