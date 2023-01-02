@@ -55,6 +55,7 @@ $(CONTRDIR)/ps2.o \
 $(CONTRDIR)/com.o \
 $(CONTRDIR)/cmos.o \
 $(CONTRDIR)/acpi.o \
+$(CONTRDIR)/ide.o \
 $(DRIVERDIR)/pit.o \
 $(DRIVERDIR)/keyboard.o \
 $(COMMONDIR)/utils.o \
