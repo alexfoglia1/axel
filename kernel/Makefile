@@ -49,8 +49,8 @@ $(ARCHDIR)/cpuid.o \
 $(ARCHDIR)/asm_io_wait.o \
 $(ARCHDIR)/asm_cpuid_supported.o \
 $(ISRDIR)/isr.o \
-$(SYSCALLDIR)/write.o \
-$(SYSCALLDIR)/read.o \
+$(SYSCALLDIR)/sys_write.o \
+$(SYSCALLDIR)/sys_read.o \
 $(CONTRDIR)/pic.o \
 $(CONTRDIR)/ps2.o \
 $(CONTRDIR)/com.o \

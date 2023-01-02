@@ -4,6 +4,7 @@
 			"path": "."
 		}
 	],
+
 	"settings": {
         "files.exclude":
 		{
@@ -16,5 +17,10 @@
 			"*sysroot*": true,
 			"**/build*": true,
 			
-        }
+		},
+		"files.associations": {
+			"unistd.h": "c"
+		}
+	}
+
 }

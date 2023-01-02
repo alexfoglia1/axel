@@ -36,6 +36,8 @@ LIBK_CPPFLAGS:=$(LIBK_CPPFLAGS) $(KERNEL_ARCH_CPPFLAGS)
 FREEOBJS=\
 $(ARCH_FREEOBJS) \
 errno/errno.o \
+unistd/read.o \
+unistd/write.o \
 stdio/printf.o \
 stdio/putchar.o \
 stdio/puts.o \

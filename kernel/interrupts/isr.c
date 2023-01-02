@@ -43,8 +43,8 @@ struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS] =
     {&exception_handler_0x1D, PRESENT | TRP_GATE},
     {&exception_handler_0x1E, PRESENT | TRP_GATE},
     {&exception_handler_0x1F, PRESENT | TRP_GATE},
-    {&read,  PRESENT | TRP_GATE},
-    {&write, PRESENT | TRP_GATE}
+    {&sys_read,  PRESENT | TRP_GATE},
+    {&sys_write, PRESENT | TRP_GATE}
 };
 
 
