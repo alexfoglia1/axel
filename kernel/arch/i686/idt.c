@@ -69,9 +69,9 @@ idt_get_addr()
 void
 store_idt(void* idt_addr)
 {
-	struct idtr idt_r;
+    struct idtr idt_r;
     idt_r.base = (uintptr_t)idt_addr;
     idt_r.limit = (uint16_t)sizeof(struct idt_entry) * IDT_SIZE - 1;
 
-	asm volatile ("lidt %0" : : "m"(idt_r));
+    asm volatile ("lidt %0" : : "m"(idt_r));
 }

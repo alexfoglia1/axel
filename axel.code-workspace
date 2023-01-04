@@ -1,35 +1,35 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
 
-	"settings": {
+    "settings": {
         "files.exclude":
-		{
+        {
             "**/*.d": true,
-			"**/*.o": true,
-			"**/*.a": true,
-			"**/*.sh": true,
-			"**/*.iso": true,
-			"*isodir*": true,
-			"*sysroot*": true,
-			"**/build*": true,
-			
-		},
-		"files.associations": {
-			"unistd.h": "c",
-			"idt.h": "c",
-			"io.h": "c",
-			"gdt.h": "c",
-			"isr.h": "c",
-			"utils.h": "c",
-			"pic.h": "c",
-			"paging.h": "c",
-			"memory.h": "c",
-			"ide.h": "c"
-		}
-	}
+            "**/*.o": true,
+            "**/*.a": true,
+            "**/*.sh": true,
+            "**/*.iso": true,
+            "*isodir*": true,
+            "*sysroot*": true,
+            "**/build*": true,
+            
+        },
+        "files.associations": {
+            "unistd.h": "c",
+            "idt.h": "c",
+            "io.h": "c",
+            "gdt.h": "c",
+            "isr.h": "c",
+            "utils.h": "c",
+            "pic.h": "c",
+            "paging.h": "c",
+            "memory.h": "c",
+            "ide.h": "c"
+        }
+    }
 
 }

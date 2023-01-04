@@ -20,12 +20,12 @@ stack_head:
 .global _start
 .type _start, @function
 _start:
-	mov $stack_head, %esp
-	push %eax
-	push %ebx
-	call kernel_main
-	cli
+    mov $stack_head, %esp
+    push %eax
+    push %ebx
+    call kernel_main
+    cli
 1:	hlt
-	jmp 1b
+    jmp 1b
 
 .size _start, . - _start

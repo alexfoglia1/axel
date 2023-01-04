@@ -36,83 +36,83 @@
 void
 kernel_main(multiboot_info_t* mbd, uint32_t magic)
 {
-	errno = ENOERR;
+    errno = ENOERR;
 
 //  Initialize COM1 immediately, to permit log capabilities since boot
 //  Note that com_init doesn't register COM IRQS, this shall be done after IDT initialization, otherwise idt_init() will erase the corresponding entry
 
-	uint8_t com1_init_res = com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
-	uint8_t com2_init_res = com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
-	__slog__(COM1_PORT, "System boot, COM ports initialized\n");
+    uint8_t com1_init_res = com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
+    uint8_t com2_init_res = com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
+    __slog__(COM1_PORT, "System boot, COM ports initialized\n");
 //  -------------------------------------------------------------------------------------------
 
 //  Initialize memory
-	memory_init(mbd);
+    memory_init(mbd);
 //  -------------------------
 
 //  Initializing tty 
-	tty_init();
-	__slog__(COM1_PORT, "Initialized TTY\n");
+    tty_init();
+    __slog__(COM1_PORT, "Initialized TTY\n");
 //  -------------------------
 
 //  Initializing GDT and IDT
-	gdt_init();
-	idt_init();
-	__slog__(COM1_PORT, "Initialized descriptors tables\n");
+    gdt_init();
+    idt_init();
+    __slog__(COM1_PORT, "Initialized descriptors tables\n");
 //  -------------------------
 
-	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	printf("Starting AXEL %d.%d-%c\n\n", MAJOR_V, MINOR_V, STAGE_V);
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    printf("Starting AXEL %d.%d-%c\n\n", MAJOR_V, MINOR_V, STAGE_V);
 
-	__slog__(COM1_PORT, "Multiboot magic: %X\n", magic);
-	if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
-	{
-		tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+    __slog__(COM1_PORT, "Multiboot magic: %X\n", magic);
+    if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
+    {
+        tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("KERNEL PANIC : INVALID BOOTLOADER\n");
-		abort();
+        abort();
     }
-	else
-	{
-		uint64_t mem_size = memory_get_size();
+    else
+    {
+        uint64_t mem_size = memory_get_size();
 
-		printf("Available Memory:\t\t");
-		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-		printf("[%U KiB]\n", mem_size / 1024);
-		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	}
+        printf("Available Memory:\t\t");
+        tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+        printf("[%U KiB]\n", mem_size / 1024);
+        tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    }
 
-	cli();
+    cli();
 
 //  Detecting CPU Model
-	printf("Detecting CPU Model:\t");
+    printf("Detecting CPU Model:\t");
 
 #ifndef __DEBUG_STUB__
-	extern int cpuid_supported();
-	int cpuid_available = cpuid_supported();
+    extern int cpuid_supported();
+    int cpuid_available = cpuid_supported();
 #else
     int cpuid_available = 1;
 #endif
 
-	if (cpuid_available == 0)
-	{
-		tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
-		printf("[KO]\n");
-	}
-	else
-	{
-		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-		int registers[3];
-		cpuid_get_model(&registers[0], &registers[1], &registers[2]);
-		printf("[");
-		for (int i = 0; i < 3; i++)
-		{
-			int model = registers[i];
-			const char* str_model = (const char*)(&model);
-			printf("%c%c%c%c", str_model[0], str_model[1], str_model[2], str_model[3]);
-		}
-		printf("]\n");
-	}
-	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    if (cpuid_available == 0)
+    {
+        tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+        printf("[KO]\n");
+    }
+    else
+    {
+        tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+        int registers[3];
+        cpuid_get_model(&registers[0], &registers[1], &registers[2]);
+        printf("[");
+        for (int i = 0; i < 3; i++)
+        {
+            int model = registers[i];
+            const char* str_model = (const char*)(&model);
+            printf("%c%c%c%c", str_model[0], str_model[1], str_model[2], str_model[3]);
+        }
+        printf("]\n");
+    }
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
 
@@ -120,113 +120,113 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
 //  Displaying Initialization of UART COM PORTS
     printf("Detecting COM1:\t\t");
-	
-	if (com1_init_res == 0x01)
+    
+    if (com1_init_res == 0x01)
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
 
-		__slog__(COM1_PORT, "COM 1 Detected\n");
+        __slog__(COM1_PORT, "COM 1 Detected\n");
     }
     else
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("[KO]\n");
     }
-	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
     printf("Detecting COM2:\t\t");
-	if (com2_init_res == 0x01)
+    if (com2_init_res == 0x01)
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
 
-		__slog__(COM1_PORT, "COM 2 Detected\n");
+        __slog__(COM1_PORT, "COM 2 Detected\n");
     }
     else
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("[KO]\n");
 
-		__slog__(COM1_PORT, "COM 2 Not Detected\n");
+        __slog__(COM1_PORT, "COM 2 Not Detected\n");
     }
-	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  ..........................
 
 //  Initializing ACPI
-	printf("Initializing ACPI:\t\t");
+    printf("Initializing ACPI:\t\t");
 
-	acpi_init();
-	if (0x01 == acpi_is_initialized())
+    acpi_init();
+    if (0x01 == acpi_is_initialized())
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[OK]\n");
 
-		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-		printf("Enabling ACPI:\t\t");
+        tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+        printf("Enabling ACPI:\t\t");
 
-		acpi_enable();
-		if  (0x01 == acpi_is_enabled())
-		{
-			tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-        	printf("[OK]\n");
-		}
-		else
-		{
-		    tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
-        	printf("[KO]\n");
-		}
+        acpi_enable();
+        if  (0x01 == acpi_is_enabled())
+        {
+            tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+            printf("[OK]\n");
+        }
+        else
+        {
+            tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+            printf("[KO]\n");
+        }
     }
     else
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("[KO]\n");
     }
-	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
 //  Initializing PS/2 controller
-	printf("Detecting PS/2 Channels:\t");
+    printf("Detecting PS/2 Channels:\t");
 
     ps2_controller_init();
 
-	if (ps2_is_present())
-	{
-		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-		printf("[%s]\n", ps2_is_dual_channel() == 0x01 ? "2" : "1");
-		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	}
-	else
-	{
-		tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
-		printf("[0]\n");
-		tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-	}
+    if (ps2_is_present())
+    {
+        tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+        printf("[%s]\n", ps2_is_dual_channel() == 0x01 ? "2" : "1");
+        tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    }
+    else
+    {
+        tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+        printf("[0]\n");
+        tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    }
 
-	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
 //  Initializing PIC IRQs
-	printf("Initializing IRQ:\t\t");
+    printf("Initializing IRQ:\t\t");
 
-	pic_init(ps2_is_present());
+    pic_init(ps2_is_present());
 
-	tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-	printf("[OK]\n");
-	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+    printf("[OK]\n");
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
 //  ..........................
 
 //  Initializing Device Drivers
-	printf("Loading device drivers:\t");
+    printf("Loading device drivers:\t");
 
-	pit_init(); // Serial output will effectively start after this call!
+    pit_init(); // Serial output will effectively start after this call!
     keyboard_init(PS2_DATA_PORT); // It works with PS/2 or legacy USB
-	com_register_interrupts();
+    com_register_interrupts();
 
-	tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printf("[OK]\n");
-	tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
 //  Initializing paging
@@ -246,15 +246,15 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-	sti();
-	
+    sti();
+    
 //  Initializing IDE/ATA
-	printf("\nScanning IDE/ATA devices:\n");
-	ide_init(IDE_BAR_0_ADDR, IDE_BAR_1_ADDR, IDE_BAR_2_ADDR, IDE_BAR_3_ADDR, 0x0000);
-	
-	uint32_t* test_va = (uint32_t*)0x401025;//0x401025;
-	*test_va = 0x00;
-	printf("val(%u)\n", *test_va);
+    printf("\nScanning IDE/ATA devices:\n");
+    ide_init(IDE_BAR_0_ADDR, IDE_BAR_1_ADDR, IDE_BAR_2_ADDR, IDE_BAR_3_ADDR, 0x0000);
+    
+    uint32_t* test_va = (uint32_t*)0x401025;//0x401025;
+    *test_va = 0x00;
+    printf("val(%u)\n", *test_va);
 
-	while (1);
+    while (1);
 }

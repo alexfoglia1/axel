@@ -4,5 +4,5 @@
 int
 putchar(int ic)
 {
-	return write(SYSCALL_TTY_WRITE, (uint8_t*)(&ic), 1);
+    return write(SYSCALL_TTY_WRITE, (uint8_t*)(&ic), 1);
 }

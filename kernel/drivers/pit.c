@@ -34,8 +34,8 @@ pit_get_count()
 void
 pit_set_count(uint32_t count)
 {
-	outb(PIT_CHANNEL_0_PORT, count & 0xFF);
-	outb(PIT_CHANNEL_0_PORT, (count & 0xFF00) >> 8);
+    outb(PIT_CHANNEL_0_PORT, count & 0xFF);
+    outb(PIT_CHANNEL_0_PORT, (count & 0xFF00) >> 8);
 }
 
 

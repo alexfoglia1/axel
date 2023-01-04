@@ -16,4 +16,5 @@ void tty_column_right(void);
 void tty_column_left(void);
 void tty_reset_column(void);
 void tty_update_cursor_position(void);
+
 #endif
