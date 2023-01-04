@@ -1,5 +1,7 @@
 #include <kernel/paging.h>
 
+#include <controllers/pic.h>
+
 #include <common/utils.h>
 
 #include <stdio.h>
@@ -46,6 +48,7 @@ paging_init()
 
     load_page_directory(page_directory);
     enable_paging();
+    pic_add_irq(PAGEFAULT_IRQ_INTERRUPT_NO, &paging_fault_irq_handler);
 
     __slog__(COM1_PORT, "We have a little friend in CR3 register :)\n");
 
@@ -65,5 +68,6 @@ __attribute__((interrupt))
 #endif
 void paging_fault_irq_handler(interrupt_stack_frame_t* frame)
 {
-
+    printf("KERNEL PANIC : PAGE FAULT\n");
+    abort();
 }
