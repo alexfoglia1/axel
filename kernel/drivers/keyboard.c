@@ -17,15 +17,11 @@ static uint8_t data_port;
 void
 keyboard_init(uint8_t in_port)
 {
-    __slog__(COM1_PORT, "Initializing keyboard\n");
-
     is_caps = 0;
     is_shift_holded = 0;
     data_port = in_port;
 
     pic_add_irq(KBD_IRQ_INTERRUPT_NO, &keyboard_irq_handler);
-
-    __slog__(COM1_PORT, "Keyboard initialized\n");
 }
 
 

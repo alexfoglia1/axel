@@ -33,8 +33,6 @@ pic_reset_slave()
 void
 pic_init(uint8_t ps2_present)
 {
-    __slog__(COM1_PORT, "Initializing Programmable Interrupt Controller\n");
-
     // Masking IRQ 2,5,6,7 : Not yet implemented
     outb(PIC_MASTER_DATA_PORT, 0x04);
     outb(PIC_MASTER_DATA_PORT, 0x20);
@@ -50,8 +48,6 @@ pic_init(uint8_t ps2_present)
     outb(PIC_SLAVE_DATA_PORT, 0x20);
     outb(PIC_SLAVE_DATA_PORT, 0x40);
     outb(PIC_SLAVE_DATA_PORT, 0x80);
-    
-    __slog__(COM1_PORT, "Masked not yet implemented IRQs\n");
 }
 
 void

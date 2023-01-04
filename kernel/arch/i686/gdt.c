@@ -11,8 +11,6 @@ struct gdt_entry gdt_table[GDT_SIZE];
 void
 gdt_init()
 {
-    __slog__(COM1_PORT, "Initializing GDT\n");
-
     for (int i = 0; i < GDT_SIZE; i++)
     {
         memset(&gdt_table[i], 0x00, sizeof(struct gdt_entry));
@@ -23,16 +21,12 @@ gdt_init()
     gdt_add_entry(2, 0x00000000, 0x000FFFFF, PRESENT|KERNEL|DATA|0x02, GRANULARITY|SZBITS);
 
     store_gdt(gdt_table, 0xFFFF, 1, 2);	
-
-    __slog__(COM1_PORT, "GDT stored\n");
 }
 
 
 void
 gdt_add_entry(int32_t pos, uint32_t base, uint32_t limit, uint8_t opt_1, uint8_t opt_2)
 {
-    __slog__(COM1_PORT, "GDT[%u] = base(0x%X), limit(0x%X), opt_1(%b), opt_2(%b)\n", pos, base, limit, opt_1, opt_2);
-
     gdt_table[pos].lim_low   = (uint16_t) (limit & 0xFFFF);
     gdt_table[pos].base_low  = (uint16_t) (base  & 0xFFFF);
     gdt_table[pos].base      = (uint8_t)  ((base >> 16)  & 0xFF);

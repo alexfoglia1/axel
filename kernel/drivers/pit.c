@@ -42,8 +42,6 @@ pit_set_count(uint32_t count)
 void
 pit_init()
 {
-    __slog__(COM1_PORT, "Initializing PIT timer\n");
-
     time_elapsed.ticks = 0;
     time_elapsed.millis = 0;
     count_0 = pit_get_count();
@@ -57,8 +55,6 @@ pit_init()
     outb(PIT_CHANNEL_0_PORT, div_high);
 
     pic_add_irq(PIT_IRQ_INTERRUPT_NO, &pit_irq0_handler);
-
-    __slog__(COM1_PORT, "PIT timer initialized\n");
 }
 
 

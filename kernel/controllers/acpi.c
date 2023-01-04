@@ -65,8 +65,6 @@ static uint32_t
       rsdp = acpi_check_rsd_ptr(addr);
       if (rsdp != 0x00)
       {
-         __slog__(COM1_PORT, "RSDP String at 0x%X\n", (uint32_t)addr);
-
          return rsdp;
       }
    }
@@ -146,24 +144,12 @@ void acpi_enable(void)
 
          if (i < 300)
          {
-            __slog__(COM1_PORT, "ACPI Enabled\n");
             acpi_enabled = 0x01;
          }
-         else
-         {
-            __slog__(COM1_PORT, "Cannot enable ACPI\n");
-            acpi_enabled = 0x00;
-         }
-      }
-      else
-      {
-         __slog__(COM1_PORT, "ACPI Cannot be enabled on this computer\n");
-         acpi_enabled = 0x00;
       }
    }
    else
    {
-      __slog__(COM1_PORT, "ACPI was already enabled\n");
       acpi_enabled = 0x01;
    }
 }
@@ -252,35 +238,15 @@ acpi_init()
                      PM1_CNT_LEN = facp->PM1_CNT_LEN;
                      SLP_EN = 1<<13;
                      SCI_EN = 0x01;
-
-                     __slog__(COM1_PORT, "ACPI Is initialized\n");
                      return;
                   }
-                  else
-                  {
-                     __slog__(COM1_PORT, "DSDT S5 Section wrong format\n");
-                  }
                }
-               else
-               {
-                  __slog__(COM1_PORT, "DSDT S5 Section not present\n");
-               }
-            }
-            else
-            {
-               __slog__(COM1_PORT, "DSDT Invalid\n");
             }
          }
 
          ptr++;
          entrys -= 1;
       }
-
-      __slog__(COM1_PORT, "No valid FACP\n");
-   }
-   else
-   {
-      __slog__(COM1_PORT, "No ACPI available on this PC\n");
    }
 
    SCI_EN = 0x00;

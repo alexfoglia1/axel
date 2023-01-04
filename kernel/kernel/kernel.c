@@ -52,7 +52,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
 //  Initializing tty 
     tty_init();
-    __slog__(COM1_PORT, "Initialized TTY\n");
 //  -------------------------
 
 //  Initializing GDT and IDT

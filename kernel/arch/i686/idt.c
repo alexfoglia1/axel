@@ -15,8 +15,6 @@ struct idt_entry idt[IDT_SIZE]; // The real IDT pointed by LIDT
 void
 idt_init()
 {
-    __slog__(COM1_PORT, "Initializing IDT\n");
-
     for (int i = 0; i < IDT_SIZE; i++)
     {
         memset(&idt[i], 0x00, sizeof(struct idt_entry));
@@ -29,16 +27,12 @@ idt_init()
     }
 
     store_idt(&idt);
-
-    __slog__(COM1_PORT, "IDT Stored\n");
 }
 
 
 void
 idt_add_entry(uint8_t pos, void* isr, uint8_t flags)
 {
-    __slog__(COM1_PORT, "IDT[%u] = isr_address(0x%X), flags(%b)\n", pos, (uint32_t)(isr), flags);
-
     struct idt_entry* descriptor = &idt[pos];
  
     descriptor->isr_low        = (uint32_t)(isr) & 0xFFFF;
