@@ -23,6 +23,7 @@ main(int argc, char** argv)
 
     mbr.flags = 0xFFFFFFFF;
     mbr.mmap_length = 6;
+    mbr.mem_upper = 0x1B80;
 
     multiboot_memory_map_t maps[6];
 

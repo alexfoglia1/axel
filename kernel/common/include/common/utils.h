@@ -26,6 +26,9 @@ extern char __slog_tst__[SERIAL_LOG_TSTMP_BUFLEN];
                 memset(__slog_tst__, 0x00, SERIAL_LOG_TSTMP_BUFLEN); } \
             while(0)
 
+#define __min__(a,b)(a < b ? a : b)
+#define __max__(a,b)(a > b ? a : b)
+
 uint64_t  parse_memory_size(multiboot_info_t* mbr);
 void cmos_datetime_to_str(cmos_rtc_datetime datetime, char* buf);
 void sleep(uint32_t millis);

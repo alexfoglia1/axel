@@ -91,10 +91,10 @@ pit_irq0_handler(interrupt_stack_frame_t* frame)
     time_elapsed.millis = (time_elapsed.ticks * PIT_MILLIS_PER_TICK);
 
     //TODO : Define a COM TX frequency
-    if (time_elapsed.ticks % 10 == 0)
+    if (time_elapsed.ticks % 2 == 0)
     {
         com_tx_buffer(COM1_PORT);
-        com_tx_buffer(COM2_PORT);
+        //com_tx_buffer(COM2_PORT);
     }
     pic_reset_master(); //IRQ0 ACK
 }

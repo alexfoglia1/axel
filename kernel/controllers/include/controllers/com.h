@@ -33,7 +33,7 @@
 #define COM1_IRQ_INTERRUPT_NO  0x0C
 #define COM2_IRQ_INTERRUPT_NO  0x0B
 
-#define COM_OUTBUF_LEN       0x2000
+#define COM_OUTBUF_LEN       0x8000
 #define COM_TX_BYTES         0x10
 
 

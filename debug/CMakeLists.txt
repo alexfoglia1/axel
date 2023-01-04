@@ -63,6 +63,7 @@ ${CMAKE_SOURCE_DIR}/../kernel/syscall/sys_read.c
 
 #---- KERNEL MAIN ----#
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/paging.c
+${CMAKE_SOURCE_DIR}/../kernel/kernel/memory.c
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/kernel.c
 
 #---- EXEC MAIN   ----#

@@ -23,7 +23,11 @@
 			"idt.h": "c",
 			"io.h": "c",
 			"gdt.h": "c",
-			"isr.h": "c"
+			"isr.h": "c",
+			"utils.h": "c",
+			"pic.h": "c",
+			"paging.h": "c",
+			"memory.h": "c"
 		}
 	}
 

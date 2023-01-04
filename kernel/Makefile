@@ -47,6 +47,8 @@ $(ARCHDIR)/gdt.o \
 $(ARCHDIR)/idt.o \
 $(ARCHDIR)/cpuid.o \
 $(ARCHDIR)/cpuid_supported.o \
+$(ARCHDIR)/enable_paging.o \
+$(ARCHDIR)/load_page_directory.o \
 $(ISRDIR)/isr.o \
 $(SYSCALLDIR)/sys_write.o \
 $(SYSCALLDIR)/sys_read.o \
@@ -69,6 +71,7 @@ LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
 KERNEL_OBJS=\
 $(KERNEL_ARCH_OBJS) \
 kernel/paging.o \
+kernel/memory.o \
 kernel/kernel.o \
 
 OBJS=\
