@@ -46,7 +46,11 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	__slog__(COM1_PORT, "System boot, COM ports initialized\n");
 //  -------------------------------------------------------------------------------------------
 
-//  Initializing vga memory 
+//  Initialize memory
+	memory_init(mbd);
+//  -------------------------
+
+//  Initializing tty 
 	tty_init();
 	__slog__(COM1_PORT, "Initialized TTY\n");
 //  -------------------------
@@ -69,7 +73,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     }
 	else
 	{
-		uint64_t mem_size = parse_memory_size(mbd);
+		uint64_t mem_size = memory_get_size();
 
 		printf("Available Memory:\t\t");
 		tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
@@ -227,7 +231,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
 //  Initializing paging
     printf("Initializing paging:\t");
-	memory_init(mbd);
     paging_init();
     if (0x01 == paging_is_active())
     {
@@ -251,6 +254,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 	uint32_t* test_va = (uint32_t*)0x401025;
 	*test_va = 0x00;
 	printf("val(%u)\n", *test_va);
-	
+
 	while (1);
 }
