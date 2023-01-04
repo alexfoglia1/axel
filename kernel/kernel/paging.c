@@ -4,6 +4,7 @@
 
 #include <common/utils.h>
 
+#include <stdlib.h>
 #include <stdio.h>
 
 uint32_t page_directory[PAGE_DIRECTORY_ENTRIES] __attribute__((aligned(PAGE_FRAME_SIZE)));

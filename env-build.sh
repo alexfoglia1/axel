@@ -15,7 +15,7 @@ export BOOTDIR=/boot
 export LIBDIR=$EXEC_PREFIX/lib
 export INCLUDEDIR=$PREFIX/include
 
-export CFLAGS='-O0 -g'
+export CFLAGS='-O0 -g -Wno-unused-parameter -Wno-unused-variable -Werror'
 export CPPFLAGS=''
 
 # Configure the cross-compiler to use the desired system root.

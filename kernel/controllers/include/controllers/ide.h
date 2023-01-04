@@ -87,6 +87,12 @@
 #define      ATA_READ      0x00
 #define      ATA_WRITE     0x01
 
+void insl(unsigned reg, unsigned int *buffer, int quads);
+unsigned char ide_read(unsigned char channel, unsigned char reg);
+void ide_write(unsigned char channel, unsigned char reg, unsigned char data);
+void ide_read_buffer(unsigned char channel, unsigned char reg, unsigned int buffer, unsigned int quads);
+unsigned char ide_polling(unsigned char channel, unsigned int advanced_check);
+unsigned char ide_print_error(unsigned int drive, unsigned char err);
 void ide_init(uint32_t bar0, uint32_t bar1, uint32_t bar2, uint32_t bar3, uint32_t bar4);
 
 #endif

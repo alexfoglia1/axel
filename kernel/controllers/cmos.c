@@ -81,11 +81,6 @@ cmos_read_rtc()
         year = (year & 0x0F) + ((year / 16) * 10);
     }
 
-    if ((0x00 == (reg_b & 0x02)) && (0x01 == (hour & 0x80)))
-    {
-        hour = ((hour & 0x7F) + 12) % 24;
-    }
-
 
     cmos_rtc_datetime datetime;
     datetime.sec = second;

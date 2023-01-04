@@ -44,5 +44,5 @@ memory_get_size()
 uint8_t
 memory_frame_present(void* frame_address)
 {
-    return frame_address < mem_size;
+    return (uint32_t) frame_address < mem_size;
 }

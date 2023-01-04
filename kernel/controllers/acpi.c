@@ -33,12 +33,12 @@ acpi_check_rsd_ptr(uint32_t* ptr)
    struct RSDPtr *rsdp = (struct RSDPtr *) ptr;
    uint8_t *bptr;
    uint8_t check = 0;
-   int i;
+   uint32_t i;
 
    if (0x00 == memcmp(sig, rsdp, 8))
    {
       bptr = (uint8_t *) ptr;
-      for (i=0; i<sizeof(struct RSDPtr); i++)
+      for (i = 0; i < sizeof(struct RSDPtr); i++)
       {
          check += *bptr;
          bptr++;

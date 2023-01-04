@@ -1,4 +1,5 @@
 #include <controllers/com.h>
+#include <controllers/pic.h>
 
 #include <kernel/arch/io.h>
 

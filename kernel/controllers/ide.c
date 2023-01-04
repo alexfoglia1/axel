@@ -1,5 +1,7 @@
 #include <controllers/ide.h>
 
+#include <common/utils.h>
+
 #include <kernel/arch/io.h>
 
 #include <stdio.h>
@@ -13,8 +15,8 @@ struct IDEChannelRegisters {
 } channels[2];
 
 unsigned char ide_buf[2048] = {0};
-volatile unsigned static char ide_irq_invoked = 0;
-unsigned static char atapi_packet[12] = {0xA8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static volatile unsigned char ide_irq_invoked = 0;
+static unsigned char atapi_packet[12] = {0xA8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 struct ide_device {
    unsigned char  Reserved;    // 0 (Empty) or 1 (This Drive really exists).
@@ -82,13 +84,13 @@ void ide_read_buffer(unsigned char channel, unsigned char reg, unsigned int buff
 #ifndef __DEBUG_STUB__
    asm("pushw %es; movw %ds, %ax; movw %ax, %es");
    if (reg < 0x08)
-      insl(channels[channel].base  + reg - 0x00, buffer, quads);
+      insl(channels[channel].base  + reg - 0x00, (unsigned int*) buffer, quads);
    else if (reg < 0x0C)
-      insl(channels[channel].base  + reg - 0x06, buffer, quads);
+      insl(channels[channel].base  + reg - 0x06, (unsigned int*) buffer, quads);
    else if (reg < 0x0E)
-      insl(channels[channel].ctrl  + reg - 0x0A, buffer, quads);
+      insl(channels[channel].ctrl  + reg - 0x0A, (unsigned int*) buffer, quads);
    else if (reg < 0x16)
-      insl(channels[channel].bmide + reg - 0x0E, buffer, quads);
+      insl(channels[channel].bmide + reg - 0x0E, (unsigned int*) buffer, quads);
    asm("popw %es;");
 #endif
    if (reg > 0x07 && reg < 0x0C)
