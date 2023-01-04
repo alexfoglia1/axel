@@ -98,7 +98,7 @@ The iso generation process is automated in the script:
 
     mkiso.sh   : it generates axel.iso, a flashable OS iso usable for both real hardware and virtual machines
 
- Note that xorriso tool is needed for this purpose. If a debian-based linux distro is used, one can type
+ Note that xorriso tool is needed for this purpose. If a debian-based linux distro is used, one can type:
 
      sudo apt install xorriso
 
