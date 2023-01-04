@@ -4,7 +4,7 @@ Project of an hobbyst x86 operating system development.
 
 ## Repository Structure
 
-The codebase has the following structure
+The codebase has the following structure:
 
     kernel/
            include/
@@ -69,12 +69,12 @@ The codebase has the following structure
     sysroot: The AXEL-OS system root, it is generated during the build process and it contains kernel binary and a minimal initial filesystem
     
 
-In order to debug core kernel functions using GDB, one can use the "debug" project, located in
+In order to debug core kernel functions using GDB, one can use the "debug" project, located in:
     
     debug
 
 This sub-project is a cmake project and depends on the OS sources, except for the x86 specific implementation of the HAL, for which there is the custom stabbed implementation described above.
-Its entry point is located inside
+Its entry point is located inside:
 
     debug/debug/main.c
 
@@ -104,13 +104,11 @@ The iso generation process is automated in the script:
 
 ## How to launch AXEL                
 
-One can either
-
+One can either:
     
 1. flash the axel.iso file in a USB drive and boot it on a real machine
 2. use a virtual environment such as qemu to launch the iso
 3. On a unix physical machine, just add the axel.kernel compiled file under /boot directory and change the /boot/grub/grub.cfg to boot axel
-
 
 I personally use the virtual machine QEMU:
 
@@ -118,7 +116,7 @@ I personally use the virtual machine QEMU:
 
 ## How to launch AXEL debugging project
 
-Open a terminal inside ./debug folder and type
+Open a terminal inside ./debug folder and type:
 
     mkdir build
     cd build
