@@ -221,7 +221,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
     pit_init(); // Serial output will effectively start after this call!
     keyboard_init(PS2_DATA_PORT); // It works with PS/2 or legacy USB
-    com_register_interrupts();
+    com_register_interrupts(); // This hasn't been done in com_init()
 
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printf("[OK]\n");
@@ -246,14 +246,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  --------------------------
 
     sti();
-    
-//  Initializing IDE/ATA
-    printf("\nScanning IDE/ATA devices:\n");
-    ide_init(IDE_BAR_0_ADDR, IDE_BAR_1_ADDR, IDE_BAR_2_ADDR, IDE_BAR_3_ADDR, 0x0000);
-    
-    uint32_t* test_va = (uint32_t*)0x401025;//0x401025;
-    *test_va = 0x00;
-    printf("val(%u)\n", *test_va);
 
     while (1);
 }
