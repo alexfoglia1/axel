@@ -13,6 +13,7 @@ mkdir -p isodir/boot
 mkdir -p isodir/boot/grub
 
 cp sysroot/boot/$OSNAME.kernel isodir/boot/$OSNAME.kernel
+cp sysroot/boot/$OSNAME.initrd isodir/boot/$OSNAME.initrd
 cat > isodir/boot/grub/grub.cfg << EOF
 menuentry "$OSNAME" {
 	multiboot /boot/$OSNAME.kernel
