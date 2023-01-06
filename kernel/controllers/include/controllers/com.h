@@ -37,14 +37,17 @@
 #define COM3_IRQ_INTERRUPT_NO  COM1_IRQ_INTERRUPT_NO // DELL OPTIPLEX 780 ONLY
 
 #define COM_OUTBUF_LEN       0x8000
+#define COM_INBUF_LEN        0x8000
 #define COM_TX_BYTES         0x10
 
 
 #include <stdint.h>
 
 uint8_t com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits);
-int com_send_message(int com_port, const char* message);
-uint32_t com_tx_buffer(int com_port);
+int com_write(int com_port, uint8_t* buf);
+int com_read(int com_port, uint8_t* buf, uint32_t n_bytes);
+
+uint32_t com_flush(int com_port); // Effectively transmit data to outport : called from PIT timer
 
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))

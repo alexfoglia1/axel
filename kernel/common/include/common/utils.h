@@ -20,7 +20,7 @@ extern char __slog_tst__[SERIAL_LOG_TSTMP_BUFLEN];
                 sprintf(__slog_prm__, format, ##__VA_ARGS__); \
                 cmos_datetime_to_str(cmos_read_rtc(), __slog_tst__); \
                 sprintf(__slog_buf__, "%s %s", __slog_tst__, __slog_prm__); \
-                com_send_message(com_port, __slog_buf__); \
+                com_write(com_port, (uint8_t*)__slog_buf__); \
                 memset(__slog_buf__, 0x00, SERIAL_LOG_BUFLEN); \
                 memset(__slog_prm__, 0x00, SERIAL_LOG_BUFLEN - SERIAL_LOG_TSTMP_BUFLEN); \
                 memset(__slog_tst__, 0x00, SERIAL_LOG_TSTMP_BUFLEN); } \
