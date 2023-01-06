@@ -2,6 +2,7 @@
 #include <controllers/pic.h>
 
 #include <kernel/arch/io.h>
+#include <kernel/arch/vga.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -10,11 +11,15 @@
 
 static uint8_t com_1_port_present;
 static uint8_t com_2_port_present;
+static uint8_t com_3_port_present;
 
 static uint8_t com_1_output_buffer[COM_OUTBUF_LEN];
 static uint8_t com_2_output_buffer[COM_OUTBUF_LEN];
+static uint8_t com_3_output_buffer[COM_OUTBUF_LEN];
+
 static uint32_t com_1_output_ll;
 static uint32_t com_2_output_ll;
+static uint32_t com_3_output_ll;
 
 static uint8_t
 COM_SET_BAUD(int baud)
@@ -52,6 +57,12 @@ com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits
         com_2_output_ll = 0;
         memset(&com_2_output_buffer, 0x00, COM_OUTBUF_LEN);
     }
+    else if (com_port == COM3_PORT)
+    {
+        com_3_port_present = 0x00;
+        com_3_output_ll = 0;
+        memset(&com_3_output_buffer, 0x00, COM_OUTBUF_LEN);
+    }
     else
     {
         return 0;
@@ -69,21 +80,27 @@ com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits
      outb(com_port + 0, COM_CMD_TEST_ECHO);
 
      uint8_t rx = inb(com_port + 0);
-
      if (COM_CMD_TEST_ECHO == rx)
      {
-          outb(com_port + 4, COM_CMD_SET_TEST_OFF);
+        outb(com_port + 4, COM_CMD_SET_TEST_OFF);
 
-          if (COM1_PORT == com_port)
-          {
-              com_1_port_present = 0x01;
-          }
-          else if (COM2_PORT == com_port)
-          {
-              com_2_port_present = 0x01;
-          }
+        if (COM1_PORT == com_port)
+        {
+            com_1_port_present = 0x01;
+            pic_add_irq(COM1_IRQ_INTERRUPT_NO, &com_1_irq_handler);
+        }
+        else if (COM2_PORT == com_port)
+        {
+            com_2_port_present = 0x01;
+            pic_add_irq(COM2_IRQ_INTERRUPT_NO, &com_2_irq_handler);
+        }
+        else if (COM3_PORT == com_port)
+        {
+            com_3_port_present = 0x01;
+            pic_add_irq(COM3_IRQ_INTERRUPT_NO, &com_3_irq_handler);
+        }
 
-          return 1;
+        return 1;
      }
      else
      {
@@ -97,9 +114,12 @@ com_send_message(int com_port, const char* message)
 {
     int len = strlen(message);
     uint8_t* output_buffer =    (COM1_PORT == com_port) ? com_1_output_buffer :
-                                (COM2_PORT == com_port) ? com_2_output_buffer : (uint8_t*) 0x00;
+                                (COM2_PORT == com_port) ? com_2_output_buffer :
+                                (COM3_PORT == com_port) ? com_3_output_buffer : (uint8_t*) 0x00;
+
     uint32_t* output_buf_llen = (COM1_PORT == com_port) ? &com_1_output_ll :
-                                (COM2_PORT == com_port) ? &com_2_output_ll : (uint32_t*) 0x00;
+                                (COM2_PORT == com_port) ? &com_2_output_ll :
+                                (COM3_PORT == com_port) ? &com_3_output_ll : (uint32_t*) 0x00;
 
     if (0x00 == output_buffer || 0x00 == output_buf_llen)
     {
@@ -128,8 +148,6 @@ com_send_message(int com_port, const char* message)
 }
 
 
-
-
 // TODO place in buffer and implement device drivers protocols
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
@@ -137,8 +155,12 @@ __attribute__((interrupt))
 void
 com_1_irq_handler(interrupt_stack_frame_t* frame)
 {
-    char rx = inb(COM1_PORT + 5) & 0x01;
-    printf("[COM1] >> %c\n", rx);
+    uint8_t recv_ok = inb(COM1_PORT + 5) & 0x01;
+    if (recv_ok)
+    {
+        char char_rx = inb(COM1_PORT);
+        printf("[COM3] >> %c\n", char_rx);
+    }
 }
 
 
@@ -147,8 +169,27 @@ __attribute__((interrupt))
 #endif
 void com_2_irq_handler(interrupt_stack_frame_t* frame)
 {
-    char rx = inb(COM2_PORT + 5) & 0x01;
-    printf("[COM2] >> %c\n", rx);
+    uint8_t recv_ok = inb(COM2_PORT + 5) & 0x01;
+    if (recv_ok)
+    {
+        char char_rx = inb(COM2_PORT);
+        printf("[COM3] >> %c\n", char_rx);
+    }
+}
+
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void com_3_irq_handler(interrupt_stack_frame_t* frame)
+{
+    uint8_t recv_ok = inb(COM3_PORT + 5) & 0x01;
+    if (recv_ok)
+    {
+        char char_rx = inb(COM3_PORT);
+        printf("[COM3] >> %c\n", char_rx);
+    }
+    
 }
 
 
@@ -156,9 +197,12 @@ uint32_t
 com_tx_buffer(int com_port)
 {
     uint8_t* output_buffer =    (COM1_PORT == com_port) ? com_1_output_buffer :
-                                (COM2_PORT == com_port) ? com_2_output_buffer : (uint8_t*) 0x00;
+                                (COM2_PORT == com_port) ? com_2_output_buffer :
+                                (COM3_PORT == com_port) ? com_3_output_buffer : (uint8_t*) 0x00;
+
     uint32_t* output_buf_llen = (COM1_PORT == com_port) ? &com_1_output_ll :
-                                (COM2_PORT == com_port) ? &com_2_output_ll : (uint32_t*) 0x00;
+                                (COM2_PORT == com_port) ? &com_2_output_ll :
+                                (COM3_PORT == com_port) ? &com_3_output_ll : (uint32_t*) 0x00;
 
     if (0x00 == output_buffer || 0x00 == output_buf_llen)
     {
@@ -181,8 +225,6 @@ com_tx_buffer(int com_port)
         *output_buf_llen -= bytes_to_transmit;
     }
 
-
-
     if (0x00 == *output_buf_llen)
     {
         memset(output_buffer, 0x00, COM_OUTBUF_LEN);
@@ -190,12 +232,3 @@ com_tx_buffer(int com_port)
 
     return COM_TX_BYTES;
 }
-
-
-void
-com_register_interrupts()
-{
-    pic_add_irq(COM1_IRQ_INTERRUPT_NO, &com_1_irq_handler);
-    pic_add_irq(COM2_IRQ_INTERRUPT_NO, &com_2_irq_handler);
-}
-

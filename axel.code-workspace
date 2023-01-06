@@ -31,7 +31,8 @@
             "ide.h": "c",
             "stdint.h": "c",
             "virtual_fs.h": "c",
-            "string.h": "c"
+            "string.h": "c",
+            "com.h": "c"
         }
     }
 

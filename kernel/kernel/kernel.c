@@ -41,26 +41,22 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 {
     errno = ENOERR;
 
-//  Initialize COM1 immediately, to permit log capabilities since boot
-//  Note that com_init doesn't register COM IRQS, this shall be done after IDT initialization, otherwise idt_init() will erase the corresponding entry
+//  Initializing TTY, GDT and IDT
+    tty_init();
+    gdt_init();
+    idt_init();
+//  -------------------------
 
+//  Initialize COM immediately, to permit log capabilities since boot
     uint8_t com1_init_res = com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
     uint8_t com2_init_res = com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
-    __slog__(COM1_PORT, "System boot, COM ports initialized\n");
+    uint8_t com3_init_res = com_init(COM3_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
+
+    __slog__(COM1_PORT, "Initialized tty, gdt, idt and COM\n");
 //  -------------------------------------------------------------------------------------------
 
 //  Initialize memory
     memory_init(mbd);
-//  -------------------------
-
-//  Initializing tty 
-    tty_init();
-//  -------------------------
-
-//  Initializing GDT and IDT
-    gdt_init();
-    idt_init();
-    __slog__(COM1_PORT, "Initialized descriptors tables\n");
 //  -------------------------
 
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
@@ -153,6 +149,23 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
         __slog__(COM1_PORT, "COM 2 Not Detected\n");
     }
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+
+    printf("Detecting COM3:\t\t");
+    if (com3_init_res == 0x01)
+    {
+        tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+        printf("[OK]\n");
+
+        __slog__(COM1_PORT, "COM 3 Detected\n");
+    }
+    else
+    {
+        tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
+        printf("[KO]\n");
+
+        __slog__(COM1_PORT, "COM 3 Not Detected\n");
+    }
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  ..........................
 
 //  Initializing ACPI
@@ -208,23 +221,11 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-//  Initializing PIC IRQs
-    printf("Initializing IRQ:\t\t");
-
-    pic_init(ps2_is_present());
-
-    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-    printf("[OK]\n");
-    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-
-//  ..........................
-
 //  Initializing Device Drivers
     printf("Loading device drivers:\t");
 
     pit_init(); // Serial output will effectively start after this call!
     keyboard_init(PS2_DATA_PORT); // It works with PS/2 or legacy USB
-    com_register_interrupts(); // This hasn't been done in com_init()
 
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printf("[OK]\n");
@@ -257,10 +258,10 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     struct dirent *node = 0;
     while ((node = vfs_read_dir(vfs_root, i)) != 0)
     {
-        printf("Found file ");
-        printf(node->name);
+        //printf("Found file ");
+        //printf(node->name);
         vfs_node_t *fsnode = vfs_find_dir(fs_root, node->name);
-
+#if 0
         if ((fsnode->flags&0x7) == FS_DIRECTORY)
             printf("\n\t(directory)\n");
         else
@@ -271,6 +272,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
             uint32_t j;
             printf("%s\n", buf);
         }
+#endif
         i++;
     }
 
