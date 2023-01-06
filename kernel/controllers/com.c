@@ -104,7 +104,7 @@ com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits
      }
      else
      {
-         return 0;
+        return 0;
      }
 }
 
@@ -159,7 +159,7 @@ com_1_irq_handler(interrupt_stack_frame_t* frame)
     if (recv_ok)
     {
         char char_rx = inb(COM1_PORT);
-        printf("[COM3] >> %c\n", char_rx);
+        printf("[COM1] >> %c\n", char_rx);
     }
 }
 
@@ -173,7 +173,7 @@ void com_2_irq_handler(interrupt_stack_frame_t* frame)
     if (recv_ok)
     {
         char char_rx = inb(COM2_PORT);
-        printf("[COM3] >> %c\n", char_rx);
+        printf("[COM2] >> %c\n", char_rx);
     }
 }
 
