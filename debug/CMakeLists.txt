@@ -61,6 +61,10 @@ ${CMAKE_SOURCE_DIR}/../kernel/controllers/ide.c
 ${CMAKE_SOURCE_DIR}/../kernel/syscall/sys_write.c
 ${CMAKE_SOURCE_DIR}/../kernel/syscall/sys_read.c
 
+#---- FILESYSTEM ----#
+${CMAKE_SOURCE_DIR}/../kernel/filesystem/initrd.c
+${CMAKE_SOURCE_DIR}/../kernel/filesystem/virtual_fs.c
+
 #---- KERNEL MAIN ----#
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/paging.c
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/memory.c
@@ -78,6 +82,7 @@ ${CMAKE_SOURCE_DIR}/../kernel/drivers/include
 ${CMAKE_SOURCE_DIR}/../kernel/controllers/include
 ${CMAKE_SOURCE_DIR}/../kernel/common/include
 ${CMAKE_SOURCE_DIR}/../kernel/syscall/include
+${CMAKE_SOURCE_DIR}/../kernel/filesystem/include
 ${CMAKE_SOURCE_DIR}/../libc/include
 )
 

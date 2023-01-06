@@ -6,15 +6,16 @@
 
 initrd_header_t *initrd_header;     // The header.
 initrd_file_header_t *file_headers; // The list of file headers.
-vfs_node_t *initrd_root;             // Our root directory node.
-vfs_node_t *initrd_dev;              // We also add a directory node for /dev, so we can mount devfs later on.
-vfs_node_t *root_nodes;              // List of file nodes.
-uint32_t nroot_nodes;                    // Number of file nodes.
+vfs_node_t *initrd_root;            // Our root directory node.
+vfs_node_t *initrd_dev;             // We also add a directory node for /dev, so we can mount devfs later on.
+vfs_node_t *root_nodes;             // List of file nodes.
+uint32_t nroot_nodes;               // Number of file nodes.
 
 struct dirent dirent;
 
 
-static uint32_t initrd_read(vfs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer)
+static uint32_t
+initrd_read(vfs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer)
 {
    initrd_file_header_t header = file_headers[node->inode];
    if (offset > header.length)
@@ -25,7 +26,9 @@ static uint32_t initrd_read(vfs_node_t *node, uint32_t offset, uint32_t size, ui
    return size;
 }
 
-static struct dirent *initrd_readdir(vfs_node_t *node, uint32_t index)
+
+static struct dirent*
+initrd_readdir(vfs_node_t *node, uint32_t index)
 {
    if (node == initrd_root && index == 0)
    {
@@ -43,7 +46,9 @@ static struct dirent *initrd_readdir(vfs_node_t *node, uint32_t index)
    return &dirent;
 }
 
-static vfs_node_t *initrd_finddir(vfs_node_t *node, char *name)
+
+static vfs_node_t*
+initrd_finddir(vfs_node_t *node, char *name)
 {
    if (node == initrd_root &&
        !memcmp(name, "dev", 3) )
@@ -57,11 +62,12 @@ static vfs_node_t *initrd_finddir(vfs_node_t *node, char *name)
 }
 
 
-vfs_node_t *initrd_init(uint32_t location)
+vfs_node_t*
+initrd_init(uint32_t location)
 {
    // Initialise the main and file header pointers and populate the root directory.
-   initrd_header = (initrd_header_t *) location;
-   file_headers = (initrd_file_header_t *) (location+sizeof(initrd_header_t));
+   initrd_header = (initrd_header_t*) location;
+   file_headers = (initrd_file_header_t*) (location+sizeof(initrd_header_t));
 
    // Initialise the root directory.
    initrd_root = (vfs_node_t*)kmalloc(sizeof(vfs_node_t));

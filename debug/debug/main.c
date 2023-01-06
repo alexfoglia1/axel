@@ -3,10 +3,18 @@
 
 #include <kernel/arch/multiboot.h>
 
+#include <filesystem/initrd.h>
+#include <filesystem/virtual_fs.h>
+
 #include <controllers/cmos.h>
 #include <controllers/com.h>
 
 #include <common/utils.h>
+
+
+void enable_paging() {}
+void load_page_directory(uint32_t* pd) {}
+uint32_t kern_end = 0xFFFF1000;
 
 extern void kernel_main(multiboot_info_t* mbr, uint32_t magic);
 
@@ -14,7 +22,7 @@ int
 main(int argc, char** argv)
 {
     /** Call and debug kernel functions which are bugged :) **/
-
+#if 0
     com_init(COM1_PORT, 38400, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
     int x = 0;
 
@@ -59,6 +67,7 @@ main(int argc, char** argv)
 
     mbr.mmap_addr = (uint32_t)(&maps);
     kernel_main(&mbr, MULTIBOOT_BOOTLOADER_MAGIC);
+#endif
 
     return 0;
 }
