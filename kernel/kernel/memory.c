@@ -11,8 +11,8 @@ uint32_t mem_size;
 uint32_t alloc_addr;
 
 // A static helpful routine to allocate dynamic memory for the kernel
-static uint8_t*
-__kmalloc__(uint32_t size, uint8_t aligned, uint8_t* pa)
+static void*
+__kmalloc__(uint32_t size, uint8_t aligned, uint32_t* pa)
 {
     // If we need to allocate aligned but alloc_addr is not alligned with page frame size, than we align it
     if (0x01 == aligned && (alloc_addr != (alloc_addr & PAGE_FRAME_MASK)))
@@ -23,7 +23,7 @@ __kmalloc__(uint32_t size, uint8_t aligned, uint8_t* pa)
 
     if (pa != 0x00)
     {
-        *pa = (uint8_t*) alloc_addr; // saving physical address if required
+        *pa = alloc_addr; // saving physical address if required
     }
 
     uint8_t* return_value = (uint8_t*)(alloc_addr);
@@ -33,28 +33,28 @@ __kmalloc__(uint32_t size, uint8_t aligned, uint8_t* pa)
 }
 
 
-uint8_t*
+void*
 kmalloc_page_aligned(uint32_t size)
 {
     return __kmalloc__(size, 0x01, 0x00);
 }
 
 
-uint8_t*
-kmalloc_physical(uint32_t size, uint8_t* pa)
+void*
+kmalloc_physical(uint32_t size, uint32_t* pa)
 {
     return __kmalloc__(size, 0x00, pa);
 }
 
 
-uint8_t*
-kmalloc_page_aligned_physical(uint32_t size, uint8_t* pa)
+void*
+kmalloc_page_aligned_physical(uint32_t size, uint32_t* pa)
 {
     return __kmalloc__(size, 0x01, pa);
 }
 
 
-uint8_t*
+void*
 kmalloc(uint32_t size)
 {
     return __kmalloc__(size, 0x00, 0x00);
@@ -95,7 +95,7 @@ memory_get_size()
 
 
 uint8_t
-memory_frame_present(uint8_t* frame_address)
+memory_frame_present(void* frame_address)
 {
     return (((uint32_t) frame_address) < mem_size);
 }
