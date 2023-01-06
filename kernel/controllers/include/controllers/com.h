@@ -40,10 +40,11 @@
 #define COM_INBUF_LEN        0x8000
 #define COM_TX_BYTES         0x10
 
-
 #include <stdint.h>
 
 uint8_t com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits);
+void com_set_int_byte(uint8_t byte);
+
 int com_write(int com_port, uint8_t* buf);
 int com_read(int com_port, uint8_t* buf, uint32_t n_bytes);
 

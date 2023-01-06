@@ -51,6 +51,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     uint8_t com1_init_res = com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
     uint8_t com2_init_res = com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
     uint8_t com3_init_res = com_init(COM3_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
+    com_set_int_byte(0x0D); // Fire a read syscall when <enter> is received
 
     __slog__(COM1_PORT, "Initialized tty, gdt, idt and COM\n");
 //  -------------------------------------------------------------------------------------------

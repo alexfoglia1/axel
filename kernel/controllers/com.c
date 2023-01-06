@@ -6,9 +6,12 @@
 #include <kernel/arch/io.h>
 #include <kernel/arch/vga.h>
 
+#include <kernel/memory.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
 
 
 static uint8_t com_1_port_present;
@@ -30,6 +33,8 @@ static uint32_t com_3_output_ll;
 static uint32_t com_1_input_ll;
 static uint32_t com_2_input_ll;
 static uint32_t com_3_input_ll;
+
+static uint8_t interrupt_byte; //when this byte is received, we will fire a software interrupt
 
 static uint8_t
 COM_SET_BAUD(int baud)
@@ -55,6 +60,8 @@ COM_SET_BPS(uint8_t bits, uint8_t parity, uint8_t stop_bits)
 uint8_t
 com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits)
 {
+    interrupt_byte = 0x00;
+
     if (com_port == COM1_PORT)
     {
         com_1_port_present = 0x00;
@@ -124,6 +131,13 @@ com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits
      {
         return 0;
      }
+}
+
+
+void
+com_set_int_byte(uint8_t byte)
+{
+    interrupt_byte = byte;
 }
 
 
@@ -205,7 +219,7 @@ com_read(int com_port, uint8_t* buf, uint32_t n_bytes)
 
 
 static void
-com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen)
+com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen, int syscall_no)
 {
     if (COM_INBUF_LEN == *input_buffer_llen)
     {
@@ -213,8 +227,15 @@ com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen
     }
     else
     {
-        input_buffer[*input_buffer_llen] = inb(com_port);
+        uint8_t byte_rx = inb(com_port);
+        input_buffer[*input_buffer_llen] = byte_rx;
         *input_buffer_llen += 1;
+
+        if (interrupt_byte != 0x00 && interrupt_byte == byte_rx)
+        {
+            uint8_t* buf = kmalloc(*input_buffer_llen);
+            read(syscall_no, buf, *input_buffer_llen);
+        }
     }
 
     outb(PIC_MASTER_CMD_PORT, PIC_EOI);
@@ -227,7 +248,7 @@ __attribute__((interrupt))
 void
 com_1_irq_handler(interrupt_stack_frame_t* frame)
 {
-    com_irq_handler(COM1_PORT, com_1_input_buffer, &com_1_input_ll);
+    com_irq_handler(COM1_PORT, com_1_input_buffer, &com_1_input_ll, SYSCALL_COM_1_READ);
 }
 
 
@@ -236,7 +257,7 @@ __attribute__((interrupt))
 #endif
 void com_2_irq_handler(interrupt_stack_frame_t* frame)
 {
-    com_irq_handler(COM2_PORT, com_2_input_buffer, &com_2_input_ll);
+    com_irq_handler(COM2_PORT, com_2_input_buffer, &com_2_input_ll, SYSCALL_COM_2_READ);
 }
 
 
@@ -245,7 +266,7 @@ __attribute__((interrupt))
 #endif
 void com_3_irq_handler(interrupt_stack_frame_t* frame)
 {
-    com_irq_handler(COM3_PORT, com_3_input_buffer, &com_3_input_ll);
+    com_irq_handler(COM3_PORT, com_3_input_buffer, &com_3_input_ll, SYSCALL_COM_3_READ);
 }
 
 
