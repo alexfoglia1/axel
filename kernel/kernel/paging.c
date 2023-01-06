@@ -26,7 +26,7 @@ paging_init()
         uint32_t current_page_directory_mask = PAGE_WRITE;
         uint32_t current_page_directory_first_addr = (i * PAGE_DIRECTORY_ENTRIES) * PAGE_FRAME_SIZE;
 
-        if (0x01 == memory_frame_present((void*)(current_page_directory_first_addr)))
+        if (0x01 == memory_frame_present((uint8_t*)(current_page_directory_first_addr)))
         {
             current_page_directory_mask |= PAGE_PRESENT;
         }
@@ -36,7 +36,7 @@ paging_init()
             uint32_t current_page_frame_addr = (i * PAGE_DIRECTORY_ENTRIES + j) * PAGE_FRAME_SIZE;
             uint32_t current_page_frame_mask = PAGE_WRITE;
 
-            if (0x01 == memory_frame_present((void*)(current_page_frame_addr)))
+            if (0x01 == memory_frame_present((uint8_t*)(current_page_frame_addr)))
             {
                 current_page_frame_mask |= PAGE_PRESENT;
             }

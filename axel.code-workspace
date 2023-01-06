@@ -28,7 +28,10 @@
             "pic.h": "c",
             "paging.h": "c",
             "memory.h": "c",
-            "ide.h": "c"
+            "ide.h": "c",
+            "stdint.h": "c",
+            "virtual_fs.h": "c",
+            "string.h": "c"
         }
     }
 

@@ -25,6 +25,8 @@
 #include <drivers/pit.h>
 #include <drivers/keyboard.h>
 
+#include <filesystem/initrd.h>
+
 #include <common/utils.h>
 
 
@@ -246,6 +248,34 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  --------------------------
 
     sti();
+
+    printf("\nMounting initrd...\n");
+    vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(mbd->mods_addr));
+
+    int i = 0;
+    struct dirent *node = 0;
+    while ((node = readdir_fs(vfs_root, i)) != 0)
+    {
+        printf("Found file ");
+        printf(node->name);
+        vfs_node_t *fsnode = finddir_fs(fs_root, node->name);
+
+        if ((fsnode->flags&0x7) == FS_DIRECTORY)
+            printf("\n\t(directory)\n");
+        else
+        {
+            printf("\n\t contents: \"");
+            char buf[256];
+            uint32_t sz = read_fs(fsnode, 0, 256, buf);
+            int j;
+            for (j = 0; j < sz; j++)
+            printf(buf[j]);
+
+            printf("\"\n");
+        }
+        i++;
+    }
+
 
     while (1);
 }

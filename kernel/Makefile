@@ -11,7 +11,7 @@ BOOTDIR?=$(EXEC_PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -mgeneral-regs-only
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -Icommon/include -Iinterrupts/include -Idrivers/include -Icontrollers/include -Isyscall/include
+CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -Icommon/include -Iinterrupts/include -Idrivers/include -Icontrollers/include -Isyscall/include -Ifilesystem/include
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
@@ -32,6 +32,9 @@ ISRDIR=interrupts
 
 #Hardware drivers
 DRIVERDIR=drivers
+
+#Filesystem
+FSDIR=filesystem
 
 KERNEL_ARCH_CFLAGS=
 KERNEL_ARCH_CPPFLAGS=
@@ -60,6 +63,8 @@ $(CONTRDIR)/acpi.o \
 $(CONTRDIR)/ide.o \
 $(DRIVERDIR)/pit.o \
 $(DRIVERDIR)/keyboard.o \
+$(FSDIR)/virtual_fs.o \
+$(FSDIR)/initrd.o \
 $(COMMONDIR)/utils.o \
 
 
@@ -122,6 +127,6 @@ install-headers:
 install-kernel: $(OSNAME).kernel
 	mkdir -p $(DESTDIR)$(BOOTDIR)
 	cp $(OSNAME).kernel $(DESTDIR)$(BOOTDIR)
-	cp ./initrd/ramdisk.initrd $(DESTDIR)$(BOOTDIR)/$(OSNAME).initrd
+	cp ./filesystem/initrd.img $(DESTDIR)$(BOOTDIR)/$(OSNAME).initrd
 
 -include $(OBJS:.o=.d)
