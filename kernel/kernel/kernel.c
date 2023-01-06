@@ -277,5 +277,11 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     }
 
 
-    while (1);
+    while (1)
+    {
+        //while (inb(COM1_PORT + 5) & 0x01)
+        {
+            //asm("int $12");
+        }
+    }
 }

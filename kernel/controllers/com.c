@@ -75,6 +75,7 @@ com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits
      outb(com_port + 3, COM_SET_BPS(bits, parity, stop_bits));
      outb(com_port + 2, COM_CMD_ENB_FIFO);
      outb(com_port + 4, COM_CMD_ENABLE_IRQS);
+     outb(com_port + 1, COM_CMD_ENB_DATA_IRQ);
 
      outb(com_port + 4, COM_CMD_SET_TEST_ON);
      outb(com_port + 0, COM_CMD_TEST_ECHO);
@@ -155,12 +156,10 @@ __attribute__((interrupt))
 void
 com_1_irq_handler(interrupt_stack_frame_t* frame)
 {
-    uint8_t recv_ok = inb(COM1_PORT + 5) & 0x01;
-    if (recv_ok)
-    {
-        char char_rx = inb(COM1_PORT);
-        printf("[COM1] >> %c\n", char_rx);
-    }
+    char char_rx = inb(COM1_PORT);
+    printf("[COM1] >> %c\n", char_rx);
+
+    outb(PIC_MASTER_CMD_PORT, PIC_EOI);
 }
 
 
@@ -169,12 +168,8 @@ __attribute__((interrupt))
 #endif
 void com_2_irq_handler(interrupt_stack_frame_t* frame)
 {
-    uint8_t recv_ok = inb(COM2_PORT + 5) & 0x01;
-    if (recv_ok)
-    {
-        char char_rx = inb(COM2_PORT);
-        printf("[COM2] >> %c\n", char_rx);
-    }
+    char char_rx = inb(COM2_PORT);
+    printf("[COM2] >> %c\n", char_rx);
 }
 
 
@@ -183,13 +178,8 @@ __attribute__((interrupt))
 #endif
 void com_3_irq_handler(interrupt_stack_frame_t* frame)
 {
-    uint8_t recv_ok = inb(COM3_PORT + 5) & 0x01;
-    if (recv_ok)
-    {
-        char char_rx = inb(COM3_PORT);
-        printf("[COM3] >> %c\n", char_rx);
-    }
-    
+    char char_rx = inb(COM3_PORT);
+    printf("[COM3] >> %c\n", char_rx);
 }
 
 

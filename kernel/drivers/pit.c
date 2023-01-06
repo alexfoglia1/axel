@@ -54,7 +54,7 @@ pit_init()
     outb(PIT_CHANNEL_0_PORT, div_low);
     outb(PIT_CHANNEL_0_PORT, div_high);
 
-    pic_add_irq(PIT_IRQ_INTERRUPT_NO, &pit_irq0_handler);
+    pic_add_irq(PIT_IRQ_INTERRUPT_NO, pit_irq0_handler);
 }
 
 
@@ -93,4 +93,6 @@ pit_irq0_handler(interrupt_stack_frame_t* frame)
         //com_tx_buffer(COM2_PORT);
     }
     pic_reset_master(); //IRQ0 ACK
+
+    outb(PIC_MASTER_CMD_PORT, PIC_EOI);
 }
