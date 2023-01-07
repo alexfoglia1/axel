@@ -67,6 +67,19 @@ uint32_t get_first_free_frame()
 }
 
 
+static
+void switch_page_directory(page_directory_t* directory)
+{
+    current_page_directory = directory;
+
+    // Load kernel page directory
+    load_page_directory(current_page_directory->page_tables_pa);
+
+    // Enable paging
+    enable_paging();
+}
+
+
 void
 paging_alloc_frame(uint32_t address, page_directory_t* page_directory, uint32_t is_kernel_page, uint32_t is_write)
 {
@@ -140,9 +153,6 @@ paging_init()
     // Clear kernel page directory pointers in order to initialize them
     memset(kernel_page_directory, 0x00, sizeof(page_directory_t));
 
-    // Set the current page directory pointer to the kernel page directory, obv
-    current_page_directory = kernel_page_directory;
-
     // Identity map (virtual = physical) addresses from 0 to memory_get_next_alloc_address()
     uint32_t current_addr = 0;
     while (current_addr <= memory_get_next_alloc_address())
@@ -154,11 +164,8 @@ paging_init()
     // Register page fault handler
     pic_add_irq(PAGEFAULT_IRQ_INTERRUPT_NO, &paging_fault_irq_handler);
 
-    // Load kernel page directory
-    load_page_directory(kernel_page_directory->page_tables_pa);
-
-    // Enable paging
-    enable_paging();
+    // Set current pèage directory = kernel_page_directory and enable paging
+    switch_page_directory(kernel_page_directory);
 
     __slog__(COM1_PORT, "We have a little friend in CR0 register!\n");
 }
