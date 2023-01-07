@@ -1,4 +1,5 @@
 #include <kernel/paging.h>
+#include <kernel/memory.h>
 
 #include <controllers/pic.h>
 
@@ -7,61 +8,161 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-uint32_t page_directory[PAGE_DIRECTORY_ENTRIES] __attribute__((aligned(PAGE_FRAME_SIZE)));
-uint32_t page_tables[PAGE_DIRECTORY_ENTRIES][PAGE_TABLE_ENTRIES] __attribute__((aligned(PAGE_FRAME_SIZE)));
-uint8_t paging_active;
+uint32_t physical_memory_size;
+uint32_t n_physical_frames;
+uint32_t *frames_bitset;
+
+page_directory_t* kernel_page_directory;
+page_directory_t* current_page_directory;
+
+#define INDEX_FROM_BIT(a)(a/32)
+#define OFFSET_FROM_BIT(a)(a%32)
+
+
+static
+void set_frames_bitset(uint32_t frame_address, uint8_t value)
+{
+    uint32_t frame  = frame_address / PAGE_FRAME_SIZE;
+    uint32_t index  = INDEX_FROM_BIT(frame);
+    uint32_t offset = OFFSET_FROM_BIT(frame);
+
+    if (0x00 == value)
+    {
+        frames_bitset[index] &= ~(0x01 << offset);
+    }
+    else
+    {
+        frames_bitset[index] |= (0x01 << offset);
+    }
+}
+
+#if 0
+static
+uint32_t test_frames_bitset(uint32_t frame_address)
+{
+    uint32_t frame  = frame_address / PAGE_FRAME_SIZE;
+    uint32_t index  = INDEX_FROM_BIT(frame);
+    uint32_t offset = OFFSET_FROM_BIT(frame);
+
+    return (frames_bitset[index] & (0x01 << offset));
+}
+#endif
+
+
+static
+uint32_t get_first_free_frame()
+{
+    for (uint32_t i = 0; i < INDEX_FROM_BIT(n_physical_frames); i++)
+    {
+        for (uint32_t j = 0; j < 32; j++)
+        {
+            if (0x00 == (frames_bitset[i] & (0x01 << j)))
+            {
+                return i * 32 + j;
+            }
+        }
+    }
+
+    return 0x00;
+}
+
+
+void
+paging_alloc_frame(uint32_t address, page_directory_t* page_directory, uint32_t is_kernel_page, uint32_t is_write)
+{
+    uint32_t address_index = address / PAGE_FRAME_SIZE;
+    uint32_t table_index   = address_index / PAGE_TABLE_ENTRIES;
+
+    page_table_entry_t* page_table_entry;
+    if (page_directory->page_tables[table_index] != 0x00)
+    {
+        page_table_entry = &page_directory->page_tables[table_index]->pages[address_index % PAGE_TABLE_ENTRIES];
+    }
+    else
+    {
+        uint32_t pa = 0x00;
+
+        page_table_t* page_table = (page_table_t*)(kmalloc_page_aligned_physical(sizeof(page_table_t), &pa));
+        memset(page_table, 0x00, sizeof(page_table_t));
+        page_directory->page_tables[table_index] = page_table;
+        page_directory->page_tables_pa[table_index] = pa | 0x07; // PRESENT, RW, USER
+        page_table_entry = &page_directory->page_tables[table_index]->pages[address % PAGE_TABLE_ENTRIES];
+    }
+
+
+    uint32_t next_free_frame = get_first_free_frame();
+    if ((uint32_t)(-1) == next_free_frame)
+    {
+        printf("KERNEL PANIC : NO FREE FRAMES\n");
+        abort();
+    }
+
+    set_frames_bitset(next_free_frame * PAGE_FRAME_SIZE, 0x01);
+
+    page_table_entry->present = 0x01;
+    page_table_entry->rw = (0x00 == is_write) ? 0x00 : 0x01;
+    page_table_entry->user = (0x00 == is_kernel_page) ? 0x01 : 0x00;
+    page_table_entry->pa = next_free_frame;
+    
+}
+
+
+void
+paging_free_frame(page_table_entry_t* page_table_entry)
+{
+    if (0x00 == page_table_entry->pa)
+    {
+        return; // Nothing to free here
+    }
+    else
+    {
+        set_frames_bitset(page_table_entry->pa, 0x00);
+        page_table_entry->pa = 0x00;
+    }
+}
+
 
 void 
 paging_init()
 {
-    paging_active = 0x00;
+    physical_memory_size = memory_get_size();
+    n_physical_frames = physical_memory_size / PAGE_FRAME_SIZE;
 
-    for(uint32_t i = 0; i < PAGE_DIRECTORY_ENTRIES; i++)
+    // We don't need a n_physical_frames length array to store n_physical_frames 0/1 values
+    frames_bitset = (uint32_t*) kmalloc(INDEX_FROM_BIT(n_physical_frames)); 
+
+    // Initialize all physical frames as non-used (0x00)
+    memset(frames_bitset, 0x00, INDEX_FROM_BIT(n_physical_frames));
+
+    // Create the kernel page directory
+    kernel_page_directory = (page_directory_t*)(kmalloc_page_aligned(sizeof(page_directory_t)));
+
+    // Clear kernel page directory pointers in order to initialize them
+    memset(kernel_page_directory, 0x00, sizeof(page_directory_t));
+
+    // Set the current page directory pointer to the kernel page directory, obv
+    current_page_directory = kernel_page_directory;
+
+    // Identity map (virtual = physical) addresses from 0 to memory_get_next_alloc_address()
+    uint32_t current_addr = 0;
+    while (current_addr <= memory_get_next_alloc_address())
     {
-        page_directory[i] = PAGE_WRITE;
-    }
-    
-    for (uint32_t i = 0; i < PAGE_DIRECTORY_ENTRIES; i++)
-    {
-        uint32_t current_page_directory_mask = PAGE_WRITE;
-        uint32_t current_page_directory_first_addr = (i * PAGE_DIRECTORY_ENTRIES) * PAGE_FRAME_SIZE;
-
-        if (0x01 == memory_frame_present((void*)(current_page_directory_first_addr)))
-        {
-            current_page_directory_mask |= PAGE_PRESENT;
-        }
-
-        for (uint32_t j = 0; j < PAGE_TABLE_ENTRIES; j++)
-        {
-            uint32_t current_page_frame_addr = (i * PAGE_DIRECTORY_ENTRIES + j) * PAGE_FRAME_SIZE;
-            uint32_t current_page_frame_mask = PAGE_WRITE;
-
-            if (0x01 == memory_frame_present((void*)(current_page_frame_addr)))
-            {
-                current_page_frame_mask |= PAGE_PRESENT;
-            }
-
-            page_tables[i][j] = current_page_frame_addr | current_page_frame_mask;
-        }
-
-        page_directory[i] = ((uint32_t)page_tables[i]) | current_page_directory_mask;
+        paging_alloc_frame(current_addr, kernel_page_directory, 0, 0); 
+        current_addr += PAGE_FRAME_SIZE;
     }
 
-    load_page_directory(page_directory);
-    enable_paging();
+    // Register page fault handler
     pic_add_irq(PAGEFAULT_IRQ_INTERRUPT_NO, &paging_fault_irq_handler);
 
-    __slog__(COM1_PORT, "We have a little friend in CR3 register :)\n");
+    // Load kernel page directory
+    load_page_directory(kernel_page_directory->page_tables_pa);
 
-    paging_active = 0x01;
+    // Enable paging
+    enable_paging();
+
+    __slog__(COM1_PORT, "We have a little friend in CR0 register!\n");
 }
 
-
-uint8_t
-paging_is_active()
-{
-    return paging_active;
-}
 
 
 #ifndef __DEBUG_STUB__
@@ -69,6 +170,21 @@ __attribute__((interrupt))
 #endif
 void paging_fault_irq_handler(interrupt_stack_frame_t* frame)
 {
-    printf("KERNEL PANIC : PAGE FAULT\n");
-    abort();
+   // A page fault has occurred.
+   // The faulting address is stored in the CR2 register.
+
+   uint32_t faulting_address;
+   asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
+
+   // The error code gives us details of what happened.
+   int present = frame->error_code & 0x1; // Page not present
+   int rw = frame->error_code & 0x2;           // Write operation?
+   int us = frame->error_code & 0x4;           // Processor was in user-mode?
+   int reserved = frame->error_code & 0x8;     // Overwritten CPU-reserved bits of page entry?
+   int id = frame->error_code & 0x10;          // Caused by an instruction fetch?
+
+   // Output an error message.
+   printf("Page fault ( present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d) ) at 0x%X\n",
+                        present,     rw,                            us,  reserved,           id,   faulting_address);
+
 }

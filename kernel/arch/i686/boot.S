@@ -9,6 +9,7 @@
 .long MAGIC
 .long FLAGS
 .long CHECKSUM
+.extern kern_end
 
 .section .bss
 .align 16

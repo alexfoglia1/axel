@@ -7,6 +7,7 @@
 #include <common/utils.h>
 
 extern uint32_t kern_end;
+uint32_t* kernel_end;
 uint32_t mem_size;
 uint32_t alloc_addr;
 
@@ -65,7 +66,8 @@ void
 memory_init(multiboot_info_t* mbd)
 {
     mem_size = 0;
-    alloc_addr = kern_end;
+    kernel_end = &kern_end;
+    alloc_addr = (uint32_t) kernel_end;
 
     #ifdef __ADDR_64BIT__
     for (uint32_t i = 0; i < mbd->mmap_length; i++)
@@ -86,6 +88,14 @@ memory_init(multiboot_info_t* mbd)
     }
    
 }
+
+
+uint32_t
+memory_get_next_alloc_address()
+{
+    return alloc_addr;
+}
+
 
 uint32_t
 memory_get_size()

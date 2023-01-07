@@ -236,53 +236,13 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  Initializing paging
     printf("Initializing paging:\t");
     paging_init();
-    if (0x01 == paging_is_active())
-    {
-        tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-        printf("[OK]\n");
-    }
-    else
-    {
-        tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
-        printf("[KO]\n");
-    }
 
+    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+    printf("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
     sti();
 
-    printf("\nMounting initrd...\n");
-    vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(mbd->mods_addr));
-
-    uint32_t i = 0;
-    struct dirent *node = 0;
-    while ((node = vfs_read_dir(vfs_root, i)) != 0)
-    {
-        //printf("Found file ");
-        //printf(node->name);
-        vfs_node_t *fsnode = vfs_find_dir(fs_root, node->name);
-#if 0
-        if ((fsnode->flags&0x7) == FS_DIRECTORY)
-            printf("\n\t(directory)\n");
-        else
-        {
-            printf("\n\t contents: \"");
-            char buf[256];
-            uint32_t sz = vfs_read(fsnode, 0, 256, (uint8_t*) buf);
-            uint32_t j;
-            printf("%s\n", buf);
-        }
-#endif
-        i++;
-    }
-
-
-    while (1)
-    {
-        //while (inb(COM1_PORT + 5) & 0x01)
-        {
-            //asm("int $12");
-        }
-    }
+    while(1);
 }

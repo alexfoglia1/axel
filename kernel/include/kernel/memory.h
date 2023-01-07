@@ -9,6 +9,7 @@
 
 void memory_init(multiboot_info_t* mbd);
 uint32_t memory_get_size();
+uint32_t memory_get_next_alloc_address();
 uint8_t memory_frame_present(void* frame_address);
 
 void* kmalloc_page_aligned(uint32_t size);

@@ -39,5 +39,5 @@ SECTIONS
     }
  
     /* Kernel end address */
-    kern_end = .;
+    kern_end = .; _kern_end = .; __kern_end = .;
 }
