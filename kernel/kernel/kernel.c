@@ -143,6 +143,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     printf("Initializing paging:\t");
 
     paging_init();
+    
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printf("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);

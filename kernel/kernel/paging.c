@@ -67,6 +67,8 @@ void switch_page_directory(page_directory_t* directory)
 
     // Enable paging
     enable_paging();
+
+    __slog__(COM1_PORT, "Switched page directory\n");
 }
 
 
@@ -129,6 +131,8 @@ paging_free_frame(page_table_entry_t* page_table_entry)
     }
     else
     {
+        __slog__(COM1_PORT, "Freeing physical frame: 0x%X\n", page_table_entry->pa);
+
         set_frames_bitset(page_table_entry->pa, 0x00);
         page_table_entry->pa = 0x00;
     }
@@ -140,6 +144,8 @@ paging_init()
 {
     physical_memory_size = memory_get_size();
     n_physical_frames = physical_memory_size / PAGE_FRAME_SIZE;
+
+    __slog__(COM1_PORT, "Initializing paging : physical_memory_size = %u bytes, number of physical frames = %u\n", physical_memory_size, n_physical_frames);   
 
     // We don't need a n_physical_frames length array to store n_physical_frames 0/1 values
     frames_bitset = (uint32_t*) kmalloc(INDEX_FROM_BIT(n_physical_frames)); 
@@ -153,11 +159,15 @@ paging_init()
     // Clear kernel page directory pointers in order to initialize them
     memset(kernel_page_directory, 0x00, sizeof(page_directory_t));
 
+    __slog__(COM1_PORT, "Kernel page directory allocated at pa 0x%X\n", (uint32_t)(kernel_page_directory));
+
     // Map pages in the kernel memory area which will become the kernel heap
     for (uint32_t i = HEAP_START; i < HEAP_START + HEAP_INITIAL_SIZE; i += PAGE_FRAME_SIZE)
     {
         paging_get_page(i, kernel_page_directory);
     }
+
+
 
     // Identity map (virtual = physical) addresses from 0 to memory_get_next_alloc_address()
     uint32_t current_addr = 0;

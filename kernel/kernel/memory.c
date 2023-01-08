@@ -213,7 +213,8 @@ memory_init(multiboot_info_t* mbd)
             mem_size += mmmt->len;
         }
     }
-   
+
+    __slog__(COM1_PORT, "Initialized memory : mem size is %u KiB, kernel_end at 0x%X\n", mem_size / 1024, alloc_addr);
 }
 
 
