@@ -225,6 +225,13 @@ memory_get_next_alloc_address()
 }
 
 
+void
+memory_set_alloc_address(uint32_t alloc_address)
+{
+    alloc_addr = alloc_address;
+}
+
+
 uint32_t
 memory_get_size()
 {

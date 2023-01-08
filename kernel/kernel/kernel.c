@@ -146,6 +146,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  Initialize paging + heap : doing so, we can kmalloc and kfree using the heap (no heap, no kfree)
     printf("Initializing paging:\t");
 
+    memory_set_alloc_address(*(uint32_t*)(initrd_addr + 4));
     paging_init();
     
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
@@ -245,32 +246,36 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
     sti();
 
-    printf("\nMounting initrd...\n");
-    printf("Initrd at 0x%X\n", initrd_addr);
-#if 0
-    while(1);
+//  Initializing ramdisk
+    printf("Mounting initrd:\t\t");
     vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(initrd_addr));
-    printf("\nHere\n");
     uint32_t i = 0;
     struct dirent *node = 0;
     while ((node = vfs_read_dir(vfs_root, i)) != 0)
     {
-        printf("Found file ");
-        printf(node->name);
-        vfs_node_t *fsnode = vfs_find_dir(fs_root, node->name);
+        __slog__(COM1_PORT, "Found file %s\n", node->name);
 
-        if ((fsnode->flags&0x7) == FS_DIRECTORY)
-            printf("\n\t(directory)\n");
+        vfs_node_t* fs_node = vfs_find_dir(vfs_root, node->name);
+
+        if (fs_node->flags == FS_DIRECTORY)
+        {
+            __slog__(COM1_PORT, "%s/%s is a directory\n", vfs_root->name, fs_node->name);
+        }
         else
         {
-            printf("\n\t contents: \"");
+            __slog__(COM1_PORT, "%s/%s is a file\n", vfs_root->name, fs_node->name);
             char buf[256];
-            uint32_t sz = vfs_read(fsnode, 0, 256, (uint8_t*) buf);
-            uint32_t j;
-            printf("%s\n", buf);
+            vfs_read(fs_node, 0, 256, (uint8_t*) buf);
+            __slog__(COM1_PORT, "File content: %s\n", (const char*) buf);
         }
-        i++;
+
+        i += 1;
     }
-#endif
+
+    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+    printf("[OK]\n");
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+//  --------------------------
+
     while(1);
 }

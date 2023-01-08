@@ -42,6 +42,7 @@ typedef struct
 void memory_init(multiboot_info_t* mbd);
 uint32_t memory_get_size();
 uint32_t memory_get_next_alloc_address();
+void memory_set_alloc_address(uint32_t alloc_address);
 uint8_t memory_frame_present(void* frame_address);
 
 
