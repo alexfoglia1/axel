@@ -131,8 +131,6 @@ paging_free_frame(page_table_entry_t* page_table_entry)
     }
     else
     {
-        __slog__(COM1_PORT, "Freeing physical frame: 0x%X\n", page_table_entry->pa);
-
         set_frames_bitset(page_table_entry->pa, 0x00);
         page_table_entry->pa = 0x00;
     }
@@ -228,5 +226,4 @@ void paging_fault_irq_handler(interrupt_stack_frame_t* frame)
                         present,     rw,                            us,  reserved,           id,   faulting_address);
 
     abort();
-
 }

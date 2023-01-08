@@ -206,7 +206,7 @@ com_read(int com_port, uint8_t* buf, uint32_t n_bytes)
         {
             memset(input_buffer, 0x00, COM_INBUF_LEN);
         }
-
+        __slog__(COM1_PORT, "COM read done, bytes read(0x%X), input buf residual length(0x%X), bytes copied at 0x%X\n", bytes_to_read, *input_buffer_llen, (uint32_t)buf);
         return bytes_to_read;
     }
 }
@@ -228,6 +228,9 @@ com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen
         if (interrupt_byte != 0x00 && interrupt_byte == byte_rx)
         {
             uint8_t* buf = kmalloc(*input_buffer_llen);
+
+            printf("Ready to trigger COM read, buf is at 0x%X, buf length(0x%X), buf content(%s)\n", (uint32_t) buf, *input_buffer_llen, (const char*) input_buffer);
+            while(1);
             read(syscall_no, buf, *input_buffer_llen);
             // I can kfree buf because i'm inside an IRQ handler : kernel has called sti() and hence paging + heap are active
             // Moreover, kernel is initializing COM after paging
