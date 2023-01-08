@@ -26,10 +26,10 @@ typedef struct
     uint8_t day;
     uint8_t month;
     uint8_t year;
-} cmos_rtc_datetime;
+} cmos_rtc_datetime_t;
 
 uint8_t cmos_read_rtc_reg(int reg);
-cmos_rtc_datetime cmos_read_rtc();
+void cmos_read_rtc(cmos_rtc_datetime_t* datetime);
 
 
 #endif

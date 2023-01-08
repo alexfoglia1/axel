@@ -209,6 +209,7 @@ keyboard_irq_handler(interrupt_stack_frame_t* frame)
             }
             break;
         default:
+            __slog__(COM1_PORT, "Keyboard IRQ handler : cannot handle key %b\n", key);
             break;
     }
 

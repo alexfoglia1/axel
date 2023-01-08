@@ -18,7 +18,9 @@ extern char __slog_tst__[SERIAL_LOG_TSTMP_BUFLEN];
 #define __slog__(com_port, format, ...) \
             do { \
                 sprintf(__slog_prm__, format, ##__VA_ARGS__); \
-                cmos_datetime_to_str(cmos_read_rtc(), __slog_tst__); \
+                cmos_rtc_datetime_t datetime; \
+                cmos_read_rtc(&datetime); \
+                cmos_datetime_to_str(datetime, __slog_tst__); \
                 sprintf(__slog_buf__, "%s %s", __slog_tst__, __slog_prm__); \
                 com_write(com_port, (uint8_t*)__slog_buf__); \
                 memset(__slog_buf__, 0x00, SERIAL_LOG_BUFLEN); \
@@ -30,7 +32,7 @@ extern char __slog_tst__[SERIAL_LOG_TSTMP_BUFLEN];
 #define __max__(a,b)(a > b ? a : b)
 
 
-void cmos_datetime_to_str(cmos_rtc_datetime datetime, char* buf);
+void cmos_datetime_to_str(cmos_rtc_datetime_t datetime, char* buf);
 void sleep(uint32_t millis);
 
 

@@ -11,7 +11,7 @@ char __slog_tst__[SERIAL_LOG_TSTMP_BUFLEN];
 
 
 void
-cmos_datetime_to_str(cmos_rtc_datetime datetime, char* buf)
+cmos_datetime_to_str(cmos_rtc_datetime_t datetime, char* buf)
 {
     char dd[3];
     char mo[3];

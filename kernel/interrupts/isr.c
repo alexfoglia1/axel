@@ -6,6 +6,8 @@
 
 #include <controllers/pic.h>
 
+#include <common/utils.h>
+
 #include <stdio.h>
 
 
@@ -54,7 +56,7 @@ __attribute__((interrupt))
 void
 divide_by_zero_exception(interrupt_stack_frame_t* frame)
 {
-    printf("Divide by 0 : halt!\n");
+    __slog__(COM1_PORT, "Divide by 0 : halt!\n");
     asm volatile("cli1: hlt");
 }
 
@@ -65,7 +67,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x01(interrupt_stack_frame_t* frame)
 {
-    printf("0x01 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x01 ISR : halt!\n");
     asm volatile("cli2: hlt");
 }
 
@@ -76,7 +78,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x02(interrupt_stack_frame_t* frame)
 {
-    printf("0x02 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x02 ISR : halt!\n");
     asm volatile("cli3: hlt");
 }
 
@@ -87,7 +89,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x03(interrupt_stack_frame_t* frame)
 {
-    printf("0x03 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x03 ISR : halt!\n");
     asm volatile("cli4: hlt");
 }
 
@@ -98,7 +100,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x04(interrupt_stack_frame_t* frame)
 {
-    printf("0x04 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x04 ISR : halt!\n");
     asm volatile("cli5: hlt");
 }
 
@@ -109,7 +111,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x05(interrupt_stack_frame_t* frame)
 {
-    printf("0x05 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x05 ISR : halt!\n");
     asm volatile("cli6: hlt");
 }
 
@@ -120,7 +122,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x06(interrupt_stack_frame_t* frame)
 {
-    printf("0x06 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x06 ISR : halt!\n");
     asm volatile("cli7: hlt");
 }
 
@@ -131,7 +133,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x07(interrupt_stack_frame_t* frame)
 {
-    printf("0x07 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x07 ISR : halt!\n");
     asm volatile("cli8: hlt");
 }
 
@@ -142,7 +144,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x10(interrupt_stack_frame_t* frame)
 {
-    printf("0x10 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x10 ISR : halt!\n");
     asm volatile("cli17: hlt");
 }
 
@@ -153,7 +155,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x11(interrupt_stack_frame_t* frame)
 {
-    printf("0x11 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x11 ISR : halt!\n");
     asm volatile("cli18: hlt");
 }
 
@@ -164,7 +166,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x12(interrupt_stack_frame_t* frame)
 {
-    printf("0x12 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x12 ISR : halt!\n");
     asm volatile("cli19: hlt");
 }
 
@@ -175,7 +177,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x13(interrupt_stack_frame_t* frame)
 {
-    printf("0x13 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x13 ISR : halt!\n");
     asm volatile("cli20: hlt");
 }
 
@@ -186,7 +188,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x14(interrupt_stack_frame_t* frame)
 {
-    printf("0x14 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x14 ISR : halt!\n");
     asm volatile("cli21: hlt");
 }
 
@@ -197,7 +199,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x15(interrupt_stack_frame_t* frame)
 {
-    printf("0x15 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x15 ISR : halt!\n");
     asm volatile("cli22: hlt");
 }
 
@@ -208,7 +210,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x16(interrupt_stack_frame_t* frame)
 {
-    printf("0x16 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x16 ISR : halt!\n");
     asm volatile("cli23: hlt");
 }
 
@@ -219,7 +221,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x17(interrupt_stack_frame_t* frame)
 {
-    printf("0x17 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x17 ISR : halt!\n");
     asm volatile("cli24: hlt");
 }
 
@@ -230,7 +232,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x18(interrupt_stack_frame_t* frame)
 {
-    printf("0x18 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x18 ISR : halt!\n");
     asm volatile("cli25: hlt");
 }
 
@@ -241,7 +243,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x19(interrupt_stack_frame_t* frame)
 {
-    printf("0x19 ISR : halt!\n");
+    __slog__(COM1_PORT, "0x19 ISR : halt!\n");
     asm volatile("cli26: hlt");
 }
 
@@ -252,7 +254,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x1A(interrupt_stack_frame_t* frame)
 {
-    printf("0x1A ISR : halt!\n");
+    __slog__(COM1_PORT, "0x1A ISR : halt!\n");
     asm volatile("cli27: hlt");
 }
 
@@ -263,7 +265,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x1B(interrupt_stack_frame_t* frame)
 {
-    printf("0x1B ISR : halt!\n");
+    __slog__(COM1_PORT, "0x1B ISR : halt!\n");
     asm volatile("cli28: hlt");
 }
 
@@ -274,7 +276,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x1C(interrupt_stack_frame_t* frame)
 {
-    printf("0x1C ISR : halt!\n");
+    __slog__(COM1_PORT, "0x1C ISR : halt!\n");
     asm volatile("cli29: hlt");
 }
 
@@ -285,7 +287,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x1D(interrupt_stack_frame_t* frame)
 {
-    printf("0x1D ISR : halt!\n");
+    __slog__(COM1_PORT, "0x1D ISR : halt!\n");
     asm volatile("cli30: hlt");
 }
 
@@ -296,7 +298,7 @@ __attribute__((interrupt))
 void
 exception_handler_0x1E(interrupt_stack_frame_t* frame)
 {
-    printf("0x1E ISR : halt!\n");
+    __slog__(COM1_PORT, "0x1E ISR : halt!\n");
     asm volatile("cli31: hlt");
 }
 
@@ -307,18 +309,16 @@ __attribute__((interrupt))
 void
 exception_handler_0x1F(interrupt_stack_frame_t* frame)
 {
-    printf("0x1F ISR : halt!\n");
+    __slog__(COM1_PORT, "0x1F ISR : halt!\n");
     asm volatile("cli32: hlt");
 }
 
-#include <common/utils.h>
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
 #endif
 void IRQ0(interrupt_stack_frame_t* frame)
 {
-    __slog__(1, "prova\n");
-    //printf("IRQ0!\n");
+    __slog__(COM1_PORT, "IRQ0!\n");
 }
 
 
@@ -327,7 +327,7 @@ __attribute__((interrupt))
 #endif
 void IRQ1(interrupt_stack_frame_t* frame)
 {
-    //printf("IRQ1!\n");
+    __slog__(COM1_PORT, "IRQ1!\n");
 }
 
 
@@ -336,7 +336,7 @@ __attribute__((interrupt))
 #endif
 void IRQ2(interrupt_stack_frame_t* frame)
 {
-    //printf("IRQ2!\n");
+    __slog__(COM1_PORT, "IRQ2!\n");
 }
 
 
@@ -345,7 +345,7 @@ __attribute__((interrupt))
 #endif
 void IRQ3(interrupt_stack_frame_t* frame)
 {
-    //printf("IRQ3!\n");
+    __slog__(COM1_PORT, "IRQ3!\n");
 }
 
 
@@ -354,7 +354,7 @@ __attribute__((interrupt))
 #endif
 void IRQ4(interrupt_stack_frame_t* frame)
 {
-    //printf("IRQ4!\n");
+    __slog__(COM1_PORT, "IRQ4!\n");
 }
 
 
@@ -363,7 +363,7 @@ __attribute__((interrupt))
 #endif
 void IRQ5(interrupt_stack_frame_t* frame)
 {
-    //printf("IRQ5!\n");
+    __slog__(COM1_PORT, "IRQ5!\n");
 }
 
 
@@ -372,7 +372,7 @@ __attribute__((interrupt))
 #endif
 void IRQ6(interrupt_stack_frame_t* frame)
 {
-    //printf("IRQ6!\n");
+    __slog__(COM1_PORT, "IRQ6!\n");
 }
 
 
@@ -381,6 +381,6 @@ __attribute__((interrupt))
 #endif
 void IRQ7(interrupt_stack_frame_t* frame)
 {
-    //printf("IRQ7!\n");
+    __slog__(COM1_PORT, "IRQ7!\n");
 }
 

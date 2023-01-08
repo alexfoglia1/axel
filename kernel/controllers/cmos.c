@@ -17,8 +17,8 @@ cmos_read_rtc_reg(int reg)
 }
 
 
-cmos_rtc_datetime
-cmos_read_rtc()
+void
+cmos_read_rtc(cmos_rtc_datetime_t* datetime)
 {
     uint8_t last_sec;
     uint8_t last_min;
@@ -82,13 +82,10 @@ cmos_read_rtc()
     }
 
 
-    cmos_rtc_datetime datetime;
-    datetime.sec = second;
-    datetime.min = minute;
-    datetime.hour = hour;
-    datetime.day = day;
-    datetime.month = month;
-    datetime.year = year;
-
-    return datetime;
+    datetime->sec = second;
+    datetime->min = minute;
+    datetime->hour = hour;
+    datetime->day = day;
+    datetime->month = month;
+    datetime->year = year;
 }
