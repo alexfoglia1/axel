@@ -43,6 +43,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 {
     cli();
     errno = ENOERR;
+
 //   I can __slog__ if com are not yet initialized, output is just buffered
     __slog__(COM1_PORT, "System boot\n"); 
 
