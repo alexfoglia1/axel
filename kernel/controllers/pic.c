@@ -29,6 +29,7 @@ pic_reset_slave()
     outb(PIC_SLAVE_DATA_PORT, PIC_RESET_COMMAND);
 }
 
+
 void
 pic_add_irq(uint8_t interrupt_no, void* isr)
 {
