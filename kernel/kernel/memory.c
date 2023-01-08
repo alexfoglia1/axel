@@ -382,6 +382,7 @@ memory_heap_alloc(uint32_t size, uint8_t page_aligned, heap_t* heap)
     block_header->size      = true_size;
 
     heap_footer_t *block_footer  = (heap_footer_t *) (orig_hole_pos + sizeof(heap_footer_t) + size);
+
     block_footer->magic     = HEAP_MAGIC;
     block_footer->header    = block_header;
 
@@ -401,9 +402,8 @@ memory_heap_alloc(uint32_t size, uint8_t page_aligned, heap_t* heap)
         ordered_array_insert(&heap->index, (array_type_t) hole_header);
     }
 
-    __slog__(COM1_PORT, "Requested 0x%X bytes in the heap at 0x%X : allocated(%u), heap start(0x%X), heap end(0x%X), heap size(0x%X)\n",
-                                size, (uint32_t)block_header+sizeof(heap_header_t), true_size, heap->start_address, heap->end_address, heap->end_address - heap->start_address);
-    
+    __slog__(COM1_PORT, "Requested 0x%X bytes in the heap, allocation at 0x%X, allocated bytes(0x%X)\n",
+                                size, (uint32_t)block_header+sizeof(heap_header_t), block_header->size);
     return (void*) ( (uint32_t)block_header+sizeof(heap_header_t));
 }
 
@@ -418,6 +418,8 @@ memory_heap_free(void* p, heap_t* heap)
     // Get the header and footer associated with this pointer.
     heap_header_t *header = (heap_header_t*) ( (uint32_t)p - sizeof(heap_header_t) );
     heap_footer_t *footer = (heap_footer_t*) ( (uint32_t)header + header->size - sizeof(heap_footer_t) );
+
+    __slog__(COM1_PORT, "Requested to free address(0x%X) with size(0x%X)\n", p, header->size);
 
     // Make us a hole.
     header->is_hole = 1;
@@ -438,11 +440,10 @@ memory_heap_free(void* p, heap_t* heap)
         do_add = 0;                       // Since this header is already in the index, we don't want to add it again.
     }
 
-    uint32_t freed_size = 0;
-
     // Unify right
     // If the thing immediately to the right of us is a header...
-    heap_header_t *test_header = (heap_header_t*) ( (uint32_t)footer + sizeof(heap_footer_t) );
+    heap_header_t *test_header = (heap_header_t*) ((uint32_t)footer + sizeof(heap_footer_t));
+
     if (test_header->magic == HEAP_MAGIC &&
        test_header->is_hole)
     {
@@ -455,12 +456,10 @@ memory_heap_free(void* p, heap_t* heap)
        while ( (iterator < heap->index.array_ll) &&
                (ordered_array_at(&heap->index, iterator) != (void*)test_header) )
            iterator++;
-
        // Make sure we actually found the item.
         if (iterator < heap->index.array_ll)
         {
             void* header  = (void*)(ordered_array_at(&heap->index, iterator));
-            freed_size = ((heap_header_t*)(header))->size;
             ordered_array_delete_at(&heap->index, iterator);
         }
     }
@@ -491,14 +490,12 @@ memory_heap_free(void* p, heap_t* heap)
                 ordered_array_delete_at(&heap->index, iterator);
         }
     }
-
     if (1 == do_add)
     {
        ordered_array_insert(&heap->index, (array_type_t) header);
     }
 
-     __slog__(COM1_PORT, "Freed 0x%X bytes in the heap at 0x%X : heap start(0x%X), heap end(0x%X), heap size(0x%X)\n",
-                                freed_size,     (uint32_t) p,  heap->start_address, heap->end_address, heap->end_address - heap->start_address);
+    __slog__(COM1_PORT, "Free address(0x%X)\n", p);
 }
 
 void

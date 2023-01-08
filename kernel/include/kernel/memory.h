@@ -10,19 +10,19 @@
 #define PAGE_FRAME_SIZE 0x1000 //A chunk of 4KiB in physical memory represents a page frame, this should be also the size of a virtual page
 #define PAGE_FRAME_MASK 0xFFFFF000
 #define HEAP_START         0xC0000000
-#define HEAP_INITIAL_SIZE  0x01000000
+#define HEAP_INITIAL_SIZE  0x00100000
 #define HEAP_INDEX_SIZE    0x20000
 #define HEAP_MAGIC         0x123890AB
 #define HEAP_MIN_SIZE      0x70000
 
-typedef struct
+typedef struct __attribute__((packed))
 {
     uint32_t magic;
     uint8_t is_hole;
     uint32_t size;
-} heap_header_t;
+} heap_header_t ;
 
-typedef struct
+typedef struct __attribute__((packed))
 {
     uint32_t magic;
     heap_header_t* header;
