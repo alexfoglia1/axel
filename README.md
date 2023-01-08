@@ -1,6 +1,6 @@
 # AXEL OS
 
-Project of an hobbyst x86 operating system development.
+Project of an hobbyst x86 operating system.
 
 ## Repository Structure
 
