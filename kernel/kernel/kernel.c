@@ -36,6 +36,8 @@
 #define STAGE_V 'B'
 
 
+uint32_t initrd_addr = 0x00;
+
 void
 kernel_main(multiboot_info_t* mbd, uint32_t magic)
 {
@@ -68,6 +70,8 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[%U KiB]\n", mem_size / 1024);
         tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+
+        initrd_addr = mbd->mods_addr;
     }
 
 //  Detecting CPU Model
@@ -241,5 +245,32 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
     sti();
 
+    printf("\nMounting initrd...\n");
+    printf("Initrd at 0x%X\n", initrd_addr);
+#if 0
+    while(1);
+    vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(initrd_addr));
+    printf("\nHere\n");
+    uint32_t i = 0;
+    struct dirent *node = 0;
+    while ((node = vfs_read_dir(vfs_root, i)) != 0)
+    {
+        printf("Found file ");
+        printf(node->name);
+        vfs_node_t *fsnode = vfs_find_dir(fs_root, node->name);
+
+        if ((fsnode->flags&0x7) == FS_DIRECTORY)
+            printf("\n\t(directory)\n");
+        else
+        {
+            printf("\n\t contents: \"");
+            char buf[256];
+            uint32_t sz = vfs_read(fsnode, 0, 256, (uint8_t*) buf);
+            uint32_t j;
+            printf("%s\n", buf);
+        }
+        i++;
+    }
+#endif
     while(1);
 }

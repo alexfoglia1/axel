@@ -167,8 +167,6 @@ paging_init()
         paging_get_page(i, kernel_page_directory);
     }
 
-
-
     // Identity map (virtual = physical) addresses from 0 to memory_get_next_alloc_address()
     uint32_t current_addr = 0;
     while (current_addr <= memory_get_next_alloc_address())

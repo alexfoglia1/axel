@@ -61,6 +61,7 @@ initrd_finddir(vfs_node_t *node, char *name)
    return 0;
 }
 
+#include <stdio.h>
 
 vfs_node_t*
 initrd_init(uint32_t location)
@@ -71,6 +72,7 @@ initrd_init(uint32_t location)
 
    // Initialise the root directory.
    initrd_root = (vfs_node_t*)kmalloc(sizeof(vfs_node_t));
+
    memcpy(initrd_root->name, "initrd", 6);
    initrd_root->perm_mask = 0;
    initrd_root->user_id = 0;
