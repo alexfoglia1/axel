@@ -66,6 +66,7 @@ $(DRIVERDIR)/keyboard.o \
 $(FSDIR)/virtual_fs.o \
 $(FSDIR)/initrd.o \
 $(COMMONDIR)/utils.o \
+$(COMMONDIR)/ordered_array.o \
 
 
 CFLAGS:=$(CFLAGS) $(KERNEL_ARCH_CFLAGS)

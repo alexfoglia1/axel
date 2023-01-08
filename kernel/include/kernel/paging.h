@@ -26,10 +26,12 @@ typedef struct page_table_entry
     uint32_t pa       :20;
 } page_table_entry_t;
 
+
 typedef struct page_table
 {
     page_table_entry_t pages[PAGE_TABLE_ENTRIES];
 } page_table_t;
+
 
 typedef struct page_directory
 {
@@ -38,12 +40,16 @@ typedef struct page_directory
     uint32_t page_tables_pa_0;
 } page_directory_t;
 
+
 extern void load_page_directory(uint32_t* page_directory);
 extern void enable_paging();
 
-void paging_alloc_frame(uint32_t address, page_directory_t* page_directory, uint32_t is_kernel_page, uint32_t is_write);
+void paging_alloc_frame(page_table_entry_t* page_table_entry, uint32_t is_kernel_page, uint32_t is_write);
 void paging_free_frame(page_table_entry_t* page_table_entry);
 void paging_init();
+
+page_table_entry_t* paging_get_page(uint32_t address, page_directory_t* page_directory);
+page_directory_t* paging_get_kernel_page_directory();
 //uint32_t* paging_clone_directory(page_directory_t* page_directory);
 
 
