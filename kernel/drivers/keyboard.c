@@ -22,6 +22,8 @@ keyboard_init(uint8_t in_port)
     data_port = in_port;
 
     pic_add_irq(KBD_IRQ_INTERRUPT_NO, &keyboard_irq_handler);
+
+    __slog__(COM1_PORT, "Keyboard initialized\n");
 }
 
 
@@ -207,7 +209,6 @@ keyboard_irq_handler(interrupt_stack_frame_t* frame)
             }
             break;
         default:
-            //check for errors or non-character keys defined in drivers/keyboard.h and not yet handled
             break;
     }
 

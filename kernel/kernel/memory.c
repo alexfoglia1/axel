@@ -19,24 +19,29 @@ heap_t* kernel_heap;
 static void*
 __kmalloc__(uint32_t size, uint8_t aligned, uint32_t* pa)
 {
-    // TODO : check if heap is initialized, if so we shall kmalloc() inside the heap!
-
-    // If we need to allocate aligned but alloc_addr is not alligned with page frame size, than we align it
-    if (0x01 == aligned && (alloc_addr != (alloc_addr & PAGE_FRAME_MASK)))
+    if (0x00 == kernel_heap)
     {
-        alloc_addr &= PAGE_FRAME_MASK; // alloc_addr is now the highest address multiple of PAGE_FRAME_SIZE which is less than alloc_addr before
-        alloc_addr += PAGE_FRAME_SIZE; // alloc_addr is now the lowest address multiple of PAGE_FRAME_SIZE which is greater than alloc_addr before
-    }
+        // If we need to allocate aligned but alloc_addr is not alligned with page frame size, then we align it
+        if (0x01 == aligned && (alloc_addr != (alloc_addr & PAGE_FRAME_MASK)))
+        {
+            alloc_addr &= PAGE_FRAME_MASK; // alloc_addr is now the highest address multiple of PAGE_FRAME_SIZE which is less than alloc_addr before
+            alloc_addr += PAGE_FRAME_SIZE; // alloc_addr is now the lowest address multiple of PAGE_FRAME_SIZE which is greater than alloc_addr before
+        }
 
-    if (pa != 0x00)
+        if (pa != 0x00)
+        {
+            *pa = alloc_addr; // saving physical address if required
+        }
+
+        void* return_value = (void*)(alloc_addr);
+        alloc_addr += size;
+
+        return return_value;
+    }
+    else
     {
-        *pa = alloc_addr; // saving physical address if required
+        return memory_heap_alloc(size, aligned, kernel_heap);
     }
-
-    uint8_t* return_value = (uint8_t*)(alloc_addr);
-    alloc_addr += size;
-
-    return return_value;
 }
 
 
@@ -170,6 +175,16 @@ void*
 kmalloc(uint32_t size)
 {
     return __kmalloc__(size, 0x00, 0x00);
+}
+
+
+void
+kfree(void* p)
+{
+    if (0x00 != kernel_heap)
+    {
+        memory_heap_free(p, kernel_heap);
+    }
 }
 
 

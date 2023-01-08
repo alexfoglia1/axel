@@ -317,7 +317,7 @@ __attribute__((interrupt))
 #endif
 void IRQ0(interrupt_stack_frame_t* frame)
 {
-    printf("IRQ0!\n");
+    //printf("IRQ0!\n");
 }
 
 
@@ -326,7 +326,7 @@ __attribute__((interrupt))
 #endif
 void IRQ1(interrupt_stack_frame_t* frame)
 {
-    printf("IRQ1!\n");
+    //printf("IRQ1!\n");
 }
 
 
@@ -335,7 +335,7 @@ __attribute__((interrupt))
 #endif
 void IRQ2(interrupt_stack_frame_t* frame)
 {
-    printf("IRQ2!\n");
+    //printf("IRQ2!\n");
 }
 
 
@@ -344,7 +344,7 @@ __attribute__((interrupt))
 #endif
 void IRQ3(interrupt_stack_frame_t* frame)
 {
-    printf("IRQ3!\n");
+    //printf("IRQ3!\n");
 }
 
 
@@ -353,7 +353,7 @@ __attribute__((interrupt))
 #endif
 void IRQ4(interrupt_stack_frame_t* frame)
 {
-    printf("IRQ4!\n");
+    //printf("IRQ4!\n");
 }
 
 
@@ -362,7 +362,7 @@ __attribute__((interrupt))
 #endif
 void IRQ5(interrupt_stack_frame_t* frame)
 {
-    //printf("IRQ5!\n");
+    ////printf("IRQ5!\n");
 }
 
 
@@ -371,7 +371,7 @@ __attribute__((interrupt))
 #endif
 void IRQ6(interrupt_stack_frame_t* frame)
 {
-    printf("IRQ6!\n");
+    //printf("IRQ6!\n");
 }
 
 
@@ -380,6 +380,6 @@ __attribute__((interrupt))
 #endif
 void IRQ7(interrupt_stack_frame_t* frame)
 {
-    printf("IRQ7!\n");
+    //printf("IRQ7!\n");
 }
 

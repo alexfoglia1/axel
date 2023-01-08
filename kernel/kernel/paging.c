@@ -1,13 +1,14 @@
 #include <kernel/paging.h>
 #include <kernel/memory.h>
 
+#include <common/utils.h>
+
 #include <controllers/pic.h>
 #include <controllers/com.h>
 
-#include <common/utils.h>
-
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 uint32_t physical_memory_size;
 uint32_t n_physical_frames;
@@ -36,18 +37,6 @@ void set_frames_bitset(uint32_t frame_address, uint8_t value)
         frames_bitset[index] |= (0x01 << offset);
     }
 }
-
-#if 0
-static
-uint32_t test_frames_bitset(uint32_t frame_address)
-{
-    uint32_t frame  = frame_address / PAGE_FRAME_SIZE;
-    uint32_t index  = INDEX_FROM_BIT(frame);
-    uint32_t offset = OFFSET_FROM_BIT(frame);
-
-    return (frames_bitset[index] & (0x01 << offset));
-}
-#endif
 
 
 static
@@ -189,13 +178,15 @@ paging_init()
 
     // Set current pèage directory = kernel_page_directory and enable paging
     switch_page_directory(kernel_page_directory);
-    __slog__(COM1_PORT, "We have a little friend in CR0 register!\n");
+
+    __slog__(COM1_PORT, "Paging is active\n");
 
     // Create kernel heap
     heap_t* kernel_heap = memory_create_heap(HEAP_START, HEAP_START + HEAP_INITIAL_SIZE, 0xCFFFF000, 0, 0);
     // Tell memory that kernel_heap is created and hence kmalloc can be redirectioned
     memory_set_kernel_heap(kernel_heap);
-    __slog__(COM1_PORT, "Heap memory initialized\n");
+
+    __slog__(COM1_PORT, "Heap is active\n");
 }
 
 

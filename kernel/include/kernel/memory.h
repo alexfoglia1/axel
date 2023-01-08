@@ -56,4 +56,6 @@ void* kmalloc_physical(uint32_t size, uint32_t* pa);
 void* kmalloc_page_aligned_physical(uint32_t size, uint32_t* pa);
 void* kmalloc(uint32_t size);
 
+void kfree(void* p);
+
 #endif

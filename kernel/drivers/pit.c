@@ -89,10 +89,20 @@ pit_irq0_handler(interrupt_stack_frame_t* frame)
     //TODO : Define a COM TX frequency
     if (time_elapsed.ticks % 2 == 0)
     {
-        com_flush(COM1_PORT);
-        //com_flush(COM2_PORT);
+        if (0x01 == com_is_initialized(COM1_PORT))
+        {
+            com_flush(COM1_PORT);
+        }
+        if (0x01 == com_is_initialized(COM2_PORT))
+        {    
+            com_flush(COM2_PORT);
+        }
+        if (0x01 == com_is_initialized(COM3_PORT))
+        {    
+            com_flush(COM3_PORT);
+        }
     }
-    pic_reset_master(); //IRQ0 ACK
 
+    pic_reset_master(); //IRQ0 ACK
     outb(PIC_MASTER_CMD_PORT, PIC_EOI);
 }

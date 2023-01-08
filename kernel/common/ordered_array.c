@@ -44,7 +44,7 @@ ordered_array_new_at(void* addr, uint32_t max_size, lessthan_predicate_t less_th
 void
 ordered_array_delete(ordered_array_t* _this)
 {
-    // todo kfree
+    kfree(_this);
 }
 
 

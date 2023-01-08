@@ -42,9 +42,9 @@
 
 #include <stdint.h>
 
-uint8_t com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits);
+void com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits);
 void com_set_int_byte(uint8_t byte);
-
+uint8_t com_is_initialized(int com_port);
 int com_write(int com_port, uint8_t* buf);
 int com_read(int com_port, uint8_t* buf, uint32_t n_bytes);
 

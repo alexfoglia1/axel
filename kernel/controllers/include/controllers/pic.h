@@ -27,7 +27,6 @@
 
 void pic_reset_master();
 void pic_reset_slave();
-void pic_init(uint8_t ps2_present);
 void pic_add_irq(uint8_t interrupt_no, void* isr);
 
 #endif

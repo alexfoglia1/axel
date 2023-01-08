@@ -1,6 +1,9 @@
 #include <controllers/ps2.h>
 #include <controllers/pic.h>
+#include <controllers/com.h>
 #include <controllers/acpi.h>
+
+#include <common/utils.h>
 
 #include <kernel/arch/io.h>
 #include <kernel/arch/tty.h>
@@ -22,6 +25,7 @@ ps2_controller_init()
 
     uint16_t boot_arch_flags = acpi_get_boot_arch_flags();
 
+    __slog__(COM1_PORT, "PS/2 controller init, boot_arch_flags(%w)\n", boot_arch_flags);
     if (0x01 == ((boot_arch_flags >> 1) & 0x01))
     {
 
@@ -37,12 +41,15 @@ ps2_controller_init()
 
         uint8_t conf_byte = inb(PS2_DATA_PORT);
         is_dual_channel = ((conf_byte >> 2) & 0x01);
+        __slog__(COM1_PORT, "PS/2 controller init, is dual channel(%b)\n", is_dual_channel);
 
         // Performing controller self test
         outb(PS2_CTRL_PORT, 0xAA);
         uint8_t self_test = inb(PS2_DATA_PORT);
         if (0x55 == self_test)
         {
+            __slog__(COM1_PORT, "PS/2 controller init, self test OK\n");
+
             if (is_dual_channel)
             {
                 outb(PS2_CTRL_PORT, PS2_TST_PORT_1);
@@ -99,6 +106,8 @@ ps2_controller_init()
         {
             is_dual_channel = 0x00;
             ps2_present = 0x00;
+
+             __slog__(COM1_PORT, "PS/2 controller init, self test KO\n");
         }
     }
 }

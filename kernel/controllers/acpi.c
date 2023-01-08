@@ -144,12 +144,14 @@ void acpi_enable(void)
 
          if (i < 300)
          {
+            __slog__(COM1_PORT, "ACPI is enabled\n");
             acpi_enabled = 0x01;
          }
       }
    }
    else
    {
+      __slog__(COM1_PORT, "Could not enable ACPI\n");
       acpi_enabled = 0x01;
    }
 }
@@ -180,7 +182,6 @@ acpi_init()
       int entrys = *(ptr + 1);
       entrys = (entrys - 36) /4;
       ptr += 36/4; 
-
       while (entrys > 0)
       {
          if (acpi_check_header((uint32_t *) *ptr, "FACP") == 0)
@@ -192,7 +193,6 @@ acpi_init()
             uint8_t* p_boot_arch_flags = (p_facp_byte_0 + 109);
             uint16_t* p16_boot_arch_flags = (uint16_t*)(p_boot_arch_flags);
             BOOT_ARCH_FLAGS = *(p16_boot_arch_flags);
-
 
             if (acpi_check_header((uint32_t *) facp->DSDT, "DSDT") == 0)
             {
@@ -238,15 +238,34 @@ acpi_init()
                      PM1_CNT_LEN = facp->PM1_CNT_LEN;
                      SLP_EN = 1<<13;
                      SCI_EN = 0x01;
+
+                     __slog__(COM1_PORT, "ACPI initialized\n");
+
                      return;
                   }
                }
+               else
+               {
+                     __slog__(COM1_PORT, "Cannot initialize ACPI : No _S5_ found\n");
+               }
             }
+            else
+            {
+               __slog__(COM1_PORT, "Cannot initialize ACPI : No DSDT found\n");
+            }
+         }
+         else
+         {
+            __slog__(COM1_PORT, "Cannot initialize ACPI : No FACP found\n");
          }
 
          ptr++;
          entrys -= 1;
       }
+   }
+   else
+   {
+      __slog__(COM1_PORT, "Cannot initialize ACPI : No RSDT found\n");
    }
 
    SCI_EN = 0x00;
