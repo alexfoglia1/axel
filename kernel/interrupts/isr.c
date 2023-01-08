@@ -311,12 +311,13 @@ exception_handler_0x1F(interrupt_stack_frame_t* frame)
     asm volatile("cli32: hlt");
 }
 
-
+#include <common/utils.h>
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
 #endif
 void IRQ0(interrupt_stack_frame_t* frame)
 {
+    __slog__(1, "prova\n");
     //printf("IRQ0!\n");
 }
 
