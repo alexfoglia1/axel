@@ -463,7 +463,6 @@ memory_heap_free(void* p, heap_t* heap)
        // Make sure we actually found the item.
         if (iterator < heap->index.array_ll)
         {
-            void* header  = (void*)(ordered_array_at(&heap->index, iterator));
             ordered_array_delete_at(&heap->index, iterator);
         }
     }
