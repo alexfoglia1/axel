@@ -36,8 +36,6 @@
 #define STAGE_V 'B'
 
 
-uint32_t initrd_addr = 0x00;
-
 void
 kernel_main(multiboot_info_t* mbd, uint32_t magic)
 {
@@ -71,8 +69,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[%U KiB]\n", mem_size / 1024);
         tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-
-        initrd_addr = mbd->mods_addr;
     }
 
 //  Detecting CPU Model
@@ -147,7 +143,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  Initialize paging + heap : doing so, we can kmalloc and kfree using the heap (no heap, no kfree)
     printf("Initializing paging:\t");
 
-    memory_set_alloc_address(*(uint32_t*)(initrd_addr + 4));
+    memory_set_alloc_address(*(uint32_t*)(mbd->mods_addr + 4));
     paging_init();
     
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
@@ -249,7 +245,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
 //  Initializing ramdisk
     printf("Mounting initrd:\t\t");
-    vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(initrd_addr));
+    vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(mbd->mods_addr));
     uint32_t i = 0;
     struct dirent *node = 0;
     while ((node = vfs_read_dir(vfs_root, i)) != 0)
