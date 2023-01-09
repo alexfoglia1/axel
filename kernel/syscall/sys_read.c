@@ -13,11 +13,11 @@ sys_read(interrupt_stack_frame_t* frame)
     register int rtype   asm("eax");
     register int rcount  asm("ebx");
     register int rbuf    asm("ecx");
-    register int rioaddr asm("edx");
+    //register int rioaddr asm("edx");
 
     uint32_t type   = (uint32_t) rtype;
     uint32_t count  = (uint32_t) rcount;
-    uint32_t ioaddr = (uint32_t) rioaddr;
+    //uint32_t ioaddr = (uint32_t) rioaddr;
 
     switch (type)
     {
