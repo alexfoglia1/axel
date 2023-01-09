@@ -383,7 +383,9 @@ memory_heap_alloc(uint32_t size, uint8_t page_aligned, heap_t* heap)
 
     heap_footer_t *block_footer  = (heap_footer_t *) (orig_hole_pos + sizeof(heap_footer_t) + size);
 
-    block_footer->magic     = HEAP_MAGIC;
+    // james molloy has a bug here : if size < 4 and heap_header_t and heap_footer_t are not declared packed, last HEAP_MAGIC byte (AB) will override
+    // the first byte of block_header->size and it will become 0xABzzyyxx where xx is the LSB of size
+    block_footer->magic     = HEAP_MAGIC; 
     block_footer->header    = block_header;
 
     if (orig_hole_size - true_size > 0)
@@ -413,7 +415,9 @@ memory_heap_free(void* p, heap_t* heap)
 {
     // Exit gracefully for null pointers.
     if (p == 0)
+    {
         return;
+    }
 
     // Get the header and footer associated with this pointer.
     heap_header_t *header = (heap_header_t*) ( (uint32_t)p - sizeof(heap_header_t) );
