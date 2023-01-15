@@ -178,5 +178,10 @@ __attribute__((interrupt))
 #endif
 void IRQ7(interrupt_stack_frame_t* frame);
 
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void
+dummy_interrupt_handler(interrupt_stack_frame_t* frame);
 
 #endif

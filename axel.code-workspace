@@ -32,7 +32,8 @@
             "stdint.h": "c",
             "virtual_fs.h": "c",
             "string.h": "c",
-            "com.h": "c"
+            "com.h": "c",
+            "memory_manager.h": "c"
         }
     }
 

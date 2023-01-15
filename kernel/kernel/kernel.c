@@ -4,7 +4,8 @@
 #include <stdbool.h>
 
 #include <kernel/paging.h>
-#include <kernel/memory.h>
+#include <kernel/kheap.h>
+#include <kernel/memory_manager.h>
 
 #include <kernel/arch/cpuid.h>
 #include <kernel/arch/tty.h>
@@ -70,7 +71,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
         printf("[%U KiB]\n", mem_size / 1024);
         tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
     }
-
+#if 0
 //  Detecting CPU Model
     printf("Detecting CPU Model:\t");
 
@@ -273,6 +274,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     printf("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
-
+#endif
     while(1);
 }

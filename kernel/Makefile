@@ -52,6 +52,7 @@ $(ARCHDIR)/cpuid.o \
 $(ARCHDIR)/cpuid_supported.o \
 $(ARCHDIR)/enable_paging.o \
 $(ARCHDIR)/load_page_directory.o \
+$(ARCHDIR)/copy_page_physical.o \
 $(ISRDIR)/isr.o \
 $(SYSCALLDIR)/sys_write.o \
 $(SYSCALLDIR)/sys_read.o \
@@ -76,8 +77,9 @@ LIBS:=$(LIBS) $(KERNEL_ARCH_LIBS)
 
 KERNEL_OBJS=\
 $(KERNEL_ARCH_OBJS) \
+kernel/kheap.o \
+kernel/memory_manager.o \
 kernel/paging.o \
-kernel/memory.o \
 kernel/kernel.o \
 
 OBJS=\

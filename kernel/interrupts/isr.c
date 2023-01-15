@@ -8,8 +8,6 @@
 
 #include <common/utils.h>
 
-#include <stdio.h>
-
 
 struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS] =
 {
@@ -382,5 +380,14 @@ __attribute__((interrupt))
 void IRQ7(interrupt_stack_frame_t* frame)
 {
     __slog__(COM1_PORT, "IRQ7!\n");
+}
+
+#ifndef __DEBUG_STUB__
+__attribute__((interrupt))
+#endif
+void
+dummy_interrupt_handler(interrupt_stack_frame_t* frame)
+{
+    printf("dummy interrupt handler!\n");
 }
 

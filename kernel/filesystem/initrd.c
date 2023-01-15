@@ -1,6 +1,6 @@
 #include <filesystem/initrd.h>
 
-#include <kernel/memory.h>
+#include <kernel/memory_manager.h>
 
 #include <string.h>
 
