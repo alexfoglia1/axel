@@ -65,13 +65,15 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     else
     {
         memory_init(mbd);
+
         uint64_t mem_size = memory_get_size();
+
         printf("Available Memory:\t\t");
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printf("[%U KiB]\n", mem_size / 1024);
         tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
     }
-#if 0
+
 //  Detecting CPU Model
     printf("Detecting CPU Model:\t");
 
@@ -140,7 +142,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     cli();
 //  --------------------------
 
-
+#if 0
 //  Initialize paging + heap : doing so, we can kmalloc and kfree using the heap (no heap, no kfree)
     printf("Initializing paging:\t");
 

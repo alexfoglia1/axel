@@ -1,7 +1,27 @@
 #include <kernel/memory_manager.h>
 
 
-static uint32_t memory_size = 0;
+static uint32_t  memory_size = 0;
+static uint32_t  alloc_addr  = 0;
+
+static void*
+__kmalloc__(uint32_t size, uint8_t page_aligned)
+{
+    if (0x01 == page_aligned)
+    {
+        if (alloc_addr & PAGE_ALIGN_MASK) // If alloc_addr is not already page aligned
+        {
+            alloc_addr &= PAGE_FRAME_MASK;
+            alloc_addr += PAGE_FRAME_SIZE;
+        }
+    }
+
+    void* p = (void*)(alloc_addr);
+    alloc_addr += size;
+
+    return p;
+}
+
 
 
 void
@@ -20,6 +40,8 @@ memory_init(multiboot_info_t* mbd)
         }
     }
 
+//  Initializing allocation address
+    alloc_addr = mbd->mods_addr + 0x04;
 }
 
 
@@ -33,7 +55,14 @@ memory_get_size()
 void*
 kmalloc(uint32_t size)
 {
-    return 0x00;
+    return __kmalloc__(size, 0x00);
+}
+
+
+void*
+kmalloc_a(uint32_t size)
+{
+    return __kmalloc__(size, 0x01);
 }
 
 
