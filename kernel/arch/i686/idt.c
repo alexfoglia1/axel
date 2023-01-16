@@ -4,7 +4,6 @@
 #include <interrupts/isr.h>
 
 #include <string.h>
-#include <stdio.h>
 
 #include <common/utils.h>
 
@@ -29,7 +28,7 @@ idt_init()
 
     for (int i = AVAILABLE_HANDLERS; i < IDT_SIZE; i++)
     {
-        idt_add_entry(i, &dummy_interrupt_handler, PRESENT | TRP_GATE);
+        idt_add_entry(i, &unhandled_interrupt, PRESENT | TRP_GATE);
     }
 
     store_idt(&idt);

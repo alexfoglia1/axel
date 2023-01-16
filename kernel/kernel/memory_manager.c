@@ -1,8 +1,8 @@
 #include <kernel/memory_manager.h>
 
-
 static uint32_t  memory_size = 0;
 static uint32_t  alloc_addr  = 0;
+
 
 static void*
 __kmalloc__(uint32_t size, uint8_t page_aligned)
@@ -21,7 +21,6 @@ __kmalloc__(uint32_t size, uint8_t page_aligned)
 
     return p;
 }
-
 
 
 void

@@ -142,16 +142,16 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     cli();
 //  --------------------------
 
-#if 0
 //  Initialize paging + heap : doing so, we can kmalloc and kfree using the heap (no heap, no kfree)
     printf("Initializing paging:\t");
 
-    memory_set_alloc_address(*(uint32_t*)(mbd->mods_addr + 4));
     paging_init();
     
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printf("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+
+#if 0
 //  -------------------------
 
 //  Kernel page directory structres are allocated before the heap : they cannot be free'd (and it makes sense)
