@@ -19,8 +19,4 @@ paging_init()
     __slog__(COM1_PORT, "Initializing paging : physical_memory_size = %u bytes, number of physical frames = %u\n", physical_memory_size, n_phyiscal_frames);
 
     kernel_directory = (page_directory_t*) kmalloc_a(sizeof(page_directory_t));
-
-    printf("Kernel directory allocated at 0x%X\n", kernel_directory);
-    printf("Kernel directory page tables at 0x%X\n", kernel_directory->tables);
-    printf("Kernel directory page tables physical at 0x%X\n", kernel_directory->tables_physical);
 }
