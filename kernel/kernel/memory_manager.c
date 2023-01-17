@@ -120,8 +120,6 @@ memory_next_available_frame()
         bit_index += 1;
     }
 
-    printf("First available frame at bitmap_index(0x%X), bit_index(0x%X), address(0x%X)\n", bitmap_index, bit_index, PAGE_FRAME_SIZE * (bitmap_index * 32 + bit_index));
-
     return PAGE_FRAME_SIZE * (bitmap_index * 32 + bit_index); 
 }
 
@@ -155,6 +153,13 @@ memory_acquire_frame(uint32_t frame_addr)
 // Set the bit associated to this frame_addr to 1 (acquired)
     uint32_t bit_mask = 0x01 << bit_index;
     frame_bitmap[bitmap_index] |= bit_mask;
+}
+
+
+void
+memory_create_heap()
+{
+
 }
 
 

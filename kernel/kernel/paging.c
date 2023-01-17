@@ -28,7 +28,6 @@ paging_init()
     
     // Identity map addresses from zero to memory_get_alloc_addr() which is the highest kernel physical address
     uint32_t pa = 0;
-
     while (pa < memory_get_alloc_addr())
     {
         uint32_t page_table_index = 0x00;
@@ -57,6 +56,12 @@ paging_init()
         pa += PAGE_FRAME_SIZE;
     }
 
+    // Creating the kernel heap
+    memory_create_heap();
+    
+    // Map kheap addresses in the kernel page directory
+    paging_map(KHEAP_START, KHEAP_START + KHEAP_SIZE, kernel_directory);
+
     // Load kernel page directory
     load_page_directory(kernel_directory->tables_physical);
     
@@ -65,6 +70,52 @@ paging_init()
 
     while(1);
     __slog__(COM1_PORT, "Paging is active\n");
+}
+
+
+void
+paging_map(uint32_t va_from, uint32_t va_to, page_directory_t* page_directory)
+{
+// Check va_from is page_aligned, if it is not, align it to the highest page aligned addr < va_from
+    if (va_from & PAGE_ALIGN_MASK)
+    {
+        va_from &= PAGE_FRAME_MASK;
+    }
+
+//  Check va_to is page_aligned, if it is not, align it to the lowest page aligned addr > va_to
+    if (va_to & PAGE_ALIGN_MASK)
+    {
+        va_to &= PAGE_FRAME_MASK;
+        va_to += PAGE_FRAME_SIZE;
+    }
+
+//  Now mapping
+    uint32_t virtual_address = va_from;
+    while (virtual_address < va_to)
+    {
+        uint32_t page_table_index = 0x00;
+        uint32_t page_frame_index = 0x00;
+        paging_get_page(virtual_address, &page_table_index, &page_frame_index);
+
+        if (0x00 == kernel_directory->tables[page_table_index])
+        {
+            uint32_t pt_pa = 0x00;
+            kernel_directory->tables[page_table_index] = new_page_table(&pt_pa);
+            kernel_directory->tables_physical[page_table_index] = (pt_pa | 0x7);
+        }
+
+        page_table_entry_t* current_pte = (page_table_entry_t*) (&kernel_directory->tables[page_table_index]->pages[page_frame_index]);
+        uint32_t physical_frame = memory_next_available_frame();
+        
+        current_pte->present = 0x01;            
+        current_pte->rw = 1;                  
+        current_pte->user = 0;             
+        current_pte->pa = physical_frame >> 12;
+
+        memory_acquire_frame(physical_frame);
+
+        virtual_address += PAGE_FRAME_SIZE;
+    }
 }
 
 

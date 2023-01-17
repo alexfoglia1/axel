@@ -41,6 +41,7 @@ extern void load_page_directory(uint32_t* page_directory);
 extern void enable_paging();
 
 void paging_init();
+void paging_map(uint32_t va_from, uint32_t va_to, page_directory_t* page_directory); 
 void paging_get_page(uint32_t va, uint32_t* page_table_index, uint32_t* frame_index);
 
 

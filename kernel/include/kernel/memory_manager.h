@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include <kernel/kheap.h>
+
 #include <kernel/arch/multiboot.h>
 
 #define PAGE_FRAME_SIZE 0x1000      // Each physical page frame is 4K length
@@ -17,6 +19,7 @@ uint32_t memory_get_size();
 uint32_t memory_get_alloc_addr();
 uint32_t memory_next_available_frame();
 void memory_acquire_frame(uint32_t frame_addr);
+void memory_create_heap();
 
 // MEMORY MANAGEMENT API : ALLOCATION 
 void* kmalloc(uint32_t size);
