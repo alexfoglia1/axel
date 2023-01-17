@@ -43,7 +43,6 @@ paging_init()
             kernel_directory->tables_physical[page_table_index] = (pt_pa | 0x7);
         }
 
-
         //The page table entry associated witch this address pa is:
         page_table_entry_t* current_pte = (page_table_entry_t*) (&kernel_directory->tables[page_table_index]->pages[page_frame_index]);
         
@@ -51,6 +50,9 @@ paging_init()
         current_pte->rw = 0;                    // We don't want to write over the kernel
         current_pte->user = 0;                  // We don't want userspace processes access to this pages
         current_pte->pa = pa >> 12;             // We are identity mapping
+
+        //Tell the memory manager that a page frame is acquired
+        memory_acquire_frame(pa);
 
         pa += PAGE_FRAME_SIZE;
     }
@@ -61,6 +63,7 @@ paging_init()
     // Enable paging
     enable_paging();
 
+    while(1);
     __slog__(COM1_PORT, "Paging is active\n");
 }
 

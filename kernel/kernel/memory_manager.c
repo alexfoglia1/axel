@@ -1,10 +1,14 @@
 #include <kernel/memory_manager.h>
 
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
-static uint32_t  memory_size = 0;
-static uint32_t  alloc_addr  = 0;
+static uint32_t  memory_size = 0x00;
+static uint32_t  n_physical_frames = 0x00;
+static uint32_t  alloc_addr  = 0x00;
+static uint32_t* frame_bitmap = 0x00;
+static uint32_t  frame_bitmap_len = 0x00;
 
 
 static void*
@@ -55,13 +59,18 @@ memory_init(multiboot_info_t* mbd)
         }
     }
 
+//  Count the number of available physical frames of PAGE_FRAME_SIZE bytes length (4096 = 4KiB)
+    n_physical_frames = memory_size / PAGE_FRAME_SIZE;
+
+//  Count the number of 32 bit blocks needed to map the state of n_physical_frames page frames
+    frame_bitmap_len = n_physical_frames / 32;
+
 //  Initializing allocation address
     alloc_addr = *(uint32_t*)(mbd->mods_addr + 4);
-    if (alloc_addr & PAGE_ALIGN_MASK) // If alloc_addr is not already page aligned
-    {
-        alloc_addr &= PAGE_FRAME_MASK;
-        alloc_addr += PAGE_FRAME_SIZE;
-    }
+
+//  Allocating the frame bitmap
+    frame_bitmap = (uint32_t*)(kmalloc(frame_bitmap_len));
+    memset(frame_bitmap, 0x00, frame_bitmap_len * sizeof(uint32_t));
 }
 
 
@@ -76,6 +85,76 @@ uint32_t
 memory_get_alloc_addr()
 {
     return alloc_addr;
+}
+
+
+uint32_t
+memory_next_available_frame()
+{
+    uint32_t bitmap_index = 0;
+    while (bitmap_index < frame_bitmap_len)
+    {
+        if (0xFFFFFFFF != frame_bitmap[bitmap_index])
+        {
+            // At least one bit in frame_bitmap[bitmap_index] is not zero!
+            break;
+        }
+
+        bitmap_index += 1;
+    }
+
+// Check the reason why we are outside the loop
+    if (bitmap_index == frame_bitmap_len)
+    {
+        printf("KERNEL PANIC : OUT OF MEMORY - NO FREE FRAMES\n");
+        abort();
+    }
+
+    int bitmap = frame_bitmap[bitmap_index];
+    int bit_index = 0;
+
+    while (bitmap != 0x00)
+    {
+        bitmap = bitmap >> 1;
+
+        bit_index += 1;
+    }
+
+    printf("First available frame at bitmap_index(0x%X), bit_index(0x%X), address(0x%X)\n", bitmap_index, bit_index, PAGE_FRAME_SIZE * (bitmap_index * 32 + bit_index));
+
+    return PAGE_FRAME_SIZE * (bitmap_index * 32 + bit_index); 
+}
+
+
+void
+memory_acquire_frame(uint32_t frame_addr)
+{
+//  Check frame_addr is page aligned
+    if (frame_addr & PAGE_ALIGN_MASK)
+    {
+        printf("KERNEL PANIC : INVALID PAGE FRAME TO ACQUIRE (0x%X)\n", frame_addr);
+        abort();
+    }
+
+//  Check memory manager was initialized
+    if (0x00 == frame_bitmap)
+    {
+        printf("KERNEL PANIC : INVALID MEMORY STATE WHILE ACQUIRING FRAME (0x%X)\n", frame_addr);
+        abort();
+    }
+
+//  Get frame index
+    uint32_t frame_index = frame_addr / PAGE_FRAME_SIZE;
+
+//  Convert frame index to bitmap index (each bitmap entry stores 32 bit, hence the state of 32 frames)
+    uint32_t bitmap_index = frame_index / 32;
+
+// Convert frame index to a bit index (this is the bit inside the bitmap entry to be set)
+    uint32_t bit_index = frame_index % 32;
+
+// Set the bit associated to this frame_addr to 1 (acquired)
+    uint32_t bit_mask = 0x01 << bit_index;
+    frame_bitmap[bitmap_index] |= bit_mask;
 }
 
 
