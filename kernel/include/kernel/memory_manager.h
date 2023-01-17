@@ -11,11 +11,15 @@
 
 // MEMORY MANAGEMENT API : INITIALIZATION
 void memory_init(multiboot_info_t* mbd);
+
+// MEMORY MANAGEMENT API : SUPPORT FUNCTIONS
 uint32_t memory_get_size();
+uint32_t memory_get_alloc_addr();
 
 // MEMORY MANAGEMENT API : ALLOCATION 
 void* kmalloc(uint32_t size);
 void* kmalloc_a(uint32_t size);
+void* kmalloc_ap(uint32_t size, uint32_t* pa);
 void  kfree(void* p);
 
 

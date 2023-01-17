@@ -37,8 +37,12 @@ typedef struct page_directory
 } page_directory_t;
 
 
-void
-paging_init();
+extern void load_page_directory(uint32_t* page_directory);
+extern void enable_paging();
+
+void paging_init();
+void paging_get_page(uint32_t va, uint32_t* page_table_index, uint32_t* frame_index);
+
 
 
 #endif
