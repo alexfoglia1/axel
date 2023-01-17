@@ -151,7 +151,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     printf("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
-#if 0
 //  -------------------------
 
 //  Kernel page directory structres are allocated before the heap : they cannot be free'd (and it makes sense)
@@ -246,6 +245,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 
     sti();
 
+#if 0
 //  Initializing ramdisk
     printf("Mounting initrd:\t\t");
     vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(mbd->mods_addr));
