@@ -26,7 +26,11 @@ paging_init()
     kernel_directory = (page_directory_t*) kmalloc_a(sizeof(page_directory_t));
     memset(kernel_directory, 0x00, sizeof(page_directory_t));
     
-    // Identity map addresses from zero to memory_get_alloc_addr() which is the highest kernel physical address
+    // Early initialization of kernel heap : assigning pointer to kernel_directory and initialize kernel heap structures
+    memory_create_heap((void*)(kernel_directory));
+
+    // Identity map addresses from zero to memory_get_alloc_addr() which is the highest kernel-used physical address
+    // Note that with the early kernel heap initialization, this loop will cover with an identity map the kheap structures
     uint32_t pa = 0;
     while (pa < memory_get_alloc_addr())
     {
@@ -56,9 +60,6 @@ paging_init()
         pa += PAGE_FRAME_SIZE;
     }
 
-    // Creating the kernel heap
-    memory_create_heap();
-    
     // Map kheap addresses in the kernel page directory
     paging_map(KHEAP_START, KHEAP_START + KHEAP_SIZE, kernel_directory);
 
@@ -68,6 +69,7 @@ paging_init()
     // Enable paging
     enable_paging();
 
+    printf("paging enabled, heap created\n");
     while(1);
     __slog__(COM1_PORT, "Paging is active\n");
 }
