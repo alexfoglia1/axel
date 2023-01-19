@@ -233,6 +233,9 @@ com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen
                 read(syscall_no, buf, *input_buffer_llen);
                 // I can kfree buf because i'm inside an IRQ handler : kernel has called sti() and hence paging + heap are active
                 // Moreover, kernel is initializing COM after paging
+
+                if (memcmp())
+
                 kfree(buf);
             }
             else if (interrupt_byte != byte_rx)

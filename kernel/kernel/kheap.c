@@ -12,6 +12,67 @@ static page_directory_t* kernel_directory = (page_directory_t*)(0x00);
 static ordered_array_t kheap;
 
 
+static void
+slog_heap_state(int com_port, const char* prompt)
+{
+    __slog__(com_port, "%s:\n", prompt);
+    for (uint32_t i = 0; i < kheap.array_ll; i++)
+    {
+        kheap_block_descriptor_t* block_i = ordered_array_at(&kheap, i);
+        __slog__(com_port, "block[%d] :\n\t\tDescriptor location: 0x%X\n\t\tAllocated address: 0x%X\n\t\tIn-memory size: 0x%X\n\t\tBlock state: %s\n", 
+                            i, block_i, block_i->addr, block_i->size, (KHEAP_AVAILABLE_BLOCK == block_i->status) ? "available" :
+                                                                      (KHEAP_USED_BLOCK == block_i->status)      ? "used" : "merged");
+    }
+}
+
+
+static void
+merge_available_blocks()
+{
+    for (uint32_t i = 0; i < kheap.array_ll - 1; i++)
+    {
+        kheap_block_descriptor_t* block_i = ordered_array_at(&kheap, i);
+        if (KHEAP_AVAILABLE_BLOCK == block_i->status)
+        {
+            uint32_t j = i + 1;
+            kheap_block_descriptor_t* next_block = ordered_array_at(&kheap, j);
+            while (j < kheap.array_ll && KHEAP_AVAILABLE_BLOCK == next_block->status)
+            {
+                block_i->size += next_block->size;
+                next_block->status = KHEAP_MERGED_BLOCK;
+            }
+        }
+    }
+
+    slog_heap_state(COM1_PORT, "Kernel heap state after merge available blocks");
+
+    int64_t kheap_idx = 0;
+    kheap_block_descriptor_t* kheap_iterator = ordered_array_at(&kheap, kheap_idx);
+
+    while (kheap_idx < kheap.array_ll)
+    {
+        if (KHEAP_MERGED_BLOCK == kheap_iterator->status)
+        {
+            ordered_array_delete_at(&kheap, kheap_idx);
+            kheap_iterator = ordered_array_at(&kheap, kheap_idx);
+        }
+        else
+        {
+            kheap_idx += 1;
+            kheap_iterator = ordered_array_at(&kheap, kheap_idx);
+        }
+    }
+
+    slog_heap_state(COM1_PORT, "Kernel heap state after removal merged blocks");
+
+    if (kheap.array_ll == 1 && KHEAP_AVAILABLE_BLOCK == ((kheap_block_descriptor_t*) ordered_array_at(&kheap, 0))->status)
+    {
+        ordered_array_delete_at(&kheap, 0);
+        __slog__(COM1_PORT, "Kernel heap clean : unique available block removed");
+    }
+}
+
+
 static void* 
 __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* pa)
 {
@@ -29,7 +90,7 @@ __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* 
     }
 
     block_descriptor->addr = alloc_addr;
-    block_descriptor->used = KHEAP_USED_BLOCK;
+    block_descriptor->status = KHEAP_USED_BLOCK;
     block_descriptor->size = size + (alloc_addr - descriptor_address);
 
     if (0x00 != pa)
@@ -52,7 +113,8 @@ __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* 
     ordered_array_insert(&kheap, block_descriptor);
     
     __slog__(COM1_PORT, "kheap malloc : requested 0x%X, allocated 0x%X, descriptor address 0x%X, returned address 0x%X\n", size, block_descriptor->size, va, block_descriptor->addr);
-    
+    slog_heap_state(COM1_PORT, "Kernel heap state after malloc");
+
     return (void*) block_descriptor->addr;
 }
 
@@ -78,7 +140,7 @@ __kheap_malloc__(uint32_t size, uint8_t page_aligned, uint32_t* pa)
             kheap_block_descriptor_t* block_i = (kheap_block_descriptor_t*) (ordered_array_at(&kheap, i));
 
             if (block_i->size >= minimum_requred_space + extra_required_space &&
-                KHEAP_AVAILABLE_BLOCK == block_i->used)
+                KHEAP_AVAILABLE_BLOCK == block_i->status)
             {
                 return __kheap_malloc_at__((uint32_t)block_i, size, page_aligned, pa);
             }
@@ -165,8 +227,12 @@ kheap_free(void* p)
 
         if (block_i->addr == ptr)
         {
-            block_i->used = KHEAP_AVAILABLE_BLOCK;
+            block_i->status = KHEAP_AVAILABLE_BLOCK;
+
             __slog__(COM1_PORT, "kheap free memory at 0x%X\n", ptr);
+            slog_heap_state(COM1_PORT, "Kernel heap state after free");
+
+            merge_available_blocks();
         }
     }
 }

@@ -4,8 +4,9 @@
 #define KHEAP_START 0xC0000000
 #define KHEAP_SIZE  0x01000000
 
-#define KHEAP_USED_BLOCK      0x01
 #define KHEAP_AVAILABLE_BLOCK 0x00
+#define KHEAP_USED_BLOCK      0x01
+#define KHEAP_MERGED_BLOCK    0x02
 
 #include <stdint.h>
 
@@ -13,7 +14,7 @@ typedef struct
 {
     uint32_t addr;
     uint32_t size;
-    uint8_t  used;
+    uint8_t  status;
 
 } kheap_block_descriptor_t;
 
