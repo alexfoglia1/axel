@@ -2,7 +2,10 @@
 #define _KHEAP_H
 
 #define KHEAP_START 0xC0000000
-#define KHEAP_SIZE  0x10000
+#define KHEAP_SIZE  0x01000000
+
+#define KHEAP_USED_BLOCK      0x01
+#define KHEAP_AVAILABLE_BLOCK 0x00
 
 #include <stdint.h>
 

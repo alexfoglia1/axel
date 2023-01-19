@@ -20,6 +20,7 @@ uint32_t memory_get_alloc_addr();
 uint32_t memory_next_available_frame();
 void memory_acquire_frame(uint32_t frame_addr);
 void memory_create_heap(void* kernel_directory);
+void memory_enable_heap_malloc();
 
 // MEMORY MANAGEMENT API : ALLOCATION 
 void* kmalloc(uint32_t size);

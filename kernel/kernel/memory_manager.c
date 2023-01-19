@@ -9,6 +9,7 @@ static uint32_t  n_physical_frames = 0x00;
 static uint32_t  alloc_addr  = 0x00;
 static uint32_t* frame_bitmap = 0x00;
 static uint32_t  frame_bitmap_len = 0x00;
+static uint32_t  redirect_kmalloc = 0x00;
 
 
 static void*
@@ -36,8 +37,6 @@ __kmalloc__(uint32_t size, uint8_t page_aligned, uint32_t* pa)
     {
         printf("KERNEL PANIC : OUT OF MEMORY\n");
         abort();
-
-        __builtin_unreachable();
     }
 
 }
@@ -166,26 +165,57 @@ memory_create_heap(void* kernel_directory)
 void*
 kmalloc(uint32_t size)
 {
-    return __kmalloc__(size, 0x00, 0x00);
+    if (0x01 == redirect_kmalloc)
+    {
+        return kheap_malloc(size);
+    }
+    else
+    {
+        return __kmalloc__(size, 0x00, 0x00);
+    }
 }
 
 
 void*
 kmalloc_a(uint32_t size)
 {
-    return __kmalloc__(size, 0x01, 0x00);
+    if (0x01 == redirect_kmalloc)
+    {
+        return kheap_malloc_a(size);
+    }
+    else
+    {
+        return __kmalloc__(size, 0x01, 0x00);
+    }
 }
 
 
 void*
 kmalloc_ap(uint32_t size, uint32_t* pa)
 {
-    return __kmalloc__(size, 0x01, pa);
+    if (0x01 == redirect_kmalloc)
+    {
+        return kheap_malloc_ap(size, pa);
+    }
+    else
+    {
+        return __kmalloc__(size, 0x01, pa);
+    }
 }
 
 
 void
 kfree(void* p)
 {
-    return;
+    if (0x01 == redirect_kmalloc)
+    {
+        return kheap_free(p);
+    }
+}
+
+
+void
+memory_enable_heap_malloc()
+{
+    redirect_kmalloc = 0x01;
 }

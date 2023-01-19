@@ -69,8 +69,9 @@ paging_init()
     // Enable paging
     enable_paging();
 
-    printf("paging enabled, heap created\n");
-    while(1);
+    // Paging is active, memory allocatiuon can be redirected to the kernel heap
+    memory_enable_heap_malloc();
+
     __slog__(COM1_PORT, "Paging is active\n");
 }
 

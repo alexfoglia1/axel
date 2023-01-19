@@ -34,9 +34,12 @@ void ordered_array_delete(ordered_array_t* _this);
 void ordered_array_insert(ordered_array_t* _this, array_type_t value);
 
 // The delete value at (index) method
-void ordered_array_delete_at(ordered_array_t* _this, uint32_t index);
+void ordered_array_delete_at(ordered_array_t* _this, int64_t index);
 
 // The get value at (index) method
-array_type_t ordered_array_at(ordered_array_t* _this, uint32_t index);
+array_type_t ordered_array_at(ordered_array_t* _this, int64_t index);
+
+// The index of (value) method
+int64_t ordered_array_index_of(ordered_array_t* this, array_type_t value);
 
 #endif
