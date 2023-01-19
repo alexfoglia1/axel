@@ -100,10 +100,10 @@ __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* 
         uint32_t table_index, frame_index;
         paging_get_page(alloc_addr, &table_index, &frame_index);
 
-        page_table_entry_t* alloc_addr_pte = (page_table_entry_t*) (&kernel_directory->tables[table_index]->pages[frame_index]);
-          
+        page_table_entry_t* current_pte = (page_table_entry_t*) (&kernel_directory->tables[table_index]->pages[frame_index]);
+
         // Get the frame address whose block contains the physical address of virtual address alloc_addr
-        uint32_t alloc_addr_frame = alloc_addr_pte->pa << 12;
+        uint32_t alloc_addr_frame = (current_pte->pa << 12);
 
         // Get the alloc_addr offset from its frame base address (if alloc_addr is page aligned, the offset is obviously zero)
         uint32_t alloc_addr_offset = alloc_addr & PAGE_ALIGN_MASK;
