@@ -12,6 +12,7 @@ static page_directory_t* kernel_directory = (page_directory_t*)(0x00);
 static ordered_array_t kheap;
 
 
+#if 0
 static void
 slog_heap_state(int com_port, const char* prompt)
 {
@@ -24,6 +25,7 @@ slog_heap_state(int com_port, const char* prompt)
                                                                       (KHEAP_USED_BLOCK == block_i->status)      ? "used" : "merged");
     }
 }
+#endif
 
 
 static void
