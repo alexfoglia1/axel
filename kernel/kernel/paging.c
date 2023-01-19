@@ -69,7 +69,7 @@ paging_init()
     // Enable paging
     enable_paging();
 
-    // Paging is active, memory allocatiuon can be redirected to the kernel heap
+    // Paging is active, memory allocation can be redirected to the kernel heap
     memory_enable_heap_malloc();
 
     __slog__(COM1_PORT, "Paging is active\n");
@@ -108,8 +108,9 @@ paging_map(uint32_t va_from, uint32_t va_to, page_directory_t* page_directory)
         }
 
         page_table_entry_t* current_pte = (page_table_entry_t*) (&kernel_directory->tables[page_table_index]->pages[page_frame_index]);
+
         uint32_t physical_frame = memory_next_available_frame();
-        
+
         current_pte->present = 0x01;            
         current_pte->rw = 1;                  
         current_pte->user = 0;             

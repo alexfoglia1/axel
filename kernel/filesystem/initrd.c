@@ -73,7 +73,8 @@ initrd_init(uint32_t location)
    // Initialise the root directory.
    initrd_root = (vfs_node_t*)kmalloc(sizeof(vfs_node_t));
 
-   memcpy(initrd_root->name, "initrd", 6);
+   memset(&initrd_root->name, 0x00, 128);
+   memcpy(initrd_root->name, "initrd", 7);
    initrd_root->perm_mask = 0;
    initrd_root->user_id = 0;
    initrd_root->group_id = 0;
@@ -91,6 +92,7 @@ initrd_init(uint32_t location)
 
    // Initialise the /dev directory (required!)
    initrd_dev = (vfs_node_t*)kmalloc(sizeof(vfs_node_t));
+   memset(&initrd_dev->name, 0x00, 128);
    memcpy(initrd_dev->name, "dev", 3);
    initrd_dev->perm_mask = 0;
    initrd_dev->user_id = 0;

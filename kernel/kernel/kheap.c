@@ -111,6 +111,9 @@ __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* 
         // Get the alloc_addr physical address
         *pa = (alloc_addr_frame | alloc_addr_offset);
     }
+
+    // Zeroize the allocated memory except for the block descriptor header
+    memset((void*) (block_descriptor + sizeof(kheap_block_descriptor_t)), 0x00, block_descriptor->size - sizeof(kheap_block_descriptor_t));
     
     ordered_array_insert(&kheap, block_descriptor);
     
@@ -218,23 +221,30 @@ kheap_free(void* p)
 {
     uint32_t ptr = (uint32_t)(p);
 
-    if (0x00 == ptr)
-    {
-        return;
-    }
-    
     for (uint32_t i = 0; i < kheap.array_ll; i++)
     {
         kheap_block_descriptor_t* block_i = (kheap_block_descriptor_t*) (ordered_array_at(&kheap, i));
 
         if (block_i->addr == ptr)
         {
-            block_i->status = KHEAP_AVAILABLE_BLOCK;
+            if (block_i->status != KHEAP_USED_BLOCK)
+            {
+                printf("KERNEL PANIC : DOUBLE FREE 0x%X\n", p);
+                abort();
+            }
+            else
+            {
+                __slog__(COM1_PORT, "kheap free memory at 0x%X\n", ptr);
 
-            __slog__(COM1_PORT, "kheap free memory at 0x%X\n", ptr);
-            //slog_heap_state(COM1_PORT, "Kernel heap state after free");
+                block_i->status = KHEAP_AVAILABLE_BLOCK;
+                //slog_heap_state(COM1_PORT, "Kernel heap state after free");
+                merge_available_blocks();
 
-            merge_available_blocks();
+                return;
+            }
         }
     }
+
+    printf("KERNEL PANIC : DOUBLE FREE OR MEMORY CORRUPTION 0x%X\n", p);
+    abort();
 }
