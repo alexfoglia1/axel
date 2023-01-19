@@ -1,229 +1,138 @@
 #include <kernel/paging.h>
-#include <kernel/memory.h>
+#include <kernel/memory_manager.h>
 
-#include <common/utils.h>
-
-#include <controllers/pic.h>
-#include <controllers/com.h>
-
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-uint32_t physical_memory_size;
-uint32_t n_physical_frames;
-uint32_t *frames_bitset;
-
-page_directory_t* kernel_page_directory;
-page_directory_t* current_page_directory;
-
-#define INDEX_FROM_BIT(a)(a/32)
-#define OFFSET_FROM_BIT(a)(a%32)
+#include <common/utils.h>
 
 
-static
-void set_frames_bitset(uint32_t frame_address, uint8_t value)
+static page_directory_t* kernel_directory = (page_directory_t*) (0x00);
+
+
+static page_table_t*
+new_page_table(uint32_t* pa)
 {
-    uint32_t frame  = frame_address / PAGE_FRAME_SIZE;
-    uint32_t index  = INDEX_FROM_BIT(frame);
-    uint32_t offset = OFFSET_FROM_BIT(frame);
+    page_table_t* new_page_table = (page_table_t*)(kmalloc_ap(sizeof(page_table_t), pa));
+    memset(new_page_table, 0x00, PAGE_TABLE_ENTRIES * sizeof(page_table_entry_t));
 
-    if (0x00 == value)
-    {
-        frames_bitset[index] &= ~(0x01 << offset);
-    }
-    else
-    {
-        frames_bitset[index] |= (0x01 << offset);
-    }
+    return new_page_table;
 }
 
 
-static
-uint32_t get_first_free_frame()
+void
+paging_init()
 {
-    for (uint32_t i = 0; i < INDEX_FROM_BIT(n_physical_frames); i++)
+    kernel_directory = (page_directory_t*) kmalloc_a(sizeof(page_directory_t));
+    memset(kernel_directory, 0x00, sizeof(page_directory_t));
+    
+    // Early initialization of kernel heap : assigning pointer to kernel_directory and initialize kernel heap structures
+    memory_create_heap((void*)(kernel_directory));
+
+    // Identity map addresses from zero to memory_get_alloc_addr() which is the highest kernel-used physical address
+    // Note that with the early kernel heap initialization, this loop will cover with an identity map the kheap structures
+    uint32_t pa = 0;
+    while (pa < memory_get_alloc_addr())
     {
-        for (uint32_t j = 0; j < 32; j++)
+        uint32_t page_table_index = 0x00;
+        uint32_t page_frame_index = 0x00;
+        paging_get_page(pa, &page_table_index, &page_frame_index);
+
+        // If the current page table does not exist, it shall be created
+        if (0x00 == kernel_directory->tables[page_table_index])
         {
-            if (0x00 == (frames_bitset[i] & (0x01 << j)))
-            {
-                return i * 32 + j;
-            }
+            uint32_t pt_pa = 0x00;
+            kernel_directory->tables[page_table_index] = new_page_table(&pt_pa);
+            kernel_directory->tables_physical[page_table_index] = (pt_pa | 0x7);
         }
+
+        //The page table entry associated witch this address pa is:
+        page_table_entry_t* current_pte = (page_table_entry_t*) (&kernel_directory->tables[page_table_index]->pages[page_frame_index]);
+        
+        current_pte->present = 0x01;            // The page is present
+        current_pte->rw = 0;                    // We don't want to write over the kernel
+        current_pte->user = 0;                  // We don't want userspace processes access to this pages
+        current_pte->pa = pa >> 12;             // We are identity mapping
+
+        //Tell the memory manager that a page frame is acquired
+        memory_acquire_frame(pa);
+
+        pa += PAGE_FRAME_SIZE;
     }
 
-    return 0x00;
-}
-
-
-static
-void switch_page_directory(page_directory_t* directory)
-{
-    current_page_directory = directory;
+    // Map kheap addresses in the kernel page directory
+    paging_map(KHEAP_START, KHEAP_START + KHEAP_SIZE, kernel_directory);
 
     // Load kernel page directory
-    load_page_directory(current_page_directory->page_tables_pa);
-
+    load_page_directory(kernel_directory->tables_physical);
+    
     // Enable paging
     enable_paging();
 
-    __slog__(COM1_PORT, "Switched page directory\n");
-}
-
-
-page_table_entry_t*
-paging_get_page(uint32_t address, page_directory_t* page_directory)
-{
-    // Turn the address into an index.
-    address /= PAGE_FRAME_SIZE;
-    // Find the page table containing this address.
-    uint32_t table_idx = address / PAGE_TABLE_ENTRIES;
-
-    if (page_directory->page_tables[table_idx]) // If this table is already assigned
-    {
-        return &page_directory->page_tables[table_idx]->pages[address % PAGE_TABLE_ENTRIES];
-    }
-    else
-    {
-        uint32_t tmp;
-        page_directory->page_tables[table_idx] = (page_table_t*) kmalloc_page_aligned_physical(sizeof(page_table_t), &tmp);
-        memset(page_directory->page_tables[table_idx], 0, PAGE_FRAME_SIZE);
-        page_directory->page_tables_pa[table_idx] = tmp | 0x7; // PRESENT, RW, US.
-
-        return &page_directory->page_tables[table_idx]->pages[address % PAGE_TABLE_ENTRIES];
-    }
-}
-
-
-void
-paging_alloc_frame(page_table_entry_t* page_table_entry, uint32_t is_kernel_page, uint32_t is_write)
-{
-    if (page_table_entry->pa != 0x00)
-    {
-        return;
-    }
-    else
-    {
-        uint32_t next_free_frame = get_first_free_frame();
-        if ((uint32_t)(-1) == next_free_frame)
-        {
-            printf("KERNEL PANIC : NO FREE FRAMES\n");
-            abort();
-        }
-
-        set_frames_bitset(next_free_frame * PAGE_FRAME_SIZE, 0x01);
-
-        page_table_entry->present = 0x01;
-        page_table_entry->rw = (0x00 == is_write) ? 0x00 : 0x01;
-        page_table_entry->user = (0x00 == is_kernel_page) ? 0x01 : 0x00;
-        page_table_entry->pa = next_free_frame;
-    }
-}
-
-
-void
-paging_free_frame(page_table_entry_t* page_table_entry)
-{
-    if (0x00 == page_table_entry->pa)
-    {
-        return; // Nothing to free here
-    }
-    else
-    {
-        set_frames_bitset(page_table_entry->pa, 0x00);
-        page_table_entry->pa = 0x00;
-    }
-}
-
-
-void 
-paging_init()
-{
-    physical_memory_size = memory_get_size();
-    n_physical_frames = physical_memory_size / PAGE_FRAME_SIZE;
-
-    __slog__(COM1_PORT, "Initializing paging : physical_memory_size = %u bytes, number of physical frames = %u\n", physical_memory_size, n_physical_frames);   
-
-    // We don't need a n_physical_frames length array to store n_physical_frames 0/1 values
-    frames_bitset = (uint32_t*) kmalloc(INDEX_FROM_BIT(n_physical_frames)); 
-
-    // Initialize all physical frames as non-used (0x00)
-    memset(frames_bitset, 0x00, INDEX_FROM_BIT(n_physical_frames));
-
-    // Create the kernel page directory
-    kernel_page_directory = (page_directory_t*)(kmalloc_page_aligned(sizeof(page_directory_t)));
-
-    // Clear kernel page directory pointers in order to initialize them
-    memset(kernel_page_directory, 0x00, sizeof(page_directory_t));
-
-    __slog__(COM1_PORT, "Kernel page directory allocated at pa 0x%X\n", (uint32_t)(kernel_page_directory));
-
-    // Map pages in the kernel memory area which will become the kernel heap
-    for (uint32_t i = HEAP_START; i < HEAP_START + HEAP_INITIAL_SIZE; i += PAGE_FRAME_SIZE)
-    {
-        paging_get_page(i, kernel_page_directory);
-    }
-
-    // Identity map (virtual = physical) addresses from 0 to memory_get_next_alloc_address()
-    uint32_t current_addr = 0;
-    while (current_addr <= memory_get_next_alloc_address())
-    {
-        paging_alloc_frame(paging_get_page(current_addr, kernel_page_directory), 0, 0); 
-        current_addr += PAGE_FRAME_SIZE;
-    }
-
-    // Now allocating heap pages created before
-    for (uint32_t i = HEAP_START; i < HEAP_START + HEAP_INITIAL_SIZE; i += PAGE_FRAME_SIZE)
-    {
-        paging_alloc_frame(paging_get_page(i, kernel_page_directory), 0, 0);
-    }
-
-    // Register page fault handler
-    pic_add_irq(PAGEFAULT_IRQ_INTERRUPT_NO, &paging_fault_irq_handler);
-
-    // Set current pèage directory = kernel_page_directory and enable paging
-    switch_page_directory(kernel_page_directory);
+    // Paging is active, memory allocation can be redirected to the kernel heap
+    memory_enable_heap_malloc();
 
     __slog__(COM1_PORT, "Paging is active\n");
-
-    // Create kernel heap
-    heap_t* kernel_heap = memory_create_heap(HEAP_START, HEAP_START + HEAP_INITIAL_SIZE, 0xCFFFF000, 0, 0);
-    // Tell memory that kernel_heap is created and hence kmalloc can be redirectioned
-    memory_set_kernel_heap(kernel_heap);
-
-    __slog__(COM1_PORT, "Heap is active\n");
 }
 
 
-page_directory_t*
-paging_get_kernel_page_directory()
+void
+paging_map(uint32_t va_from, uint32_t va_to, page_directory_t* page_directory)
 {
-    return kernel_page_directory;
+// Check va_from is page_aligned, if it is not, align it to the highest page aligned addr < va_from
+    if (va_from & PAGE_ALIGN_MASK)
+    {
+        va_from &= PAGE_FRAME_MASK;
+    }
+
+//  Check va_to is page_aligned, if it is not, align it to the lowest page aligned addr > va_to
+    if (va_to & PAGE_ALIGN_MASK)
+    {
+        va_to &= PAGE_FRAME_MASK;
+        va_to += PAGE_FRAME_SIZE;
+    }
+
+//  Now mapping
+    uint32_t virtual_address = va_from;
+    while (virtual_address < va_to)
+    {
+        uint32_t page_table_index = 0x00;
+        uint32_t page_frame_index = 0x00;
+        paging_get_page(virtual_address, &page_table_index, &page_frame_index);
+
+        if (0x00 == kernel_directory->tables[page_table_index])
+        {
+            uint32_t pt_pa = 0x00;
+            kernel_directory->tables[page_table_index] = new_page_table(&pt_pa);
+            kernel_directory->tables_physical[page_table_index] = (pt_pa | 0x7);
+        }
+
+        page_table_entry_t* current_pte = (page_table_entry_t*) (&kernel_directory->tables[page_table_index]->pages[page_frame_index]);
+
+        uint32_t physical_frame = memory_next_available_frame();
+
+        current_pte->present = 0x01;            
+        current_pte->rw = 1;                  
+        current_pte->user = 0;             
+        current_pte->pa = physical_frame >> 12;
+
+        memory_acquire_frame(physical_frame);
+
+        virtual_address += PAGE_FRAME_SIZE;
+    }
 }
 
 
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void paging_fault_irq_handler(interrupt_stack_frame_t* frame)
+void
+paging_get_page(uint32_t va, uint32_t* page_table_index, uint32_t* frame_index)
 {
-   // A page fault has occurred.
-   // The faulting address is stored in the CR2 register.
+    if (0x00 != page_table_index)
+    {
+        *page_table_index = (va / (PAGE_FRAME_SIZE * PAGE_DIRECTORY_ENTRIES));
+    }
 
-   uint32_t faulting_address;
-   asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
-
-   // The error code gives us details of what happened.
-   int present = frame->error_code & 0x1; // Page not present
-   int rw = frame->error_code & 0x2;           // Write operation?
-   int us = frame->error_code & 0x4;           // Processor was in user-mode?
-   int reserved = frame->error_code & 0x8;     // Overwritten CPU-reserved bits of page entry?
-   int id = frame->error_code & 0x10;          // Caused by an instruction fetch?
-
-   // Output an error message.
-   printf("\nPage fault ( present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d) ) at 0x%X\n",
-                        present,     rw,                            us,  reserved,           id,   faulting_address);
-
-    abort();
+    if (0x00 != frame_index)
+    {
+        *frame_index = (va / PAGE_FRAME_SIZE) % PAGE_TABLE_ENTRIES;
+    }
 }

@@ -1,9 +1,9 @@
 #include <kernel/arch/idt.h>
+#include <kernel/arch/gdt.h>
 
 #include <interrupts/isr.h>
 
 #include <string.h>
-#include <stdio.h>
 
 #include <common/utils.h>
 
@@ -24,6 +24,11 @@ idt_init()
     {
         /** isr_vector is declared in isr/isr.h and defined in arch/i386/isr.c **/
         idt_add_entry(i, isr_vector[i].handler, isr_vector[i].attributes);
+    }
+
+    for (int i = AVAILABLE_HANDLERS; i < IDT_SIZE; i++)
+    {
+        idt_add_entry(i, &unhandled_interrupt, PRESENT | TRP_GATE);
     }
 
     store_idt(&idt);

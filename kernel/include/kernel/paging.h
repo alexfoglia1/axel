@@ -1,11 +1,8 @@
 #ifndef _PAGING_H
 #define _PAGING_H
 
-#include <kernel/memory.h>
 
-#include <interrupts/isr.h> // for interrupt stack frame t
-
-#include <stdint.h>
+#include <kernel/memory_manager.h>
 
 #define PAGE_DIRECTORY_ENTRIES 0x400
 #define PAGE_TABLE_ENTRIES 0x400
@@ -13,7 +10,6 @@
 #define PAGE_PRESENT 0x01
 #define PAGE_WRITE   0x02
 
-#define PAGEFAULT_IRQ_INTERRUPT_NO  0x0E
 
 typedef struct page_table_entry
 {
@@ -35,28 +31,19 @@ typedef struct page_table
 
 typedef struct page_directory
 {
-    page_table_t* page_tables[PAGE_DIRECTORY_ENTRIES];
-    uint32_t page_tables_pa[PAGE_DIRECTORY_ENTRIES];
-    uint32_t page_tables_pa_0;
+    page_table_t* tables[PAGE_DIRECTORY_ENTRIES];       // Array of pointers to page tables where pointers are virtual  addresses
+    uint32_t tables_physical[PAGE_DIRECTORY_ENTRIES];   // Array of pointers to page tables where pointers are physical addresses 
+    uint32_t physical_addr;                             // Physical address of tables_physical
 } page_directory_t;
 
 
 extern void load_page_directory(uint32_t* page_directory);
 extern void enable_paging();
 
-void paging_alloc_frame(page_table_entry_t* page_table_entry, uint32_t is_kernel_page, uint32_t is_write);
-void paging_free_frame(page_table_entry_t* page_table_entry);
 void paging_init();
-
-page_table_entry_t* paging_get_page(uint32_t address, page_directory_t* page_directory);
-page_directory_t* paging_get_kernel_page_directory();
-//uint32_t* paging_clone_directory(page_directory_t* page_directory);
+void paging_map(uint32_t va_from, uint32_t va_to, page_directory_t* page_directory); 
+void paging_get_page(uint32_t va, uint32_t* page_table_index, uint32_t* frame_index);
 
 
-
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void paging_fault_irq_handler(interrupt_stack_frame_t* frame);
 
 #endif

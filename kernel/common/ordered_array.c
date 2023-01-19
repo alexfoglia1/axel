@@ -1,6 +1,6 @@
 #include <common/ordered_array.h>
 
-#include <kernel/memory.h>
+#include <kernel/memory_manager.h>
 
 #include <string.h>
 
@@ -51,6 +51,7 @@ ordered_array_delete(ordered_array_t* _this)
 void
 ordered_array_insert(ordered_array_t* _this, array_type_t value)
 {
+    
     uint32_t pos;
     for (pos = 0; pos < _this->array_ll; pos++)
     {
@@ -61,7 +62,7 @@ ordered_array_insert(ordered_array_t* _this, array_type_t value)
             break;
         }
     }
-
+    
     if (_this->array_ll == pos)
     {
         // We shall simply add value at the end of the array
@@ -76,9 +77,9 @@ ordered_array_insert(ordered_array_t* _this, array_type_t value)
         if (_this->array_ll < _this->array_pl)
         {
             // Shift array[pos] to the right
-            for (uint32_t i = _this->array_ll - 1; i >= pos; i--)
+            for (uint32_t i = _this->array_ll; i > pos; i--)
             {
-                _this->array[i + 1] = _this->array[i];
+                _this->array[i] = _this->array[i - 1];
             } 
 
             // Set array[pos] = value
@@ -91,11 +92,11 @@ ordered_array_insert(ordered_array_t* _this, array_type_t value)
 
 
 void
-ordered_array_delete_at(ordered_array_t* _this, uint32_t index)
+ordered_array_delete_at(ordered_array_t* _this, int64_t index)
 {
-    if (_this->array_ll > 0)
+    if (_this->array_ll > 0 && index >= 0)
     {
-        for (uint32_t i = index; i < _this->array_ll; i++)
+        for (uint32_t i = (uint32_t)(index); i < _this->array_ll; i++)
         {
             _this->array[i] = _this->array[i + 1];
         }
@@ -106,9 +107,9 @@ ordered_array_delete_at(ordered_array_t* _this, uint32_t index)
 
 
 array_type_t
-ordered_array_at(ordered_array_t* _this, uint32_t index)
+ordered_array_at(ordered_array_t* _this, int64_t index)
 {
-    if (index < _this->array_ll)
+    if ((uint32_t)(index) < _this->array_ll && index >= 0)
     {
         return _this->array[index];
     }
@@ -116,4 +117,21 @@ ordered_array_at(ordered_array_t* _this, uint32_t index)
     {
         return (array_type_t)(0x00);
     }
+}
+
+
+int64_t
+ordered_array_index_of(ordered_array_t* this, array_type_t value)
+{
+    int64_t index = -1;
+    for (uint32_t i = 0; i < this->array_ll; i++)
+    {
+        if (this->array[i] == value)
+        {
+            index = (int64_t)i;
+            break;
+        }
+    }
+
+    return index;
 }

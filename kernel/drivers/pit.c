@@ -103,11 +103,6 @@ pit_irq0_handler(interrupt_stack_frame_t* frame)
         }
     }
 
-    if (time_elapsed.ticks % 1000 == 0)
-    {
-        __slog__(COM1_PORT, "PIT IRQ handler : 1000 ticks\n");
-    }
-
     pic_reset_master(); //IRQ0 ACK
     outb(PIC_MASTER_CMD_PORT, PIC_EOI);
 }
