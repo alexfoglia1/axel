@@ -47,7 +47,7 @@ ordered_array_delete(ordered_array_t* _this)
     kfree(_this);
 }
 
-#include <stdio.h>
+
 void
 ordered_array_insert(ordered_array_t* _this, array_type_t value)
 {
@@ -77,10 +77,9 @@ ordered_array_insert(ordered_array_t* _this, array_type_t value)
         if (_this->array_ll < _this->array_pl)
         {
             // Shift array[pos] to the right
-            for (uint32_t i = _this->array_ll - 1; i >= pos; i--)
+            for (uint32_t i = _this->array_ll; i > pos; i--)
             {
-                // todo qua
-                _this->array[i + 1] = _this->array[i];
+                _this->array[i] = _this->array[i - 1];
             } 
 
             // Set array[pos] = value
@@ -89,8 +88,6 @@ ordered_array_insert(ordered_array_t* _this, array_type_t value)
             _this->array_ll += 1;
         }
     }
-
-    printf("inserting 0x%X at ordered_array[%u]\n", value, pos);
 }
 
 

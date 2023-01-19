@@ -15,14 +15,13 @@ static ordered_array_t kheap;
 static void* 
 __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* pa)
 {
-    printf("\nkheap malloc at va 0x%X\n", va);
     uint32_t descriptor_address = va;
     kheap_block_descriptor_t* block_descriptor = (kheap_block_descriptor_t*) (descriptor_address);
     uint32_t alloc_addr = descriptor_address + sizeof(kheap_block_descriptor_t);
 
     // va may correspond to a previously allocated block and hence it is yet present in the kheap ordered array
     ordered_array_delete_at(&kheap, ordered_array_index_of(&kheap, block_descriptor));
-    printf("safety deleted\n");
+
     if (0x01 == page_aligned && alloc_addr & PAGE_ALIGN_MASK)
     {
         alloc_addr &= PAGE_FRAME_MASK;
@@ -32,7 +31,6 @@ __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* 
     block_descriptor->addr = alloc_addr;
     block_descriptor->used = KHEAP_USED_BLOCK;
     block_descriptor->size = size + (alloc_addr - descriptor_address);
-    printf("block descriptor built\n");
 
     if (0x00 != pa)
     {
@@ -52,7 +50,6 @@ __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* 
     }
     
     ordered_array_insert(&kheap, block_descriptor);
-    printf("ordered array insert block descriptor\n");
     
     __slog__(COM1_PORT, "kheap malloc : requested 0x%X, allocated 0x%X, descriptor address 0x%X, returned address 0x%X\n", size, block_descriptor->size, va, block_descriptor->addr);
     
