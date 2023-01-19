@@ -44,7 +44,7 @@ merge_available_blocks()
         }
     }
 
-    slog_heap_state(COM1_PORT, "Kernel heap state after merge available blocks");
+    //slog_heap_state(COM1_PORT, "Kernel heap state after merge available blocks");
 
     int64_t kheap_idx = 0;
     kheap_block_descriptor_t* kheap_iterator = ordered_array_at(&kheap, kheap_idx);
@@ -63,12 +63,12 @@ merge_available_blocks()
         }
     }
 
-    slog_heap_state(COM1_PORT, "Kernel heap state after removal merged blocks");
+    //slog_heap_state(COM1_PORT, "Kernel heap state after removal merged blocks");
 
     if (kheap.array_ll == 1 && KHEAP_AVAILABLE_BLOCK == ((kheap_block_descriptor_t*) ordered_array_at(&kheap, 0))->status)
     {
         ordered_array_delete_at(&kheap, 0);
-        __slog__(COM1_PORT, "Kernel heap clean : unique available block removed");
+        __slog__(COM1_PORT, "Kernel heap clean : unique available block removed\n");
     }
 }
 
@@ -113,7 +113,7 @@ __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* 
     ordered_array_insert(&kheap, block_descriptor);
     
     __slog__(COM1_PORT, "kheap malloc : requested 0x%X, allocated 0x%X, descriptor address 0x%X, returned address 0x%X\n", size, block_descriptor->size, va, block_descriptor->addr);
-    slog_heap_state(COM1_PORT, "Kernel heap state after malloc");
+    //slog_heap_state(COM1_PORT, "Kernel heap state after malloc");
 
     return (void*) block_descriptor->addr;
 }
@@ -230,7 +230,7 @@ kheap_free(void* p)
             block_i->status = KHEAP_AVAILABLE_BLOCK;
 
             __slog__(COM1_PORT, "kheap free memory at 0x%X\n", ptr);
-            slog_heap_state(COM1_PORT, "Kernel heap state after free");
+            //slog_heap_state(COM1_PORT, "Kernel heap state after free");
 
             merge_available_blocks();
         }

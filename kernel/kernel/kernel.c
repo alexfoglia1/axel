@@ -150,10 +150,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printf("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-
-//  -------------------------
-
-//  Kernel page directory structres are allocated before the heap : they cannot be free'd (and it makes sense)
 //  -------------------------
 
 //  Initialize COM
@@ -244,7 +240,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
 //  --------------------------
 
     sti();
-
 #if 0
 //  Initializing ramdisk
     printf("Mounting initrd:\t\t");
