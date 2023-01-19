@@ -272,5 +272,14 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
+    uint32_t* ptr1 = kmalloc(20 * 4);
+    uint32_t* ptr2, ptr2_pa;
+
+    printf("ptr1(0x%X)\n", ptr1);
+    
+    ptr2 = kmalloc_ap(25 * 4, &ptr2_pa);
+
+    printf("ptr2(0x%X), pa(0x%X)\n", ptr2, ptr2_pa);
+
     while(1);
 }

@@ -32,7 +32,7 @@ paging_init()
     // Identity map addresses from zero to memory_get_alloc_addr() which is the highest kernel-used physical address
     // Note that with the early kernel heap initialization, this loop will cover with an identity map the kheap structures
     uint32_t pa = 0;
-    while (pa < memory_get_alloc_addr())
+    while (pa <= memory_get_alloc_addr())
     {
         uint32_t page_table_index = 0x00;
         uint32_t page_frame_index = 0x00;
@@ -110,9 +110,14 @@ paging_map(uint32_t va_from, uint32_t va_to, page_directory_t* page_directory)
         page_table_entry_t* current_pte = (page_table_entry_t*) (&kernel_directory->tables[page_table_index]->pages[page_frame_index]);
 
         uint32_t physical_frame = memory_next_available_frame();
+        
+        if (virtual_address == 0xC0001000 || virtual_address == 0xC0000000)
+        {
+            printf("\nvirtual address 0x%X mapped to physical_frame 0x%X at table_index %u, frame_index %u\n", virtual_address, physical_frame, page_table_index, page_frame_index);    
+        }
 
         current_pte->present = 0x01;            
-        current_pte->rw = 1;                  
+        current_pte->rw = 0x01;                  
         current_pte->user = 0;             
         current_pte->pa = physical_frame >> 12;
 
