@@ -8,7 +8,7 @@
 
 
 static page_directory_t* kernel_directory = (page_directory_t*) (0x00);
-
+static page_directory_t* current_directory = (page_directory_t*) (0x00);
 
 static page_table_t*
 new_page_table(uint32_t* pa)
@@ -17,6 +17,33 @@ new_page_table(uint32_t* pa)
     memset(new_page_table, 0x00, PAGE_TABLE_ENTRIES * sizeof(page_table_entry_t));
 
     return new_page_table;
+}
+
+
+static page_table_t*
+clone_table(page_table_t* src, uint32_t* phys)
+{
+    page_table_t* dst = new_page_table(phys);
+
+    for (uint32_t i = 0; i < PAGE_TABLE_ENTRIES; i++)
+    {
+        if (0x00 != src->pages[i].pa)
+        {
+            uint32_t physical_frame = memory_next_available_frame();
+            memory_acquire_frame(physical_frame);
+
+            dst->pages[i].present  = (src->pages[i].present)  ? 0x01 : 0x00;
+            dst->pages[i].rw       = (src->pages[i].rw)       ? 0x01 : 0x00;
+            dst->pages[i].user     = (src->pages[i].user)     ? 0x01 : 0x00;
+            dst->pages[i].accessed = (src->pages[i].accessed) ? 0x01 : 0x00;
+            dst->pages[i].dirty    = (src->pages[i].dirty)    ? 0x01 : 0x00;
+            dst->pages[i].pa       = physical_frame >> 12;
+
+            copy_page_physical(src->pages[i].pa * PAGE_FRAME_SIZE, dst->pages[i].pa * PAGE_FRAME_SIZE);
+        }
+    }
+
+    return dst;
 }
 
 
@@ -71,8 +98,13 @@ paging_init()
 
     // Paging is active, memory allocation can be redirected to the kernel heap
     memory_enable_heap_malloc();
-
     __slog__(COM1_PORT, "Paging is active\n");
+
+    // Now clone the kernel directory and use the clone
+    current_directory = paging_clone_directory(kernel_directory);
+    load_page_directory((uint32_t*)(current_directory->physical_addr));
+
+    __slog__(COM1_PORT, "Kernel directory cloned\n");
 }
 
 
@@ -135,4 +167,36 @@ paging_get_page(uint32_t va, uint32_t* page_table_index, uint32_t* frame_index)
     {
         *frame_index = (va / PAGE_FRAME_SIZE) % PAGE_TABLE_ENTRIES;
     }
+}
+
+
+page_directory_t* paging_clone_directory(page_directory_t* src)
+{
+    uint32_t phys;
+    page_directory_t* dst = (page_directory_t*) kmalloc_ap(sizeof(page_directory_t), &phys);
+
+    memset(dst, 0x00, sizeof(page_directory_t));
+
+    uint32_t offset = (uint32_t)dst->tables_physical - (uint32_t)dst;
+    dst->physical_addr = phys + offset;
+
+    for (uint32_t i = 0; i < PAGE_DIRECTORY_ENTRIES; i++)
+    {
+        if (0x00 != src->tables[i])
+        {
+            if (kernel_directory->tables[i] == src->tables[i])
+            {
+                dst->tables[i] = src->tables[i];
+                dst->tables_physical[i] = src->tables_physical[i];
+            }
+            else
+            {
+                uint32_t phys;
+                dst->tables[i] = clone_table(src->tables[i], &phys);
+                dst->tables_physical[i] = phys | 0x07;
+            }
+        }
+    }
+
+    return dst;
 }
