@@ -38,7 +38,7 @@
 
 
 void
-kernel_main(multiboot_info_t* mbd, uint32_t magic)
+kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 {
     cli();
     errno = ENOERR;

@@ -22,6 +22,7 @@ stack_head:
 .type _start, @function
 _start:
     mov $stack_head, %esp
+    push %esp
     push %eax
     push %ebx
     call kernel_main

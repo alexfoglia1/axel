@@ -91,6 +91,7 @@ paging_init()
     paging_map(KHEAP_START, KHEAP_START + KHEAP_SIZE, kernel_directory);
 
     // Load kernel page directory
+    // (kernel_directory was allocated BEFORE paging and heap, its physical address is equal to the address of tables_physical)
     load_page_directory(kernel_directory->tables_physical);
     
     // Enable paging
@@ -102,8 +103,10 @@ paging_init()
 
     // Now clone the kernel directory and use the clone
     current_directory = paging_clone_directory(kernel_directory);
-    load_page_directory((uint32_t*)(current_directory->physical_addr));
 
+    // current_directory is allocated AFTER paging and heap, tables_physical points a virtual address in the heap
+    // but physical_addr stores tables_physical physical address due to the paging_clone_directory() behaviour
+    load_page_directory((uint32_t*)(current_directory->physical_addr));
     __slog__(COM1_PORT, "Kernel directory cloned\n");
 }
 
@@ -173,12 +176,15 @@ paging_get_page(uint32_t va, uint32_t* page_table_index, uint32_t* frame_index)
 page_directory_t* paging_clone_directory(page_directory_t* src)
 {
     uint32_t phys;
-    page_directory_t* dst = (page_directory_t*) kmalloc_ap(sizeof(page_directory_t), &phys);
 
+    page_directory_t* dst = (page_directory_t*) kmalloc_ap(sizeof(page_directory_t), &phys);
     memset(dst, 0x00, sizeof(page_directory_t));
 
+    // dst is probably allocated in the kernel heap (for sure considering the paging_init() routine)
+    // hence load_page_directory() cannot take a virtual address as the page directory address (both dst and dst->tables_physical) are virtual)
+
     uint32_t offset = (uint32_t)dst->tables_physical - (uint32_t)dst;
-    dst->physical_addr = phys + offset;
+    dst->physical_addr = phys + offset; // if using dst as the current page directory in %CR3, this value shall be used
 
     for (uint32_t i = 0; i < PAGE_DIRECTORY_ENTRIES; i++)
     {
