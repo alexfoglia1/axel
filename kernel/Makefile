@@ -53,6 +53,9 @@ $(ARCHDIR)/cpuid_supported.o \
 $(ARCHDIR)/enable_paging.o \
 $(ARCHDIR)/load_page_directory.o \
 $(ARCHDIR)/copy_page_physical.o \
+$(ARCHDIR)/flush_tlb.o \
+$(ARCHDIR)/read_instruction_pointer.o \
+$(ARCHDIR)/context_switch.o \
 $(ISRDIR)/isr.o \
 $(SYSCALLDIR)/sys_write.o \
 $(SYSCALLDIR)/sys_read.o \
@@ -80,6 +83,7 @@ $(KERNEL_ARCH_OBJS) \
 kernel/kheap.o \
 kernel/memory_manager.o \
 kernel/paging.o \
+kernel/multitasking.o \
 kernel/kernel.o \
 
 OBJS=\

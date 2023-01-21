@@ -6,6 +6,7 @@
 #include <kernel/paging.h>
 #include <kernel/kheap.h>
 #include <kernel/memory_manager.h>
+#include <kernel/multitasking.h>
 
 #include <kernel/arch/cpuid.h>
 #include <kernel/arch/tty.h>
@@ -239,8 +240,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-    sti();
-
 //  Initializing ramdisk
     printf("Mounting initrd:\t\t");
     vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(mbd->mods_addr));
@@ -272,5 +271,44 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-    while(1);
+
+//  Initializing multitasking
+    printf("Initializing scheduler:\t");
+    tasking_init(esp);
+    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+    printf("[OK]\n");
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+//  --------------------------
+
+    sti();
+
+    int tid = tasking_fork();
+    if (0 == tid)
+    {
+        int child_tid = tasking_fork();
+        if (0 == child_tid)
+        {
+            while (1)
+            {
+                printf("I am child's child, fork() returned 0x%X,0x%X, get_tid() returned 0x%X\n", tid, child_tid, tasking_gettid());
+                sleep(1000);
+            }
+        }
+        else
+        {
+            while (1)
+            {
+                printf("I am parent's child, fork() returned 0x%X,0x%X, get_tid() returned 0x%X\n", tid, child_tid, tasking_gettid());
+                sleep(2000);
+            }
+        }
+    }
+    else
+    {
+        while (1)
+        {
+            printf("I am parent, fork() returned 0x%X, get_tid() returned 0x%X\n", tid, tasking_gettid());
+            sleep(4000);
+        }
+    }
 }

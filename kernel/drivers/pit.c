@@ -77,6 +77,8 @@ pit_get_ticks()
 }
 
 
+#include <kernel/multitasking.h>
+
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
 #endif
@@ -86,7 +88,6 @@ pit_irq0_handler(interrupt_stack_frame_t* frame)
     time_elapsed.ticks += 1;
     time_elapsed.millis = (time_elapsed.ticks * PIT_MILLIS_PER_TICK);
 
-    //TODO : Define a COM TX frequency
     if (time_elapsed.ticks % 2 == 0)
     {
         if (0x01 == com_is_initialized(COM1_PORT))
@@ -105,4 +106,7 @@ pit_irq0_handler(interrupt_stack_frame_t* frame)
 
     pic_reset_master(); //IRQ0 ACK
     outb(PIC_MASTER_CMD_PORT, PIC_EOI);
+
+    //TODO : Create a scheduler wrapper and handle entire scheduling (tasks, COM tx, etc)
+    tasking_scheduler();
 }

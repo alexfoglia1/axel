@@ -92,6 +92,7 @@ paging_init()
 
     // Load kernel page directory
     // (kernel_directory was allocated BEFORE paging and heap, its physical address is equal to the address of tables_physical)
+    kernel_directory->physical_addr = (uint32_t)(kernel_directory->tables_physical);
     load_page_directory(kernel_directory->tables_physical);
     
     // Enable paging
@@ -129,20 +130,20 @@ paging_map(uint32_t va_from, uint32_t va_to, page_directory_t* page_directory)
 
 //  Now mapping
     uint32_t virtual_address = va_from;
-    while (virtual_address < va_to)
+    while (virtual_address <= va_to)
     {
         uint32_t page_table_index = 0x00;
         uint32_t page_frame_index = 0x00;
         paging_get_page(virtual_address, &page_table_index, &page_frame_index);
 
-        if (0x00 == kernel_directory->tables[page_table_index])
+        if (0x00 == page_directory->tables[page_table_index])
         {
             uint32_t pt_pa = 0x00;
-            kernel_directory->tables[page_table_index] = new_page_table(&pt_pa);
-            kernel_directory->tables_physical[page_table_index] = (pt_pa | 0x7);
+            page_directory->tables[page_table_index] = new_page_table(&pt_pa);
+            page_directory->tables_physical[page_table_index] = (pt_pa | 0x7);
         }
 
-        page_table_entry_t* current_pte = (page_table_entry_t*) (&kernel_directory->tables[page_table_index]->pages[page_frame_index]);
+        page_table_entry_t* current_pte = (page_table_entry_t*) (&page_directory->tables[page_table_index]->pages[page_frame_index]);
 
         uint32_t physical_frame = memory_next_available_frame();
         
@@ -170,6 +171,13 @@ paging_get_page(uint32_t va, uint32_t* page_table_index, uint32_t* frame_index)
     {
         *frame_index = (va / PAGE_FRAME_SIZE) % PAGE_TABLE_ENTRIES;
     }
+}
+
+
+void
+paging_flush_tlb()
+{
+    flush_tlb();
 }
 
 
@@ -205,4 +213,25 @@ page_directory_t* paging_clone_directory(page_directory_t* src)
     }
 
     return dst;
+}
+
+
+page_directory_t*
+paging_current_page_directory()
+{
+    return current_directory;
+}
+
+
+page_directory_t*
+paging_kernel_page_directory()
+{
+    return kernel_directory;
+}
+
+
+void
+paging_set_current_page_directory(page_directory_t* page_directory)
+{
+    current_directory = page_directory;
 }
