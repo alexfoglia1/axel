@@ -4,12 +4,14 @@
 
 #include <controllers/com.h>
 
+
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
 #endif
 void
 sys_read(interrupt_stack_frame_t* frame)
 {
+
     register int rtype   asm("eax");
     register int rcount  asm("ebx");
     register int rbuf    asm("ecx");
@@ -21,7 +23,7 @@ sys_read(interrupt_stack_frame_t* frame)
 
     switch (type)
     {
-        case SYSCALL_COM_1_READ:
+        case SYSCALL_TYPE_COM_1_READ:
         {
             uint8_t* buffer = (uint8_t*)(rbuf);
             com_read(COM1_PORT, buffer, count);
@@ -30,7 +32,7 @@ sys_read(interrupt_stack_frame_t* frame)
             tty_putstring("\n");
             break;
         }
-        case SYSCALL_COM_2_READ:
+        case SYSCALL_TYPE_COM_2_READ:
         {
             uint8_t* buffer = (uint8_t*)(rbuf);
             com_read(COM2_PORT, buffer, count);
@@ -39,7 +41,7 @@ sys_read(interrupt_stack_frame_t* frame)
             tty_putstring("\n");
             break;
         }
-        case SYSCALL_COM_3_READ:
+        case SYSCALL_TYPE_COM_3_READ:
         {
             uint8_t* buffer = (uint8_t*)(rbuf);
             com_read(COM3_PORT, buffer, count);

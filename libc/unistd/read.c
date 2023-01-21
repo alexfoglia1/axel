@@ -1,13 +1,10 @@
 #include <unistd.h>
 
+
 int
-read(int desc, uint8_t* buffer, size_t count)
+read(uint32_t syscall_type, uint8_t* buffer, size_t count)
 {
-    asm volatile ("mov %0, %%eax\n\
-                   mov %1, %%ebx\n\
-                   mov %2, %%ecx\n\
-                   int $32"
-                   :: "m" (desc), "m" (count), "m" (buffer));
+    syscall_interface(SYSCALL_INT_NO_READ, syscall_type, (uint32_t) count, (uint32_t) buffer, 0);
 
     return count;
 }

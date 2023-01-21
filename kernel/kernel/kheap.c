@@ -8,9 +8,7 @@
 #include <common/ordered_array.h>
 
 
-static page_directory_t* kernel_directory = (page_directory_t*)(0x00);
 static ordered_array_t kheap;
-
 
 #if 0
 static void
@@ -97,10 +95,12 @@ __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* 
 
     if (0x00 != pa)
     {
+        page_directory_t* current_directory = paging_kernel_page_directory();
+
         uint32_t table_index, frame_index;
         paging_get_page(alloc_addr, &table_index, &frame_index);
 
-        page_table_entry_t* current_pte = (page_table_entry_t*) (&kernel_directory->tables[table_index]->pages[frame_index]);
+        page_table_entry_t* current_pte = (page_table_entry_t*) (&current_directory->tables[table_index]->pages[frame_index]);
 
         // Get the frame address whose block contains the physical address of virtual address alloc_addr
         uint32_t alloc_addr_frame = (current_pte->pa << 12);
@@ -188,9 +188,8 @@ uint8_t size_based_less_than(array_type_t arg_1, array_type_t arg_2)
 
 
 void
-kheap_init(void* _kernel_directory)
+kheap_init()
 {
-    kernel_directory = (page_directory_t*)(_kernel_directory);
     kheap = ordered_array_new(KHEAP_SIZE, &size_based_less_than);
 }
 

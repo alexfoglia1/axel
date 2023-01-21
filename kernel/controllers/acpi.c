@@ -69,18 +69,6 @@ static uint32_t
       }
    }
 
-   int ebda = *((short *) 0x40E);
-   ebda = ebda*0x10 &0x000FFFFF;
-
-   for (addr = (uint32_t *) ebda; (int) addr<ebda+1024; addr+= 0x10/sizeof(addr))
-   {
-      rsdp = acpi_check_rsd_ptr(addr);
-      if (rsdp != 0x00)
-      {
-         return rsdp;
-      }
-   }
-
    return 0x00;
 }
 
@@ -156,6 +144,7 @@ void acpi_enable(void)
    }
 }
 
+#include <stdint.h>
 
 void
 acpi_init()

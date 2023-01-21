@@ -18,7 +18,7 @@ typedef struct
 
 } kheap_block_descriptor_t;
 
-void kheap_init(void* kernel_directory);
+void kheap_init();
 
 // KHEAP API : ALLOCATION (forwarded from memory_manager) 
 void* kheap_malloc(uint32_t size);
