@@ -27,7 +27,7 @@ keyboard_init(uint8_t in_port)
 }
 
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void

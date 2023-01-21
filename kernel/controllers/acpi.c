@@ -161,7 +161,7 @@ acpi_init()
    SCI_EN = 0x00;
    PM1_CNT_LEN = 0x00;
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
    uint32_t *ptr = acpi_get_rsd_ptr();
 #else
    uint32_t* ptr = 0x00;

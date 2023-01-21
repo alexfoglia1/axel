@@ -29,7 +29,7 @@ uint32_t pit_get_ticks();
 
 void pit_set_callback(pit_callback_t callback);
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void pit_irq0_handler(interrupt_stack_frame_t* frame);

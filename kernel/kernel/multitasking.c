@@ -80,8 +80,8 @@ tasking_fork()
     __slog__(COM1_PORT, "fork(), parent tid(0x%X), child tid(0x%X)\n", parent_task->tid, task_ptr->next->tid);
 
     uint32_t eip;
-    eip = read_instruction_pointer();
-    // From here on, we may have called read_instruction_pointer and are the parent task
+    eip = read_eip();
+    // From here on, we may have called read_eip and are the parent task
     // OR
     // We are the child task and we need to start execution
     if (current_task == parent_task)
@@ -120,11 +120,11 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
     uint32_t ebp;
     asm volatile("mov %%ebp, %0" : "=r" (ebp));
     uint32_t eip;
-    eip = read_instruction_pointer();
+    eip = read_eip();
 
     if (0x7A10ADED == eip)
     {
-        // If read_instruction_pointer() returns 0x7A1OADED, we are immediately after context_switch(), just return
+        // If read_eip() returns 0x7A1OADED, we are immediately after context_switch(), just return
         return;
     }
 

@@ -48,17 +48,17 @@ struct interrupt_handler_descriptor
 extern struct interrupt_handler_descriptor isr_vector[INITIAL_INTERRUPT_HANDLERS];
 
 //TODO : implement other exceptions
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void divide_by_zero_exception(interrupt_stack_frame_t* frame); //INT 0
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void page_fault_exception(interrupt_stack_frame_t* frame); // INT 14
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void

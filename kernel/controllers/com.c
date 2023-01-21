@@ -248,7 +248,7 @@ com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen
 }
 
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void
@@ -258,7 +258,7 @@ com_1_irq_handler(interrupt_stack_frame_t* frame)
 }
 
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void com_2_irq_handler(interrupt_stack_frame_t* frame)
@@ -267,7 +267,7 @@ void com_2_irq_handler(interrupt_stack_frame_t* frame)
 }
 
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void com_3_irq_handler(interrupt_stack_frame_t* frame)

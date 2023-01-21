@@ -8,7 +8,7 @@
 #define IDE_IRQ_INTERRUPT_NO 0x76
 
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void ide_irq_handler(interrupt_stack_frame_t* frame);

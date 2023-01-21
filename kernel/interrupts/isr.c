@@ -3,6 +3,7 @@
 #include <syscall/syscall.h>
 
 #include <kernel/arch/gdt.h>
+#include <kernel/arch/rf.h>
 
 #include <controllers/pic.h>
 
@@ -54,7 +55,7 @@ struct interrupt_handler_descriptor isr_vector[INITIAL_INTERRUPT_HANDLERS] =
 };
 
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void
@@ -65,7 +66,7 @@ divide_by_zero_exception(interrupt_stack_frame_t* frame)
 }
 
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void page_fault_exception(interrupt_stack_frame_t* frame)
@@ -73,7 +74,8 @@ void page_fault_exception(interrupt_stack_frame_t* frame)
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
     uint32_t faulting_address;
-    asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
+    RF_GRAB_CR_2(faulting_address); 
+
 
     // The error code gives us details of what happened.
     int present = (frame->error_code >> 0) & 0x1;      // Page present
@@ -91,7 +93,7 @@ void page_fault_exception(interrupt_stack_frame_t* frame)
 }
 
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void

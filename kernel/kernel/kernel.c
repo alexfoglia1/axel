@@ -84,14 +84,8 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //  Detecting CPU Model
     printf("Detecting CPU Model:\t");
 
-#ifndef __DEBUG_STUB__
-    extern int cpuid_supported();
-    int cpuid_available = cpuid_supported();
-#else
-    int cpuid_available = 1;
-#endif
-
-    if (cpuid_available == 0)
+    uint8_t cpuid_available = cpuid_supported();
+    if (0x00 == cpuid_available)
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("[KO]\n");

@@ -4,6 +4,8 @@
 
 #include <kernel/memory_manager.h>
 
+#include <kernel/arch/asm.h>
+
 #define PAGE_DIRECTORY_ENTRIES 0x400
 #define PAGE_TABLE_ENTRIES 0x400
 
@@ -35,12 +37,6 @@ typedef struct page_directory
     uint32_t tables_physical[PAGE_DIRECTORY_ENTRIES];   // Array of pointers to page tables where pointers are physical addresses 
     uint32_t physical_addr;                             // Physical address of tables_physical
 } page_directory_t;
-
-
-extern void load_page_directory(uint32_t* page_directory);
-extern void copy_page_physical(uint32_t src, uint32_t dst);
-extern void enable_paging();
-extern void flush_tlb();
 
 void paging_init();
 void paging_map(uint32_t va_from, uint32_t va_to, page_directory_t* page_directory); 

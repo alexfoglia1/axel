@@ -54,17 +54,17 @@ int com_read(int com_port, uint8_t* buf, uint32_t n_bytes);
 
 uint32_t com_flush(int com_port); // Effectively transmit data to outport : called from PIT timer
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void com_1_irq_handler(interrupt_stack_frame_t* frame);
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void com_2_irq_handler(interrupt_stack_frame_t* frame);
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void com_3_irq_handler(interrupt_stack_frame_t* frame);

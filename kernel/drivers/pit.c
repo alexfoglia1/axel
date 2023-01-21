@@ -87,7 +87,7 @@ pit_set_callback(pit_callback_t _callback)
 }
 
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void

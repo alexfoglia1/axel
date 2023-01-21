@@ -23,11 +23,11 @@ void syscall_init();
 // each assembly routine in syscall_interface.S triggers a software interrupt which number shall be mapped in the IDT
 // with the particular system call associated to such an interrupt number
 
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void sys_write(interrupt_stack_frame_t* frame);
-#ifndef __DEBUG_STUB__
+#if ARCH == i686
 __attribute__((interrupt))
 #endif
 void sys_read(interrupt_stack_frame_t* frame);

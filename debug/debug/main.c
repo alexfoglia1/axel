@@ -12,8 +12,6 @@
 #include <common/utils.h>
 
 
-void enable_paging() {}
-void load_page_directory(uint32_t* pd) {}
 uint32_t kern_end = 0xFFFF1000;
 
 extern void kernel_main(multiboot_info_t* mbr, uint32_t magic);

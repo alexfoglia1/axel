@@ -6,11 +6,11 @@
 #include <kernel/paging.h>
 #include <kernel/memory_manager.h>
 
+#include <kernel/arch/rf.h>
+#include <kernel/arch/asm.h>
+
 #define STACK_START 0xE0000000
 #define STACK_SIZE  0x20000
-
-extern uint32_t read_instruction_pointer();
-extern void context_switch(uint32_t eip, uint32_t esp, uint32_t ebp, uint32_t page_directory);
 
 // Structure which defines a process (called task here)
 typedef struct task
