@@ -40,6 +40,10 @@
 #define COM_INBUF_LEN        0x8000
 #define COM_TX_BYTES         0x10
 
+#define COM_MIN_TX_FREQ_HZ 1
+#define COM_MAX_TX_FREQ_HZ 1000
+#define COM_STD_TX_FREQ_HZ 100
+
 #include <stdint.h>
 
 void com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits);

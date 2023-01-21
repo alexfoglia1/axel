@@ -10,14 +10,16 @@
 #include <stdio.h>
 
 
-struct pit_time_elapsed time_elapsed;
-uint32_t count_0;
+static uint32_t ticks_cnt;
+static uint32_t millis_cnt;
 
+static pit_callback_t callback;
 
 uint32_t
 pit_get_count()
 {
     uint32_t count = 0;
+    callback = (pit_callback_t)(0x00);
 
     outb(PIT_MDCMD_REG_PORT, 0b0000000);
 
@@ -42,9 +44,8 @@ pit_set_count(uint32_t count)
 void
 pit_init()
 {
-    time_elapsed.ticks = 0;
-    time_elapsed.millis = 0;
-    count_0 = pit_get_count();
+    ticks_cnt = 0;
+    millis_cnt = 0;
 
     uint16_t div = PIT_DIVISOR;
     uint8_t div_low  = div & 0xFF;
@@ -61,23 +62,30 @@ pit_init()
 uint32_t
 pit_get_millis()
 {
-    return time_elapsed.millis;
+    return millis_cnt;
 }
 
-int
+
+uint32_t
 pit_get_seconds()
 {
-    return time_elapsed.millis / 1000;
+    return (millis_cnt / 1000);
 }
+
 
 uint32_t
 pit_get_ticks()
 {
-    return time_elapsed.ticks;
+    return ticks_cnt;
 }
 
 
-#include <kernel/multitasking.h>
+void
+pit_set_callback(pit_callback_t _callback)
+{
+    callback = _callback;
+}
+
 
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))
@@ -85,28 +93,14 @@ __attribute__((interrupt))
 void
 pit_irq0_handler(interrupt_stack_frame_t* frame)
 {
-    time_elapsed.ticks += 1;
-    time_elapsed.millis = (time_elapsed.ticks * PIT_MILLIS_PER_TICK);
-
-    if (time_elapsed.ticks % 2 == 0)
-    {
-        if (0x01 == com_is_initialized(COM1_PORT))
-        {
-            com_flush(COM1_PORT);
-        }
-        if (0x01 == com_is_initialized(COM2_PORT))
-        {    
-            com_flush(COM2_PORT);
-        }
-        if (0x01 == com_is_initialized(COM3_PORT))
-        {    
-            com_flush(COM3_PORT);
-        }
-    }
+    ticks_cnt  += 1;
+    millis_cnt = (ticks_cnt * PIT_MILLIS_PER_TICK);
 
     pic_reset_master(); //IRQ0 ACK
     outb(PIC_MASTER_CMD_PORT, PIC_EOI);
 
-    //TODO : Create a scheduler wrapper and handle entire scheduling (tasks, COM tx, etc)
-    tasking_scheduler();
+    if (0x00 != callback)
+    {
+        callback(ticks_cnt, millis_cnt);
+    }
 }

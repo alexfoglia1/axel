@@ -22,7 +22,7 @@ tasking_init(uint32_t _initial_esp)
     next_tid = 0x01;
     initial_esp = _initial_esp;
 
-    __slog__(COM1_PORT, "\nInitializing multitask, initial_esp(0x%X)\n", initial_esp);
+    __slog__(COM1_PORT, "Initializing multitask, initial_esp(0x%X)\n", initial_esp);
 
     // Relocate stack
     tasking_move_stack(STACK_START, STACK_SIZE);
@@ -108,7 +108,7 @@ tasking_fork()
 
 
 void
-tasking_scheduler()
+tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
 {
     if (0x00 == current_task)
     {
@@ -124,7 +124,7 @@ tasking_scheduler()
 
     if (0xDEADC0DE == eip)
     {
-        // I am child, return
+        // If read_instruction_pointer() returns 0xDEADC0DE, we are immediately after context_switch(), just return
         return;
     }
 
@@ -135,6 +135,7 @@ tasking_scheduler()
     current_task->page_directory = paging_current_page_directory();
 
     // Implementing round robin scheduler
+    // TODO : use pit_ticks and/or pit_millis to implement different scheduling policies
     current_task = current_task->next;
     if (0x00 == current_task)
     {
@@ -197,5 +198,5 @@ tasking_move_stack(uint32_t new_stack_addr, uint32_t stack_size)
     asm volatile("mov %0, %%esp" : : "r" (new_esp));
     asm volatile("mov %0, %%ebp" : : "r" (new_ebp));
 
-    __slog__(COM1_PORT, "Stack moved, esp(0x%X->0x%X), ebp(0x%X->0x%X)\n", esp, new_esp, ebp, new_ebp);
+    __slog__(COM1_PORT, "Stack moved, esp(0x%X->0x%X)\n", esp, new_esp);
 }

@@ -14,11 +14,8 @@
 
 #define PIT_IRQ_INTERRUPT_NO 0x08
 
-struct pit_time_elapsed
-{
-    uint32_t ticks;
-    uint32_t millis;
-};
+
+typedef void (*pit_callback_t) (uint32_t ticks, uint32_t millis);
 
 
 void pit_init();
@@ -27,8 +24,10 @@ uint32_t pit_get_count();
 void pit_set_count(uint32_t count);
 
 uint32_t pit_get_millis();
-int pit_get_seconds();
+uint32_t pit_get_seconds();
 uint32_t pit_get_ticks();
+
+void pit_set_callback(pit_callback_t callback);
 
 #ifndef __DEBUG_STUB__
 __attribute__((interrupt))

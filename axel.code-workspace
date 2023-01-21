@@ -34,7 +34,9 @@
             "string.h": "c",
             "com.h": "c",
             "memory_manager.h": "c",
-            "stdio.h": "c"
+            "stdio.h": "c",
+            "cmos.h": "c",
+            "acpi.h": "c"
         }
     }
 

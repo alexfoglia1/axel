@@ -24,7 +24,7 @@ typedef struct task
 } task_t;
 
 void tasking_init(uint32_t initial_esp);
-void tasking_scheduler();
+void tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis);
 int  tasking_fork();
 int  tasking_gettid();
 

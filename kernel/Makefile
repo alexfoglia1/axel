@@ -84,6 +84,7 @@ kernel/kheap.o \
 kernel/memory_manager.o \
 kernel/paging.o \
 kernel/multitasking.o \
+kernel/scheduler.o \
 kernel/kernel.o \
 
 OBJS=\

@@ -7,6 +7,7 @@
 #include <kernel/kheap.h>
 #include <kernel/memory_manager.h>
 #include <kernel/multitasking.h>
+#include <kernel/scheduler.h>
 
 #include <kernel/arch/cpuid.h>
 #include <kernel/arch/tty.h>
@@ -158,9 +159,10 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
     com_init(COM3_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
     com_set_int_byte(0x0D); // Fire a read syscall when <enter> is received
-    __slog__(COM1_PORT, "COM ports initialized\n");
 
+    __slog__(COM1_PORT, "COM ports initialized\n");
     printf("Detecting COM1:\t\t");
+
     if (com_is_initialized(COM1_PORT) == 0x01)
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
@@ -242,6 +244,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 
 //  Initializing ramdisk
     printf("Mounting initrd:\t\t");
+
     vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(mbd->mods_addr));
     uint32_t i = 0;
     struct dirent *node = 0;
@@ -274,7 +277,11 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 
 //  Initializing multitasking
     printf("Initializing scheduler:\t");
+    
     tasking_init(esp);
+    scheduler_init(COM_STD_TX_FREQ_HZ);
+    pit_set_callback(&scheduler);
+    
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printf("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
