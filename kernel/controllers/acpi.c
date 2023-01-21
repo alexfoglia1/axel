@@ -6,7 +6,6 @@
 #include <drivers/pit.h>
 
 #include <kernel/arch/io.h>
-#include <kernel/paging.h>
 
 #include <stddef.h>
 #include <stdio.h>
