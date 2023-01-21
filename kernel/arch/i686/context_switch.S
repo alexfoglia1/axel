@@ -14,7 +14,7 @@ context_switch:
     mov %ecx, %ebp // current base pointer = new task base pointer
     mov %edx, %cr3 // current page directory = new task page directory
     mov %eax, %ebx // ebx = new task eip
-    mov $0xDEADC0DE, %eax // set return value equals to a well known constant
+    mov $0x7A10ADED, %eax // set return value equals to a well known constant
     sti
     
     jmp %ebx //jump to new task, if I am child eip = ebx = return from here = return 0xDEADC0DE

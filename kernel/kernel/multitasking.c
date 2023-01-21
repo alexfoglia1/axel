@@ -122,9 +122,9 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
     uint32_t eip;
     eip = read_instruction_pointer();
 
-    if (0xDEADC0DE == eip)
+    if (0x7A10ADED == eip)
     {
-        // If read_instruction_pointer() returns 0xDEADC0DE, we are immediately after context_switch(), just return
+        // If read_instruction_pointer() returns 0x7A1OADED, we are immediately after context_switch(), just return
         return;
     }
 
