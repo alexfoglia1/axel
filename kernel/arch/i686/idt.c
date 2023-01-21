@@ -20,13 +20,13 @@ idt_init()
         memset(&idt[i], 0x00, sizeof(struct idt_entry));
     }
 
-    for (int i = 0; i < AVAILABLE_HANDLERS; i++)
+    for (int i = 0; i < INITIAL_INTERRUPT_HANDLERS; i++)
     {
         /** isr_vector is declared in isr/isr.h and defined in arch/i386/isr.c **/
         idt_add_entry(i, isr_vector[i].handler, isr_vector[i].attributes);
     }
 
-    for (int i = AVAILABLE_HANDLERS; i < IDT_SIZE; i++)
+    for (int i = INITIAL_INTERRUPT_HANDLERS; i < IDT_SIZE; i++)
     {
         idt_add_entry(i, &unhandled_interrupt, PRESENT | TRP_GATE);
     }

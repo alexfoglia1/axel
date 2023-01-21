@@ -19,13 +19,14 @@ sys_write(interrupt_stack_frame_t* frame)
 
     switch (type)
     {
-        case SYSCALL_TTY_WRITE:
+        case SYSCALL_TYPE_TTY_WRITE:
         {
             const char* buffer = (const char*)(rbuf);
             tty_putchars(buffer, count);
+
             break;
         }
-        case SYSCALL_IO_WRITE_BYTE:
+        case SYSCALL_TYPE_IO_WRITE_BYTE:
         {
             uint8_t* buffer = (uint8_t*)(rbuf);
             for (uint32_t i = 0; i < count; i++)
@@ -34,7 +35,7 @@ sys_write(interrupt_stack_frame_t* frame)
             }
             break;
         }
-        case SYSCALL_IO_WRITE_WORD:
+        case SYSCALL_TYPE_IO_WRITE_WORD:
         {
             uint16_t* buffer = (uint16_t*)(rbuf);
             for (uint32_t i = 0; i < count; i++)
@@ -43,7 +44,7 @@ sys_write(interrupt_stack_frame_t* frame)
             }
             break;
         }
-        case SYSCALL_IO_WRITE_LONG:
+        case SYSCALL_TYPE_IO_WRITE_LONG:
         {
             uint32_t* buffer = (uint32_t*)(rbuf);
             for (uint32_t i = 0; i < count; i++)

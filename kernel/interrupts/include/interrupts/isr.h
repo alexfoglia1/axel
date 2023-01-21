@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 
-#define AVAILABLE_HANDLERS 34 // change this when adding a new interrupt handler
+#define INITIAL_INTERRUPT_HANDLERS 32
 #define TSK_GATE 0x5
 #define IRQ_GATE 0xE
 #define TRP_GATE 0xF
@@ -45,7 +45,7 @@ struct interrupt_handler_descriptor
 };
 
 
-extern struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS];
+extern struct interrupt_handler_descriptor isr_vector[INITIAL_INTERRUPT_HANDLERS];
 
 //TODO : implement other exceptions
 #ifndef __DEBUG_STUB__

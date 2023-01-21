@@ -36,7 +36,9 @@
             "memory_manager.h": "c",
             "stdio.h": "c",
             "cmos.h": "c",
-            "acpi.h": "c"
+            "acpi.h": "c",
+            "stddef.h": "c",
+            "syscall.h": "c"
         }
     }
 

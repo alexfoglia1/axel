@@ -18,6 +18,8 @@
 
 #include <interrupts/isr.h>
 
+#include <syscall/syscall.h>
+
 #include <controllers/ps2.h>
 #include <controllers/pic.h>
 #include <controllers/com.h>
@@ -48,14 +50,17 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //   I can __slog__ if com are not yet initialized, output is just buffered
     __slog__(COM1_PORT, "System boot\n"); 
 
-//  Initializing TTY, GDT and IDT (this shall be the very first thing to do, otherwise printf will triple fault)
+//  Initializing TTY, GDT, IDT and system calls (this shall be the very first thing to do, otherwise printf will triple fault)
     tty_init();
     gdt_init();
     idt_init();
     __slog__(COM1_PORT, "Descriptors initialized\n");
+
+    syscall_init();
 //  -------------------------
 
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+
     printf("Starting AXEL %d.%d-%c\n\n", MAJOR_V, MINOR_V, STAGE_V);
 
     if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
@@ -108,13 +113,11 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-
-//  Initializing ACPI : this shall be done before paging because it will search on physical address given by the bootloader
+//  Initializing ACPI
     printf("Initializing ACPI:\t\t");
 
-    pit_init(); // ACPI needs PIT timer to complete initialization
-    sti();
     acpi_init();
+
     if (0x01 == acpi_is_initialized())
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
@@ -141,7 +144,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
         printf("[KO]\n");
     }
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-    cli();
 //  --------------------------
 
 //  Initialize paging + heap : doing so, we can kmalloc and kfree using the heap (no heap, no kfree)
@@ -235,12 +237,14 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //  Initializing Device Drivers
     printf("Loading device drivers:\t");
 
+    pit_init();
     keyboard_init(PS2_DATA_PORT); // It works with PS/2 or legacy USB
 
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printf("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
+
 
 //  Initializing ramdisk
     printf("Mounting initrd:\t\t");
@@ -274,7 +278,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-
 //  Initializing multitasking
     printf("Initializing scheduler:\t");
     
@@ -288,6 +291,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //  --------------------------
 
     sti();
+
 
     int tid = tasking_fork();
     if (0 == tid)

@@ -214,7 +214,7 @@ com_read(int com_port, uint8_t* buf, uint32_t n_bytes)
 
 
 static void
-com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen, int syscall_no)
+com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen, int syscall_type)
 {
     if (COM_INBUF_LEN == *input_buffer_llen)
     {
@@ -231,7 +231,7 @@ com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen
                 (*input_buffer_llen > 0))
             {
                 uint8_t* buf = kmalloc(*input_buffer_llen);
-                read(syscall_no, buf, *input_buffer_llen);
+                read(syscall_type, buf, *input_buffer_llen);
                 // I can kfree buf because i'm inside an IRQ handler : kernel has called sti() and hence paging + heap are active
                 // Moreover, kernel is initializing COM after paging
                 kfree(buf);
@@ -254,7 +254,7 @@ __attribute__((interrupt))
 void
 com_1_irq_handler(interrupt_stack_frame_t* frame)
 {
-    com_irq_handler(COM1_PORT, com_1_input_buffer, &com_1_input_ll, SYSCALL_COM_1_READ);
+    com_irq_handler(COM1_PORT, com_1_input_buffer, &com_1_input_ll, SYSCALL_TYPE_COM_1_READ);
 }
 
 
@@ -263,7 +263,7 @@ __attribute__((interrupt))
 #endif
 void com_2_irq_handler(interrupt_stack_frame_t* frame)
 {
-    com_irq_handler(COM2_PORT, com_2_input_buffer, &com_2_input_ll, SYSCALL_COM_2_READ);
+    com_irq_handler(COM2_PORT, com_2_input_buffer, &com_2_input_ll, SYSCALL_TYPE_COM_2_READ);
 }
 
 
@@ -272,7 +272,7 @@ __attribute__((interrupt))
 #endif
 void com_3_irq_handler(interrupt_stack_frame_t* frame)
 {
-    com_irq_handler(COM3_PORT, com_3_input_buffer, &com_3_input_ll, SYSCALL_COM_3_READ);
+    com_irq_handler(COM3_PORT, com_3_input_buffer, &com_3_input_ll, SYSCALL_TYPE_COM_3_READ);
 }
 
 

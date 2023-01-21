@@ -56,9 +56,11 @@ $(ARCHDIR)/copy_page_physical.o \
 $(ARCHDIR)/flush_tlb.o \
 $(ARCHDIR)/read_instruction_pointer.o \
 $(ARCHDIR)/context_switch.o \
+$(ARCHDIR)/syscall_interface.o \
 $(ISRDIR)/isr.o \
 $(SYSCALLDIR)/sys_write.o \
 $(SYSCALLDIR)/sys_read.o \
+$(SYSCALLDIR)/syscall.o \
 $(CONTRDIR)/pic.o \
 $(CONTRDIR)/ps2.o \
 $(CONTRDIR)/com.o \

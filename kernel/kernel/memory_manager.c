@@ -156,9 +156,9 @@ memory_acquire_frame(uint32_t frame_addr)
 
 
 void
-memory_create_heap(void* kernel_directory)
+memory_create_heap()
 {
-    kheap_init(kernel_directory);
+    kheap_init();
 }
 
 

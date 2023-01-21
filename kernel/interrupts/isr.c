@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 
-struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS] =
+struct interrupt_handler_descriptor isr_vector[INITIAL_INTERRUPT_HANDLERS] =
 {
     // int 0 = divide by zero
     {&divide_by_zero_exception, PRESENT | TRP_GATE},
@@ -51,12 +51,6 @@ struct interrupt_handler_descriptor isr_vector[AVAILABLE_HANDLERS] =
     {&unhandled_interrupt, PRESENT | TRP_GATE},
     {&unhandled_interrupt, PRESENT | TRP_GATE},
     {&unhandled_interrupt, PRESENT | TRP_GATE},
-
-    // int 32 read syscall
-    {&sys_read,  PRESENT | TRP_GATE},
-
-    // int 33 write syscall
-    {&sys_write, PRESENT | TRP_GATE}
 };
 
 
@@ -82,11 +76,11 @@ void page_fault_exception(interrupt_stack_frame_t* frame)
     asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
 
     // The error code gives us details of what happened.
-    int present = frame->error_code & 0x1;      // Page present
-    int rw = frame->error_code & 0x2;           // Write operation?
-    int us = frame->error_code & 0x4;           // Processor was in user-mode?
-    int reserved = frame->error_code & 0x8;     // Overwritten CPU-reserved bits of page entry?
-    int id = frame->error_code & 0x10;          // Caused by an instruction fetch?
+    int present = (frame->error_code >> 0) & 0x1;      // Page present
+    int rw = (frame->error_code >> 1) & 0x1;           // Write operation?
+    int us = (frame->error_code >> 2) & 0x1;           // Processor was in user-mode?
+    int reserved = (frame->error_code >> 3) & 0x1;     // Overwritten CPU-reserved bits of page entry?
+    int id = (frame->error_code>> 4) & 0x1;          // Caused by an instruction fetch?
 
     // Output an error message.
     printf("Page fault (present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d)) at 0x%X\n",
