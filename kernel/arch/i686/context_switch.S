@@ -7,9 +7,8 @@ context_switch:
     mov 12(%esp), %ebx // new task esp
     mov 16(%esp), %ecx // new task ebp
     mov 20(%esp), %edx // new task page directory
-    cli
-
     
+    cli
     mov %ebx, %esp // current stack pointer = new task stack pointer
     mov %ecx, %ebp // current base pointer = new task base pointer
     mov %edx, %cr3 // current page directory = new task page directory
