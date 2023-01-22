@@ -41,7 +41,4 @@ sys_read(interrupt_stack_frame_t frame)
         default:
             break;
     }
-
-    tty_putstring("before sys_read return\n");
-    //while(1);
 }

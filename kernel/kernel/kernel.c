@@ -275,30 +275,21 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //  --------------------------
 
 //  Initializing multitasking
-//    printf("Initializing scheduler:\t");
+    printf("Initializing scheduler:\t");
     
-//    tasking_init(esp);
-//    scheduler_init(COM_STD_TX_FREQ_HZ);
-//    pit_set_callback(&scheduler);
+    tasking_init(esp);
+    scheduler_init(COM_STD_TX_FREQ_HZ);
+    pit_set_callback(&scheduler);
     
-//    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-//    printf("[OK]\n");
-//    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+    printf("[OK]\n");
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
     sti();
 
     printf("Welcome!\n");
-    printf("Insert characters from terminal\n");
-    for(int i = 0; i < 20; i++)
-    {
-        printf("%d    \r", 20 - i);
-        sleep(100);
-    }
-    char buf[64];
-    syscall_interface(80, SYSCALL_TYPE_COM_1_READ, (uint32_t)buf, 64, 0);
-    printf("After int80\n");
-    
+
     while(1);
 
 #if 0
