@@ -54,15 +54,15 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_init();
     gdt_init();
     idt_init();
+
     __slog__(COM1_PORT, "Descriptors initialized\n");
 
     syscall_init();
 //  -------------------------
 
-    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-
-    printf("abc");
+    write(0x01, (uint8_t*) 0x02, 0x03);
     while(1);
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
     printf("Starting AXEL %d.%d-%c\n\n", MAJOR_V, MINOR_V, STAGE_V);
 

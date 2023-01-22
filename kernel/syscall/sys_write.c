@@ -7,22 +7,19 @@
 #include <stdio.h>
 
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
 void
-sys_write(interrupt_stack_frame_t* frame)
+sys_write(interrupt_stack_frame_t frame)
 {
 
-    uint32_t rtype = 0;
-    uint32_t rcount = 0;
-    uint32_t rbuf = 0;
-    uint32_t rioaddr = 0; 
+    uint32_t rtype = frame.eax;
+    uint32_t rcount = frame.ebx;
+    uint32_t rbuf = frame.ecx;
+    uint32_t rioaddr = frame.edx;
     
-    RF_READ_GENERAL_A_32(rtype);
-    RF_READ_GENERAL_B_32(rcount);
-    RF_READ_GENERAL_C_32(rbuf);
-    RF_READ_GENERAL_D_32(rioaddr);
+    //RF_READ_GENERAL_A_32(rtype);
+    //RF_READ_GENERAL_B_32(rcount);
+    //RF_READ_GENERAL_C_32(rbuf);
+    //RF_READ_GENERAL_D_32(rioaddr);
 
     uint32_t type = (uint32_t) rtype;
     uint32_t count = (uint32_t) rcount;
@@ -32,6 +29,7 @@ sys_write(interrupt_stack_frame_t* frame)
     char temp[512];
     sprintf(temp, "sys_write: type(0x%X), count(0x%X), buf(0x%X), ioaddr(0x%X)\n\n", type, count, buf, ioaddr);
     tty_putstring(temp);
+    while(1);
     return;
 #if 0
     switch (register_type)

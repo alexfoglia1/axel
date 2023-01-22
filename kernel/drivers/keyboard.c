@@ -21,17 +21,14 @@ keyboard_init(uint8_t in_port)
     is_shift_holded = 0;
     data_port = in_port;
 
-    pic_add_irq(KBD_IRQ_INTERRUPT_NO, &keyboard_irq_handler);
+    isr_register(KBD_IRQ_INTERRUPT_NO, &keyboard_irq_handler);
 
     __slog__(COM1_PORT, "Keyboard initialized\n");
 }
 
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
 void
-keyboard_irq_handler(interrupt_stack_frame_t* frame)
+keyboard_irq_handler(interrupt_stack_frame_t frame)
 {
     uint8_t key = inb(data_port);
 

@@ -6,12 +6,8 @@
 #include <controllers/com.h>
 
 
-
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
 void
-sys_read(interrupt_stack_frame_t* frame)
+sys_read(interrupt_stack_frame_t frame)
 {
     uint32_t register_type;
     uint32_t register_count;

@@ -1,104 +1,101 @@
 #include <interrupts/isr.h>
 
-#include <syscall/syscall.h>
-
-#include <kernel/arch/gdt.h>
+#include <kernel/arch/idt.h>
 #include <kernel/arch/rf.h>
-
-#include <controllers/pic.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-
-struct interrupt_handler_descriptor isr_vector[INITIAL_INTERRUPT_HANDLERS] =
+static hl_interrupt_handler hl_interrupt_handlers[IDT_N_ENTRY_POINTS] = 
 {
-    // int 0 = divide by zero
-    {&divide_by_zero_exception, PRESENT | TRP_GATE},
-
-    // int 1->13 = todo 
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE}, 
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE}, 
-
-    // int 14 = page fault
-    {&page_fault_exception, PRESENT | TRP_GATE}, 
-
-    // int 15->31 = todo
-    {&unhandled_interrupt, PRESENT | TRP_GATE}, 
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
+    &divide_by_zero_exception, // INT 0 : DIVIDE BY ZERO
+    &unhandled_interrupt,      // INT 1 : UNHANDLED
+    &unhandled_interrupt,      // INT 2 : UNHANDLED
+    &unhandled_interrupt,      // INT 3 : UNHANDLED
+    &unhandled_interrupt,      // INT 4 : UNHANDLED
+    &unhandled_interrupt,      // INT 5 : UNHANDLED
+    &unhandled_interrupt,      // INT 6 : UNHANDLED
+    &unhandled_interrupt,      // INT 7 : UNHANDLED
+    &unhandled_interrupt,      // INT 8 : UNHANDLED (PIT TIMER IRQ : IT WILL BE ADDED BY PIT DRIVER)
+    &unhandled_interrupt,      // INT 9 : UNHANDLED (KEYBOARD IRQ  : IT WILL BE ADDED BY KEYBOARD DRIVER)
+    &unhandled_interrupt,      // INT 10 : UNHANDLED 
+    &unhandled_interrupt,      // INT 11 : UNHANDLED (COM_2 IRQ : IT WILL BE ADDED BY COM DRIVER)
+    &unhandled_interrupt,      // INT 12 : UNHANDLED (COM_1 IRQ : IT WILL BE ADDED BY COM DRIVER)
+    &unhandled_interrupt,      // INT 13 : UNHANDLED
+    &page_fault_exception,     // INT 14 : PAGE FAULT
+    &unhandled_interrupt,      // INT 15 : UNHANDLED
+    &unhandled_interrupt,      // INT 16 : UNHANDLED
+    &unhandled_interrupt,      // INT 17 : UNHANDLED
+    &unhandled_interrupt,      // INT 18 : UNHANDLED
+    &unhandled_interrupt,      // INT 19 : UNHANDLED
+    &unhandled_interrupt,      // INT 20 : UNHANDLED
+    &unhandled_interrupt,      // INT 21 : UNHANDLED
+    &unhandled_interrupt,      // INT 22 : UNHANDLED
+    &unhandled_interrupt,      // INT 23 : UNHANDLED
+    &unhandled_interrupt,      // INT 24 : UNHANDLED
+    &unhandled_interrupt,      // INT 25 : UNHANDLED
+    &unhandled_interrupt,      // INT 26 : UNHANDLED
+    &unhandled_interrupt,      // INT 27 : UNHANDLED
+    &unhandled_interrupt,      // INT 28 : UNHANDLED
+    &unhandled_interrupt,      // INT 29 : UNHANDLED
+    &unhandled_interrupt,      // INT 30 : UNHANDLED
+    &unhandled_interrupt,      // INT 31 : UNHANDLED
+    &unhandled_interrupt,      // INT 32 : UNHANDLED
+    &unhandled_interrupt,      // INT 33 : UNHANDLED (SYSCALL READ  : IT WILL BE ADDED BY SYSCALL HANDLER)
+    &unhandled_interrupt       // INT 34 : UNHANDLED (SYSCALL WRITE : IT WILL BE ADDED BY SYSCALL HANDLER)
 };
 
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
 void
-divide_by_zero_exception(interrupt_stack_frame_t* frame)
+isr_register(uint32_t int_no, hl_interrupt_handler handler)
 {
-    printf("KERNEL PANIC : DIVIDE BY ZERO\n");
+    hl_interrupt_handlers[int_no] = handler;
+}
+
+
+void
+hl_int_dispatcher(interrupt_stack_frame_t stack_frame)
+{
+    printf("hl_int_dispatcher : requested int no 0x%X\n", stack_frame.int_no);
+    hl_interrupt_handlers[stack_frame.int_no](stack_frame);
+}
+
+
+void
+unhandled_interrupt(interrupt_stack_frame_t frame)
+{
+    printf("Unhandled interrupt 0x%X\n", frame.int_no);
+    printf("eax(%u), ebx(%u), ecx(%u), edx(%u)\n", frame.eax, frame.ebx, frame.ecx, frame.edx);
+    while(1);
+}
+
+
+void
+divide_by_zero_exception(interrupt_stack_frame_t stack_frame)
+{
+    printf("KERNEL PANIC : DIVIDE BY 0 EXCEPTION\n");
     abort();
 }
 
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void page_fault_exception(interrupt_stack_frame_t* frame)
+void
+page_fault_exception(interrupt_stack_frame_t frame)
 {
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
     uint32_t faulting_address;
     RF_READ_CR_2(faulting_address); 
 
-
     // The error code gives us details of what happened.
-    int present = (frame->err_code >> 0) & 0x1;      // Page present
-    int rw = (frame->err_code >> 1) & 0x1;           // Write operation?
-    int us = (frame->err_code >> 2) & 0x1;           // Processor was in user-mode?
-    int reserved = (frame->err_code >> 3) & 0x1;     // Overwritten CPU-reserved bits of page entry?
-    int id = (frame->err_code>> 4) & 0x1;          // Caused by an instruction fetch?
+    int present = (frame.err_code >> 0) & 0x1;      // Page present
+    int rw = (frame.err_code >> 1) & 0x1;           // Write operation?
+    int us = (frame.err_code >> 2) & 0x1;           // Processor was in user-mode?
+    int reserved = (frame.err_code >> 3) & 0x1;     // Overwritten CPU-reserved bits of page entry?
+    int id = (frame.err_code>> 4) & 0x1;            // Caused by an instruction fetch?
 
     // Output an error message.
-    printf("Page fault (present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d)) at 0x%X\n",
+    printf("KERNEL PANIC : PAGE FAULT\n(present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d))\n\tat 0x%X\n\n",
                         present,     rw,                            us,  reserved,           id,   faulting_address);
 
-    printf("KERNEL PANIC : PAGE FAULT\n");
     abort();
 }
-
-
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void
-unhandled_interrupt(interrupt_stack_frame_t* frame)
-{
-    printf("Unhandled interrupt 0x%X\n", *(uint32_t*)(frame->int_no));
-}
-

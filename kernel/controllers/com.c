@@ -1,6 +1,8 @@
 #include <controllers/com.h>
 #include <controllers/pic.h>
 
+#include <interrupts/isr.h>
+
 #include <common/utils.h>
 
 #include <kernel/arch/io.h>
@@ -100,17 +102,17 @@ com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits
         if (COM1_PORT == com_port)
         {
             com_1_port_initialized = 0x01;
-            pic_add_irq(COM1_IRQ_INTERRUPT_NO, &com_1_irq_handler);
+            isr_register(COM1_IRQ_INTERRUPT_NO, &com_1_irq_handler);
         }
         else if (COM2_PORT == com_port)
         {
             com_2_port_initialized = 0x01;
-            pic_add_irq(COM2_IRQ_INTERRUPT_NO, &com_2_irq_handler);
+            isr_register(COM2_IRQ_INTERRUPT_NO, &com_2_irq_handler);
         }
         else if (COM3_PORT == com_port)
         {
             com_3_port_initialized = 0x01;
-            pic_add_irq(COM3_IRQ_INTERRUPT_NO, &com_3_irq_handler);
+            isr_register(COM3_IRQ_INTERRUPT_NO, &com_3_irq_handler);
         }
      }
 }
@@ -248,29 +250,22 @@ com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen
 }
 
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
 void
-com_1_irq_handler(interrupt_stack_frame_t* frame)
+com_1_irq_handler(interrupt_stack_frame_t frame)
 {
     com_irq_handler(COM1_PORT, com_1_input_buffer, &com_1_input_ll, SYSCALL_TYPE_COM_1_READ);
 }
 
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void com_2_irq_handler(interrupt_stack_frame_t* frame)
+void
+com_2_irq_handler(interrupt_stack_frame_t frame)
 {
     com_irq_handler(COM2_PORT, com_2_input_buffer, &com_2_input_ll, SYSCALL_TYPE_COM_2_READ);
 }
 
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void com_3_irq_handler(interrupt_stack_frame_t* frame)
+void
+com_3_irq_handler(interrupt_stack_frame_t frame)
 {
     com_irq_handler(COM3_PORT, com_3_input_buffer, &com_3_input_ll, SYSCALL_TYPE_COM_3_READ);
 }

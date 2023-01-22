@@ -48,6 +48,8 @@ $(ARCHDIR)/tty.o \
 $(ARCHDIR)/io.o \
 $(ARCHDIR)/gdt.o \
 $(ARCHDIR)/idt.o \
+$(ARCHDIR)/int_entry_points.o \
+$(ARCHDIR)/ll_int_dispatcher.o \
 $(ARCHDIR)/cpuid.o \
 $(ARCHDIR)/cpuid_supported.o \
 $(ARCHDIR)/enable_paging.o \

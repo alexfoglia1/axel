@@ -2,14 +2,15 @@
 
 #include <common/utils.h>
 
-#include <kernel/arch/idt.h>
-#include <kernel/arch/gdt.h>
+#include <interrupts/isr.h>
+
+#include <kernel/arch/tty.h>
 
 void
 syscall_init()
 {
-    idt_add_entry(SYSCALL_INT_NO_READ,  &sys_read,  PRESENT | TRP_GATE);
-    idt_add_entry(SYSCALL_INT_NO_WRITE, &sys_write, PRESENT | TRP_GATE);
+    isr_register(SYSCALL_INT_NO_READ,  &sys_read);
+    isr_register(SYSCALL_INT_NO_WRITE, &sys_write);
 
     __slog__(COM1_PORT, "Syscall mapped\n");
 }

@@ -3,47 +3,42 @@
 
 #include <stdint.h>
 
-
-#define INITIAL_INTERRUPT_HANDLERS 32
-#define TSK_GATE 0x5
-#define IRQ_GATE 0xE
-#define TRP_GATE 0xF
-
-
 typedef struct
 {
-    uint32_t eax, ebx, ecx, edx;
-    uint32_t int_no, err_code;
-    uint32_t eip, cs, eflags, userresp, ss;
+   uint32_t ds;
+   uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+   uint32_t int_no, err_code;
+   uint32_t eip, cs, eflags, useresp, ss;
 } interrupt_stack_frame_t;
 
+typedef void (*hl_interrupt_handler)(interrupt_stack_frame_t frame);
 
-typedef void (*interrupt_handler)(interrupt_stack_frame_t* frame);
+// Register high level interrupt service routines : it shall be used by the kernel and device drivers
+void isr_register(uint32_t int_no, hl_interrupt_handler handler); 
 
-struct interrupt_handler_descriptor
-{
-    interrupt_handler handler;
-    uint8_t attributes;
-};
-
-
-extern struct interrupt_handler_descriptor isr_vector[INITIAL_INTERRUPT_HANDLERS];
-
-//TODO : implement other exceptions
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void divide_by_zero_exception(interrupt_stack_frame_t* frame); //INT 0
-
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void page_fault_exception(interrupt_stack_frame_t* frame); // INT 14
-
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void
-unhandled_interrupt(interrupt_stack_frame_t* frame);
+// The below routine is called by the asm ll_int_dispatcher() defined in kernel/arch/asm.h
+// |
+// |
+// |
+// |
+// |
+// v
+void hl_int_dispatcher(interrupt_stack_frame_t stack_frame);
+// ^
+// |
+// |
+// |
+// |
+//
+// The above routine calls the belows
+//
+// |
+// |
+// |
+// |
+// v
+void divide_by_zero_exception(interrupt_stack_frame_t stack_frame);
+void page_fault_exception(interrupt_stack_frame_t stack_frame);
+void unhandled_interrupt(interrupt_stack_frame_t stack_frame);
 
 #endif

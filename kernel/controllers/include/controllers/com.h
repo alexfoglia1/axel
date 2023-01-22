@@ -34,7 +34,8 @@
 
 #define COM1_IRQ_INTERRUPT_NO  0x0C
 #define COM2_IRQ_INTERRUPT_NO  0x0B
-#define COM3_IRQ_INTERRUPT_NO  COM1_IRQ_INTERRUPT_NO // DELL OPTIPLEX 780 ONLY
+#define COM3_IRQ_INTERRUPT_NO  COM1_IRQ_INTERRUPT_NO
+#define COM4_IRQ_INTERRUPT_NO  COM2_IRQ_INTERRUPT_NO
 
 #define COM_OUTBUF_LEN       0x8000
 #define COM_INBUF_LEN        0x8000
@@ -54,19 +55,8 @@ int com_read(int com_port, uint8_t* buf, uint32_t n_bytes);
 
 uint32_t com_flush(int com_port); // Effectively transmit data to outport : called from PIT timer
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void com_1_irq_handler(interrupt_stack_frame_t* frame);
-
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void com_2_irq_handler(interrupt_stack_frame_t* frame);
-
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void com_3_irq_handler(interrupt_stack_frame_t* frame);
+void com_1_irq_handler(interrupt_stack_frame_t frame);
+void com_2_irq_handler(interrupt_stack_frame_t frame);
+void com_3_irq_handler(interrupt_stack_frame_t frame);
 
 #endif

@@ -8,10 +8,7 @@
 #define IDE_IRQ_INTERRUPT_NO 0x76
 
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void ide_irq_handler(interrupt_stack_frame_t* frame);
+void ide_irq_handler(interrupt_stack_frame_t frame);
 
 void ide_init(uint32_t bar0, uint32_t bar1, uint32_t bar2, uint32_t bar3, uint32_t bar4);
 unsigned char ide_write_sectors(unsigned char drive, unsigned char numsects, unsigned int lba, unsigned short es, unsigned int edi);

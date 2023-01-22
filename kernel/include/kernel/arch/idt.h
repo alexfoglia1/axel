@@ -1,9 +1,15 @@
 #ifndef _IDT_H
 #define _IDT_H
 
-#define IDT_SIZE 256
-
 #include <stdint.h>
+#include <kernel/arch/asm.h>
+
+#define IDT_SIZE 256 // The length of the entire IDT structure
+#define IDT_N_ENTRY_POINTS 35 // Actual serviced interrupts
+
+#define TSK_GATE 0x5
+#define IRQ_GATE 0xE
+#define TRP_GATE 0xF
 
 struct idt_entry
 {

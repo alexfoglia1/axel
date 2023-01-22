@@ -55,7 +55,7 @@ pit_init()
     outb(PIT_CHANNEL_0_PORT, div_low);
     outb(PIT_CHANNEL_0_PORT, div_high);
 
-    pic_add_irq(PIT_IRQ_INTERRUPT_NO, pit_irq0_handler);
+    isr_register(PIT_IRQ_INTERRUPT_NO, pit_irq0_handler);
 }
 
 
@@ -87,11 +87,8 @@ pit_set_callback(pit_callback_t _callback)
 }
 
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
 void
-pit_irq0_handler(interrupt_stack_frame_t* frame)
+pit_irq0_handler(interrupt_stack_frame_t frame)
 {
     ticks_cnt  += 1;
     millis_cnt = (ticks_cnt * PIT_MILLIS_PER_TICK);

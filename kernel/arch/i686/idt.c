@@ -20,16 +20,42 @@ idt_init()
         memset(&idt[i], 0x00, sizeof(struct idt_entry));
     }
 
-    for (int i = 0; i < INITIAL_INTERRUPT_HANDLERS; i++)
-    {
-        /** isr_vector is declared in isr/isr.h and defined in arch/i386/isr.c **/
-        idt_add_entry(i, isr_vector[i].handler, isr_vector[i].attributes);
-    }
 
-    for (int i = INITIAL_INTERRUPT_HANDLERS; i < IDT_SIZE; i++)
-    {
-        idt_add_entry(i, &unhandled_interrupt, PRESENT | TRP_GATE);
-    }
+    idt_add_entry(0,  &isr0_entry_point,  PRESENT | TRP_GATE);
+    idt_add_entry(1,  &isr1_entry_point,  PRESENT | TRP_GATE);
+    idt_add_entry(2,  &isr2_entry_point,  PRESENT | TRP_GATE);
+    idt_add_entry(3,  &isr3_entry_point,  PRESENT | TRP_GATE);
+    idt_add_entry(4,  &isr4_entry_point,  PRESENT | TRP_GATE);
+    idt_add_entry(5,  &isr5_entry_point,  PRESENT | TRP_GATE);
+    idt_add_entry(6,  &isr6_entry_point,  PRESENT | TRP_GATE);
+    idt_add_entry(7,  &isr7_entry_point,  PRESENT | TRP_GATE);
+    idt_add_entry(8,  &isr8_entry_point,  PRESENT | TRP_GATE);
+    idt_add_entry(9,  &isr9_entry_point,  PRESENT | TRP_GATE);
+    idt_add_entry(10, &isr10_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(11, &isr11_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(12, &isr12_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(13, &isr13_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(14, &isr14_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(15, &isr15_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(16, &isr16_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(17, &isr17_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(18, &isr18_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(19, &isr19_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(20, &isr20_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(21, &isr21_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(22, &isr22_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(23, &isr23_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(24, &isr24_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(25, &isr25_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(26, &isr26_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(27, &isr27_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(28, &isr28_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(29, &isr29_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(30, &isr30_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(31, &isr31_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(32, &isr32_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(33, &isr33_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(34, &isr34_entry_point, PRESENT | TRP_GATE);
 
     store_idt(&idt);
 }

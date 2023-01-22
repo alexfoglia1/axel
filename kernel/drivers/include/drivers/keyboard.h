@@ -94,10 +94,7 @@
 
 void keyboard_init(uint8_t in_port);
 
-#if ARCH == i686
-__attribute__((interrupt))
-#endif
-void keyboard_irq_handler(interrupt_stack_frame_t* frame);
+void keyboard_irq_handler(interrupt_stack_frame_t frame);
 
 
 #endif
