@@ -21,7 +21,7 @@
 // Assembly interface to actual system calls, this shall be equals to the signature defined in kernel/arch/asm.h
 extern void syscall_interface(uint32_t syscall_int_no, uint32_t syscall_type, uint32_t count, uint32_t buffer, uint32_t extra);
 
-int write(uint32_t syscall_type, uint8_t* buffer, size_t count);
-int read(uint32_t syscall_type,  uint8_t* buffer, size_t count);
+int write(uint32_t syscall_type, void* buffer, size_t count);
+int read(uint32_t syscall_type,  void* buffer, size_t count);
 
 #endif

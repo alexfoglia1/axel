@@ -59,8 +59,10 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 
     syscall_init();
 //  -------------------------
-
-    write(0x01, (uint8_t*) 0x02, 0x03);
+    void* buffer = (void*)(0xDEADC0DE);
+    size_t count = 0xCAFEBABE;
+    uint32_t syscall_type = SYSCALL_TYPE_COM_1_READ; // 0x04
+    read(syscall_type, buffer, count);
     while(1);
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 

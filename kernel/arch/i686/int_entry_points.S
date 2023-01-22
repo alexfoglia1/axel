@@ -371,10 +371,12 @@ isr31_entry_point:
 .globl isr32_entry_point
 isr32_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
+
+    // syscall args from syscall_interface
+    push %edx // syscall_extra
+    push %ecx // syscall_buffer
+    push %ebx // syscall_count
+    push %eax // syscall_type
     
     push $0 // error code
     push $32
@@ -384,15 +386,24 @@ isr32_entry_point:
 isr33_entry_point:
     cli
     // syscall args from syscall_interface
-    push $0
+    push %edx // syscall_extra
+    push %ecx // syscall_buffer
+    push %ebx // syscall_count
+    push %eax // syscall_type
+    
+    push $0 // error code
     push $33
     jmp ll_int_dispatcher
 
 .globl isr34_entry_point
 isr34_entry_point:
     cli
-    // syscall args from syscall_interface
     push $0
+    push $0
+    push $0
+    push $0
+    
+    push $0 // error code
     push $34
     jmp ll_int_dispatcher
 

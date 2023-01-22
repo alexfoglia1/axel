@@ -11,10 +11,12 @@ void
 sys_write(interrupt_stack_frame_t frame)
 {
 
-    uint32_t rtype = frame.eax;
-    uint32_t rcount = frame.ebx;
-    uint32_t rbuf = frame.ecx;
-    uint32_t rioaddr = frame.edx;
+    uint32_t rtype = frame.syscall_type;
+    uint32_t rcount = frame.syscall_count;
+    uint32_t rbuf = frame.syscall_buffer;
+    uint32_t rioaddr = frame.syscall_ioaddr;
+    uint32_t err_code = frame.err_code; // should be zero ?
+    uint32_t int_no = frame.int_no; // Should be 0x21
     
     //RF_READ_GENERAL_A_32(rtype);
     //RF_READ_GENERAL_B_32(rcount);
@@ -27,7 +29,7 @@ sys_write(interrupt_stack_frame_t frame)
     uint32_t ioaddr = (uint32_t) rioaddr;
 
     char temp[512];
-    sprintf(temp, "sys_write: type(0x%X), count(0x%X), buf(0x%X), ioaddr(0x%X)\n\n", type, count, buf, ioaddr);
+    sprintf(temp, "sys_write: err_code(%u), int_no(0x%X)\n\ttype(0x%X), count(0x%X), buf(0x%X), ioaddr(0x%X)\n\n", err_code, int_no, type, count, buf, ioaddr);
     tty_putstring(temp);
     while(1);
     return;
