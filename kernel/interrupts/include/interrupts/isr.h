@@ -7,7 +7,7 @@ typedef struct
 {
    uint32_t ds;
    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
-   uint32_t int_no, err_code, syscall_type, syscall_count, syscall_buffer, syscall_ioaddr;
+   uint32_t int_no, err_code, syscall_type, syscall_buffer, syscall_count, syscall_ioaddr;
    uint32_t eip, cs, eflags, useresp, ss;
 } interrupt_stack_frame_t;
 
