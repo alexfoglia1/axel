@@ -21,31 +21,27 @@ sys_read(interrupt_stack_frame_t frame)
         {
             uint8_t* buffer = (uint8_t*)(buf);
             com_read(COM1_PORT, buffer, count);
-            tty_putstring("[COM1] >> ");
-            tty_putchars((const char*)buffer, count);
-            tty_putstring("\n");
+            printf("[COM1] >> %s\n", buffer);
             break;
         }
         case SYSCALL_TYPE_COM_2_READ:
         {
             uint8_t* buffer = (uint8_t*)(buf);
             com_read(COM2_PORT, buffer, count);
-            tty_putstring("[COM2] >> ");
-            tty_putchars((const char*)buffer, count);
-            tty_putstring("\n");
+            printf("[COM2] >> %s\n", buffer);
             break;
         }
         case SYSCALL_TYPE_COM_3_READ:
         {
             uint8_t* buffer = (uint8_t*)(buf);
             com_read(COM3_PORT, buffer, count);
-            tty_putstring("[COM3] >> ");
-            tty_putchars((const char*)buffer, count);
-            tty_putstring("\n");
+            printf("[COM3] >> %s\n", buffer);
             break;
         }
         default:
             break;
     }
 
+    tty_putstring("before sys_read return\n");
+    //while(1);
 }

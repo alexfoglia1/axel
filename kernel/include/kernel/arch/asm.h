@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+void store_gdt(uint32_t gdt_addr);
+void store_idt(uint32_t idt_addr);
 uint8_t cpuid_supported();
 uint32_t read_eip();
 void flush_tlb();

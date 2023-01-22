@@ -13,7 +13,7 @@ ll_int_dispatcher:
     mov %ax, %gs
     
     call hl_int_dispatcher
-    
+
     pop %eax
     mov %ax, %ds
     mov %ax, %es

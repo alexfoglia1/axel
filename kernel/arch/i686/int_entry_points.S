@@ -51,7 +51,7 @@ isr5_entry_point:
 isr6_entry_point:
     cli
     
-    push $0
+    push $0x17
     push $6
     jmp ll_int_dispatcher
 
@@ -138,8 +138,8 @@ isr16_entry_point:
 .globl isr17_entry_point
 isr17_entry_point:
     cli
+    // Error code from CPU
     
-    push $0 // error code
     push $17
     jmp ll_int_dispatcher
 
@@ -170,8 +170,8 @@ isr20_entry_point:
 .globl isr21_entry_point
 isr21_entry_point:
     cli
+    // Error code from CPU
     
-    push $0 // error code
     push $21
     jmp ll_int_dispatcher
 
@@ -258,7 +258,7 @@ isr31_entry_point:
 .globl isr80_entry_point
 isr80_entry_point:
     cli
-
+    
     push $0 // error code
     push $80
     jmp ll_int_dispatcher

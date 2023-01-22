@@ -6,17 +6,17 @@
 struct i686_interrupt_stack
 {
    uint32_t ds;
-   uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+   uint32_t edi, esi, ebp, spare, ebx, edx, ecx, eax;
    uint32_t int_no, err_code;
-   uint32_t eip, cs, eflags, useresp, ss;
+   uint32_t eip, cs, eflags, esp, ss;
 };
 
 struct debug_interrupt_stack
 {
    uint32_t ds;
-   uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+   uint32_t edi, esi, ebp, spare, ebx, edx, ecx, eax;
    uint32_t int_no, err_code;
-   uint32_t eip, cs, eflags, useresp, ss;
+   uint32_t eip, cs, eflags, esp, ss;
 };
 
 #if ARCH == i686

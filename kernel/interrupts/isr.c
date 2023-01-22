@@ -5,10 +5,12 @@
 #include <kernel/arch/idt.h>
 #include <kernel/arch/rf.h>
 
+#include <common/utils.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
-static hl_interrupt_handler hl_interrupt_handlers[IDT_SIZE] = 
+static hl_interrupt_handler hl_interrupt_handlers[IDT_ENTRIES] = 
 {
     &divide_by_zero_exception,    // INT 0  : DIVIDE BY ZERO
     &unhandled_interrupt,         // INT 1  : UNHANDLED
@@ -95,9 +97,13 @@ isr_register(uint32_t int_no, hl_interrupt_handler handler)
 void
 hl_int_dispatcher(interrupt_stack_frame_t stack_frame)
 {
-    if (hl_interrupt_handlers[stack_frame.int_no])
+    if (0x00 != hl_interrupt_handlers[stack_frame.int_no])
     {
         hl_interrupt_handlers[stack_frame.int_no](stack_frame);
+    }
+    else
+    {
+        __slog__(COM1_PORT, "hl_int_dispatcher : ISR for int_no(0x%X) is null pointer\n", stack_frame.int_no);
     }
 }
 
@@ -118,7 +124,7 @@ hl_irq_dispatcher(interrupt_stack_frame_t stack_frame)
 void
 unhandled_interrupt(interrupt_stack_frame_t frame)
 {
-    printf("Unhandled interrupt 0x%X\n", frame.int_no);
+    __slog__(COM1_PORT, "Unhandled interrupt 0x%X\n", frame.int_no);
 }
 
 
@@ -131,10 +137,13 @@ divide_by_zero_exception(interrupt_stack_frame_t stack_frame)
 
 void undef_opcode_exception(interrupt_stack_frame_t stack_frame)
 {
-    uint32_t isr;
-    RF_READ_IST_PTR(isr);
-
-    printf("KERNEL PANIC : UNDEFINED OPCODE AT 0x%x\n", isr);
+    printf("KERNEL PANIC : UNDEFINED OPCODE\n");
+    printf("\teax(0x%X), ebx(0x%X), ecx(0x%X), edx(0x%X)\n", stack_frame.eax, stack_frame.ebx, stack_frame.ecx, stack_frame.edx);
+    printf("\tesp(0x%X), ebp()\n", stack_frame.esp);//, stack_frame.ebp);
+    printf("\teip(0x%X)\n", stack_frame.eip);
+    printf("\tcs(0x%X), ds(), edi(), esi()\n", stack_frame.cs);// stack_frame.ds, stack_frame.edi, stack_frame.esi);
+    printf("\teflags(0x%X), ss(0x%X), err_code(0x%X)\n\n", stack_frame.eflags, stack_frame.err_code, stack_frame.ss);
+    
     abort();
 }
 

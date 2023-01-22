@@ -41,4 +41,6 @@ trigger_int_81:
     jmp _exit
     
 _exit:
+    popa
+    add $8, %esp
     ret

@@ -48,6 +48,8 @@ $(ARCHDIR)/tty.o \
 $(ARCHDIR)/io.o \
 $(ARCHDIR)/gdt.o \
 $(ARCHDIR)/idt.o \
+$(ARCHDIR)/store_gdt.o \
+$(ARCHDIR)/store_idt.o \
 $(ARCHDIR)/int_entry_points.o \
 $(ARCHDIR)/irq_entry_points.o \
 $(ARCHDIR)/ll_int_dispatcher.o \
