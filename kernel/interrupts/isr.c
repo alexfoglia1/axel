@@ -78,11 +78,11 @@ void page_fault_exception(interrupt_stack_frame_t* frame)
 
 
     // The error code gives us details of what happened.
-    int present = (frame->error_code >> 0) & 0x1;      // Page present
-    int rw = (frame->error_code >> 1) & 0x1;           // Write operation?
-    int us = (frame->error_code >> 2) & 0x1;           // Processor was in user-mode?
-    int reserved = (frame->error_code >> 3) & 0x1;     // Overwritten CPU-reserved bits of page entry?
-    int id = (frame->error_code>> 4) & 0x1;          // Caused by an instruction fetch?
+    int present = (frame->err_code >> 0) & 0x1;      // Page present
+    int rw = (frame->err_code >> 1) & 0x1;           // Write operation?
+    int us = (frame->err_code >> 2) & 0x1;           // Processor was in user-mode?
+    int reserved = (frame->err_code >> 3) & 0x1;     // Overwritten CPU-reserved bits of page entry?
+    int id = (frame->err_code>> 4) & 0x1;          // Caused by an instruction fetch?
 
     // Output an error message.
     printf("Page fault (present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d)) at 0x%X\n",
@@ -99,6 +99,6 @@ __attribute__((interrupt))
 void
 unhandled_interrupt(interrupt_stack_frame_t* frame)
 {
-    printf("Unhandled interrupt 0x%X\n", *(uint32_t*)(frame->vec_no));
+    printf("Unhandled interrupt 0x%X\n", *(uint32_t*)(frame->int_no));
 }
 

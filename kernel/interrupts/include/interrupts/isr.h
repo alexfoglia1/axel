@@ -10,29 +10,11 @@
 #define TRP_GATE 0xF
 
 
-typedef struct __attribute__((__packed__))
+typedef struct
 {
-    uint16_t gs;
-    uint16_t fs;
-    uint16_t es;
-    uint16_t ds;
-    uint32_t ebp;
-    uint32_t edi;
-    uint32_t esi;
-    uint32_t edx;
-    uint32_t ecx;
-    uint32_t ebx;
-    uint32_t eax;
-    //Vector no.
-    uint32_t vec_no;
-    //Hardware error code
-    uint32_t error_code;
-    //Hardware pushed registers
-    void (*eip)(void);
-    uint16_t cs;
-    uint32_t eflag;
-    void *esp;
-    uint16_t ss;
+    uint32_t eax, ebx, ecx, edx;
+    uint32_t int_no, err_code;
+    uint32_t eip, cs, eflags, userresp, ss;
 } interrupt_stack_frame_t;
 
 

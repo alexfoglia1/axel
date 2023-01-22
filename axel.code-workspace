@@ -40,7 +40,8 @@
             "stddef.h": "c",
             "syscall.h": "c",
             "rf.h": "c",
-            "multitasking.h": "c"
+            "multitasking.h": "c",
+            "tty.h": "c"
         }
     }
 

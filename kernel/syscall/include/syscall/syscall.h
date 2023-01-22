@@ -6,8 +6,6 @@
 
 #include <interrupts/isr.h> // for interrupt_stack_frame_t
 
-#include <kernel/arch/io.h>
-
 #include <unistd.h>
 
 // These are the interrupt numbers associated to system calls

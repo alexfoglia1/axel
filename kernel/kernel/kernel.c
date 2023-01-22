@@ -61,6 +61,9 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
+    printf("abc");
+    while(1);
+
     printf("Starting AXEL %d.%d-%c\n\n", MAJOR_V, MINOR_V, STAGE_V);
 
     if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
