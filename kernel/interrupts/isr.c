@@ -74,7 +74,7 @@ void page_fault_exception(interrupt_stack_frame_t* frame)
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
     uint32_t faulting_address;
-    RF_GRAB_CR_2(faulting_address); 
+    RF_READ_CR_2(faulting_address); 
 
 
     // The error code gives us details of what happened.
