@@ -38,7 +38,10 @@
             "cmos.h": "c",
             "acpi.h": "c",
             "stddef.h": "c",
-            "syscall.h": "c"
+            "syscall.h": "c",
+            "rf.h": "c",
+            "multitasking.h": "c",
+            "tty.h": "c"
         }
     }
 

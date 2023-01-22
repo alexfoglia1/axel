@@ -10,17 +10,18 @@
 #define SYSCALL_TYPE_COM_3_READ    0x06
 
 // These interrupts numbers shall be equals to the interrupts number defined in kernel/syscall/syscall.h
-#define SYSCALL_INT_NO_READ  32
-#define SYSCALL_INT_NO_WRITE 33
+#define SYSCALL_INT_NO_READ  80
+#define SYSCALL_INT_NO_WRITE 81
 
 #include <sys/cdefs.h>
+
 #include <stdint.h>
 #include <stddef.h>
 
-// Assembly interface to actual system calls
-extern void syscall_interface(uint32_t syscall_int_no, uint32_t syscall_type, uint32_t count, uint32_t buffer, uint32_t extra);
+// Assembly interface to actual system calls, this shall be equals to the signature defined in kernel/arch/asm.h
+extern void syscall_interface(uint32_t syscall_int_no, uint32_t syscall_type, uint32_t buffer, uint32_t count, uint32_t extra);
 
-int write(uint32_t syscall_type, uint8_t* buffer, size_t count);
-int read(uint32_t syscall_type,  uint8_t* buffer, size_t count);
+int write(uint32_t syscall_type, void* buffer, size_t count);
+int read(uint32_t syscall_type,  void* buffer, size_t count);
 
 #endif

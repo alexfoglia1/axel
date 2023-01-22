@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.12)
 
 project(axel-kernel-debug)
 
-add_compile_definitions(__DEBUG_STUB__)
-add_compile_definitions(__ADDR_64BIT__)
-add_compile_definitions(__is_libk)
+add_compile_definitions(i686=0)
+add_compile_definitions(debug_x86_64=1)
+add_compile_definitions(ARCH=debug_x86_64)
 
 add_executable(
 axel-kernel-debug
@@ -17,8 +17,20 @@ ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/gdt.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/idt.c
 ${CMAKE_SOURCE_DIR}/../kernel/arch/debug/cpuid.c
 
+#---- ARCHITECTURE SPECIFIC ASM SOURCES C MOCKED ----#
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/cpuid_supported.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/syscall_interface.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/load_page_directory.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/enable_paging.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/copy_page_physical.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/flush_tlb.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/read_eip.c
+${CMAKE_SOURCE_DIR}/../kernel/arch/debug/context_switch.c
+
+
 #---- COMMON      ----#
 ${CMAKE_SOURCE_DIR}/../kernel/common/utils.c
+${CMAKE_SOURCE_DIR}/../kernel/common/ordered_array.c
 
 #---- LIBC ERRNO  ----#
 ${CMAKE_SOURCE_DIR}/../libc/errno/errno.c
@@ -60,6 +72,7 @@ ${CMAKE_SOURCE_DIR}/../kernel/controllers/ide.c
 #---- SYSCALLS   ----#
 ${CMAKE_SOURCE_DIR}/../kernel/syscall/sys_write.c
 ${CMAKE_SOURCE_DIR}/../kernel/syscall/sys_read.c
+${CMAKE_SOURCE_DIR}/../kernel/syscall/syscall.c
 
 #---- FILESYSTEM ----#
 ${CMAKE_SOURCE_DIR}/../kernel/filesystem/initrd.c
@@ -67,7 +80,10 @@ ${CMAKE_SOURCE_DIR}/../kernel/filesystem/virtual_fs.c
 
 #---- KERNEL MAIN ----#
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/paging.c
-${CMAKE_SOURCE_DIR}/../kernel/kernel/memory.c
+${CMAKE_SOURCE_DIR}/../kernel/kernel/memory_manager.c
+${CMAKE_SOURCE_DIR}/../kernel/kernel/kheap.c
+${CMAKE_SOURCE_DIR}/../kernel/kernel/multitasking.c
+${CMAKE_SOURCE_DIR}/../kernel/kernel/scheduler.c
 ${CMAKE_SOURCE_DIR}/../kernel/kernel/kernel.c
 
 #---- EXEC MAIN   ----#

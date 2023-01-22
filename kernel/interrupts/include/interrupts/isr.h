@@ -3,65 +3,76 @@
 
 #include <stdint.h>
 
-
-#define INITIAL_INTERRUPT_HANDLERS 32
-#define TSK_GATE 0x5
-#define IRQ_GATE 0xE
-#define TRP_GATE 0xF
-
-
-typedef struct __attribute__((__packed__))
+struct i686_interrupt_stack
 {
-    uint16_t gs;
-    uint16_t fs;
-    uint16_t es;
-    uint16_t ds;
-    uint32_t ebp;
-    uint32_t edi;
-    uint32_t esi;
-    uint32_t edx;
-    uint32_t ecx;
-    uint32_t ebx;
-    uint32_t eax;
-    //Vector no.
-    uint32_t vec_no;
-    //Hardware error code
-    uint32_t error_code;
-    //Hardware pushed registers
-    void (*eip)(void);
-    uint16_t cs;
-    uint32_t eflag;
-    void *esp;
-    uint16_t ss;
-} interrupt_stack_frame_t;
-
-
-typedef void (*interrupt_handler)(interrupt_stack_frame_t* frame);
-
-struct interrupt_handler_descriptor
-{
-    interrupt_handler handler;
-    uint8_t attributes;
+   uint32_t ds;
+   uint32_t edi, esi, ebp, spare, ebx, edx, ecx, eax;
+   uint32_t int_no, err_code;
+   uint32_t eip, cs, eflags, esp, ss;
 };
 
+struct debug_interrupt_stack
+{
+   uint32_t ds;
+   uint32_t edi, esi, ebp, spare, ebx, edx, ecx, eax;
+   uint32_t int_no, err_code;
+   uint32_t eip, cs, eflags, esp, ss;
+};
 
-extern struct interrupt_handler_descriptor isr_vector[INITIAL_INTERRUPT_HANDLERS];
-
-//TODO : implement other exceptions
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
+#if ARCH == i686
+typedef struct i686_interrupt_stack interrupt_stack_frame_t;
+#else
+typedef struct debug_interrupt_stack interrupt_stack_frame_t;
 #endif
-void divide_by_zero_exception(interrupt_stack_frame_t* frame); //INT 0
 
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void page_fault_exception(interrupt_stack_frame_t* frame); // INT 14
+typedef void (*hl_interrupt_handler)(interrupt_stack_frame_t frame);
 
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void
-unhandled_interrupt(interrupt_stack_frame_t* frame);
+// Register high level interrupt service routines : it shall be used by the kernel and device drivers
+void isr_register(uint32_t int_no, hl_interrupt_handler handler); 
+
+// The below routine is called by the asm ll_int_dispatcher() defined in kernel/arch/asm.h
+// |
+// |
+// |
+// |
+// |
+// v
+void hl_int_dispatcher(interrupt_stack_frame_t stack_frame);
+// ^
+// |
+// |
+// |
+// |
+//
+// The above routine calls the belows
+//
+// |
+// |
+// |
+// |
+// v
+void unhandled_interrupt(interrupt_stack_frame_t stack_frame);
+void divide_by_zero_exception(interrupt_stack_frame_t stack_frame);
+void undef_opcode_exception(interrupt_stack_frame_t stack_frame);
+void gpf_exception(interrupt_stack_frame_t stack_frame);
+void page_fault_exception(interrupt_stack_frame_t stack_frame);
+
+// The below routine is called by the asm ll_irq_dispatcher() defined in kernel/arch/asm.h
+// |
+// |
+// |
+// |
+// |
+// v
+void hl_irq_dispatcher(interrupt_stack_frame_t stack_frame); // This extends the behavior of hl_int_dispatcher : it resets the pic when an interrupt has been served
+// ^
+// |
+// |
+// |
+// |
+//
+// The above routine calls :
+// 1) unhandled_interrupt() if the particular irq_no received by the ll_irq_dispatcher has not been registered by the corresponding device driver, OR
+// 2) the isr routine which the corresponding device driver has registered
 
 #endif

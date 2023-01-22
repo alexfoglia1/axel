@@ -1,34 +1,28 @@
 #include <syscall/syscall.h>
+
 #include <kernel/arch/tty.h>
+#include <kernel/arch/io.h>
 
-
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
 void
-sys_write(interrupt_stack_frame_t* frame)
+sys_write(interrupt_stack_frame_t frame)
 {
-    register int rtype   asm("eax");
-    register int rcount  asm("ebx");
-    register int rbuf    asm("ecx");
-    register int rioaddr asm("edx");
-
-    uint32_t type   = (uint32_t) rtype;
-    uint32_t count  = (uint32_t) rcount;
-    uint32_t ioaddr = (uint32_t) rioaddr;
+    uint32_t type   = frame.eax;
+    uint32_t buf    = frame.ebx;
+    uint32_t count  = frame.ecx;
+    uint32_t ioaddr = frame.edx;
 
     switch (type)
     {
         case SYSCALL_TYPE_TTY_WRITE:
         {
-            const char* buffer = (const char*)(rbuf);
+            const char* buffer = (const char*)(buf);
             tty_putchars(buffer, count);
 
             break;
         }
         case SYSCALL_TYPE_IO_WRITE_BYTE:
         {
-            uint8_t* buffer = (uint8_t*)(rbuf);
+            uint8_t* buffer = (uint8_t*)(buf);
             for (uint32_t i = 0; i < count; i++)
             {
                 outb(ioaddr, buffer[i]);
@@ -37,7 +31,7 @@ sys_write(interrupt_stack_frame_t* frame)
         }
         case SYSCALL_TYPE_IO_WRITE_WORD:
         {
-            uint16_t* buffer = (uint16_t*)(rbuf);
+            uint16_t* buffer = (uint16_t*)(buf);
             for (uint32_t i = 0; i < count; i++)
             {
                 outw(ioaddr, buffer[i]);
@@ -46,7 +40,7 @@ sys_write(interrupt_stack_frame_t* frame)
         }
         case SYSCALL_TYPE_IO_WRITE_LONG:
         {
-            uint32_t* buffer = (uint32_t*)(rbuf);
+            uint32_t* buffer = (uint32_t*)(buf);
             for (uint32_t i = 0; i < count; i++)
             {
                 outl(ioaddr, buffer[i]);

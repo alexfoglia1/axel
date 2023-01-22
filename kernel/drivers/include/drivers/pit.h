@@ -12,7 +12,7 @@
 #define PIT_DIVISOR         11931
 #define PIT_MILLIS_PER_TICK 3
 
-#define PIT_IRQ_INTERRUPT_NO 0x08
+#define PIT_IRQ             0x00
 
 
 typedef void (*pit_callback_t) (uint32_t ticks, uint32_t millis);
@@ -29,9 +29,6 @@ uint32_t pit_get_ticks();
 
 void pit_set_callback(pit_callback_t callback);
 
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void pit_irq0_handler(interrupt_stack_frame_t* frame);
+void pit_irq0_handler(interrupt_stack_frame_t frame);
 
 #endif

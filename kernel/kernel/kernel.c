@@ -50,9 +50,12 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //   I can __slog__ if com are not yet initialized, output is just buffered
     __slog__(COM1_PORT, "System boot\n"); 
 
-//  Initializing TTY, GDT, IDT and system calls (this shall be the very first thing to do, otherwise printf will triple fault)
+//  Initializing TTY, GDT, IDT and system calls
     tty_init();
     gdt_init();
+
+//  We need pic to be remapped before IDT initialization
+    pic_remap();
     idt_init();
     __slog__(COM1_PORT, "Descriptors initialized\n");
 
@@ -84,14 +87,8 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //  Detecting CPU Model
     printf("Detecting CPU Model:\t");
 
-#ifndef __DEBUG_STUB__
-    extern int cpuid_supported();
-    int cpuid_available = cpuid_supported();
-#else
-    int cpuid_available = 1;
-#endif
-
-    if (cpuid_available == 0)
+    uint8_t cpuid_available = cpuid_supported();
+    if (0x00 == cpuid_available)
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printf("[KO]\n");
@@ -245,7 +242,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-
 //  Initializing ramdisk
     printf("Mounting initrd:\t\t");
 
@@ -292,7 +288,11 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 
     sti();
 
+    printf("Welcome!\n");
 
+    while(1);
+
+#if 0
     int tid = tasking_fork();
     if (0 == tid)
     {
@@ -322,4 +322,5 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
             sleep(4000);
         }
     }
+#endif
 }

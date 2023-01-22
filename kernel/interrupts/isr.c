@@ -1,102 +1,178 @@
 #include <interrupts/isr.h>
 
-#include <syscall/syscall.h>
-
-#include <kernel/arch/gdt.h>
-
 #include <controllers/pic.h>
+
+#include <kernel/arch/idt.h>
+#include <kernel/arch/rf.h>
+
+#include <common/utils.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-
-struct interrupt_handler_descriptor isr_vector[INITIAL_INTERRUPT_HANDLERS] =
+static hl_interrupt_handler hl_interrupt_handlers[IDT_ENTRIES] = 
 {
-    // int 0 = divide by zero
-    {&divide_by_zero_exception, PRESENT | TRP_GATE},
+    &divide_by_zero_exception,    // INT 0  : DIVIDE BY ZERO
+    &unhandled_interrupt,         // INT 1  : UNHANDLED
+    &unhandled_interrupt,         // INT 2  : UNHANDLED
+    &unhandled_interrupt,         // INT 3  : UNHANDLED
+    &unhandled_interrupt,         // INT 4  : UNHANDLED
+    &unhandled_interrupt,         // INT 5  : UNHANDLED
+    &undef_opcode_exception,      // INT 6  : UNDEFINED OPCODE
+    &unhandled_interrupt,         // INT 7  : UNHANDLED
+    &unhandled_interrupt,         // INT 8  : UNHANDLED
+    &unhandled_interrupt,         // INT 9  : UNHANDLED
+    &unhandled_interrupt,         // INT 10 : UNHANDLED 
+    &unhandled_interrupt,         // INT 11 : UNHANDLED
+    &unhandled_interrupt,         // INT 12 : UNHANDLED
+    &gpf_exception,               // INT 13 : GENERAL PROTECTION FAULT
+    &page_fault_exception,        // INT 14 : PAGE FAULT
+    &unhandled_interrupt,         // INT 15 : UNHANDLED
+    &unhandled_interrupt,         // INT 16 : UNHANDLED
+    &unhandled_interrupt,         // INT 17 : UNHANDLED
+    &unhandled_interrupt,         // INT 18 : UNHANDLED
+    &unhandled_interrupt,         // INT 19 : UNHANDLED
+    &unhandled_interrupt,         // INT 20 : UNHANDLED
+    &unhandled_interrupt,         // INT 21 : UNHANDLED
+    &unhandled_interrupt,         // INT 22 : UNHANDLED
+    &unhandled_interrupt,         // INT 23 : UNHANDLED
+    &unhandled_interrupt,         // INT 24 : UNHANDLED
+    &unhandled_interrupt,         // INT 25 : UNHANDLED
+    &unhandled_interrupt,         // INT 26 : UNHANDLED
+    &unhandled_interrupt,         // INT 27 : UNHANDLED
+    &unhandled_interrupt,         // INT 28 : UNHANDLED
+    &unhandled_interrupt,         // INT 29 : UNHANDLED
+    &unhandled_interrupt,         // INT 30 : UNHANDLED
+    &unhandled_interrupt,         // INT 31 : UNHANDLED
 
-    // int 1->13 = todo 
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE}, 
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE}, 
+    &unhandled_interrupt,         // INT 32 : IRQ0
+    &unhandled_interrupt,         // INT 33 : IRQ1
+    &unhandled_interrupt,         // INT 34 : IRQ2
+    &unhandled_interrupt,         // INT 35 : IRQ3
+    &unhandled_interrupt,         // INT 36 : IRQ4
+    &unhandled_interrupt,         // INT 37 : IRQ5
+    &unhandled_interrupt,         // INT 38 : IRQ6
+    &unhandled_interrupt,         // INT 39 : IRQ7
+    &unhandled_interrupt,         // INT 40 : IRQ8
+    &unhandled_interrupt,         // INT 41 : IRQ9
+    &unhandled_interrupt,         // INT 42 : IRQ10
+    &unhandled_interrupt,         // INT 43 : IRQ11
+    &unhandled_interrupt,         // INT 44 : IRQ12
+    &unhandled_interrupt,         // INT 45 : IRQ13
+    &unhandled_interrupt,         // INT 46 : IRQ14
+    &unhandled_interrupt,         // INT 47 : IRQ15
 
-    // int 14 = page fault
-    {&page_fault_exception, PRESENT | TRP_GATE}, 
-
-    // int 15->31 = todo
-    {&unhandled_interrupt, PRESENT | TRP_GATE}, 
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
-    {&unhandled_interrupt, PRESENT | TRP_GATE},
+    0, 0, 0,                      // INT 48->50   null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 51->60   null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 61->70   null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 71->80   null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 81->90   null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 91->100  null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 101->110 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 111->120 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 121->130 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 131->140 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 141->150 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 151->160 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 161->170 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 171->180 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 181->190 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 191->200 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 201->210 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 211->220 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 221->230 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 231->240 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 241->250 null
+    0, 0, 0, 0, 0                 // INT 251->255 null
 };
 
 
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
 void
-divide_by_zero_exception(interrupt_stack_frame_t* frame)
+isr_register(uint32_t int_no, hl_interrupt_handler handler)
 {
-    printf("KERNEL PANIC : DIVIDE BY ZERO\n");
+    hl_interrupt_handlers[int_no] = handler;
+}
+
+
+void
+hl_int_dispatcher(interrupt_stack_frame_t stack_frame)
+{
+    if (0x00 != hl_interrupt_handlers[stack_frame.int_no])
+    {
+        hl_interrupt_handlers[stack_frame.int_no](stack_frame);
+    }
+    else
+    {
+        __slog__(COM1_PORT, "hl_int_dispatcher : ISR for int_no(0x%X) is null pointer\n", stack_frame.int_no);
+    }
+}
+
+
+void
+hl_irq_dispatcher(interrupt_stack_frame_t stack_frame)
+{
+    if (stack_frame.int_no >= PIC_IRQ_SLV_THRESHOLD)
+    {
+        pic_reset_slave();
+    }
+    pic_reset_master();
+
+    hl_int_dispatcher(stack_frame);
+}
+
+
+void
+unhandled_interrupt(interrupt_stack_frame_t frame)
+{
+    __slog__(COM1_PORT, "Unhandled interrupt 0x%X\n", frame.int_no);
+}
+
+
+void
+divide_by_zero_exception(interrupt_stack_frame_t stack_frame)
+{
+    printf("KERNEL PANIC : DIVIDE BY 0 EXCEPTION\n");
+    abort();
+}
+
+void undef_opcode_exception(interrupt_stack_frame_t stack_frame)
+{
+    printf("KERNEL PANIC : UNDEFINED OPCODE\n");
+    printf("\teax(0x%X), ebx(0x%X), ecx(0x%X), edx(0x%X)\n", stack_frame.eax, stack_frame.ebx, stack_frame.ecx, stack_frame.edx);
+    printf("\tesp(0x%X), ebp()\n", stack_frame.esp);//, stack_frame.ebp);
+    printf("\teip(0x%X)\n", stack_frame.eip);
+    printf("\tcs(0x%X), ds(), edi(), esi()\n", stack_frame.cs);// stack_frame.ds, stack_frame.edi, stack_frame.esi);
+    printf("\teflags(0x%X), ss(0x%X), err_code(0x%X)\n\n", stack_frame.eflags, stack_frame.err_code, stack_frame.ss);
+    
     abort();
 }
 
 
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void page_fault_exception(interrupt_stack_frame_t* frame)
+void gpf_exception(interrupt_stack_frame_t frame)
+{
+    printf("KERNEL PANIC : GENERAL PROTECTION FAULT\n");
+    abort();
+}
+
+
+void
+page_fault_exception(interrupt_stack_frame_t frame)
 {
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
     uint32_t faulting_address;
-    asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
+    RF_READ_CR_2(faulting_address); 
 
     // The error code gives us details of what happened.
-    int present = (frame->error_code >> 0) & 0x1;      // Page present
-    int rw = (frame->error_code >> 1) & 0x1;           // Write operation?
-    int us = (frame->error_code >> 2) & 0x1;           // Processor was in user-mode?
-    int reserved = (frame->error_code >> 3) & 0x1;     // Overwritten CPU-reserved bits of page entry?
-    int id = (frame->error_code>> 4) & 0x1;          // Caused by an instruction fetch?
+    int present = (frame.err_code >> 0) & 0x1;      // Page present
+    int rw = (frame.err_code >> 1) & 0x1;           // Write operation?
+    int us = (frame.err_code >> 2) & 0x1;           // Processor was in user-mode?
+    int reserved = (frame.err_code >> 3) & 0x1;     // Overwritten CPU-reserved bits of page entry?
+    int id = (frame.err_code>> 4) & 0x1;            // Caused by an instruction fetch?
 
     // Output an error message.
-    printf("Page fault (present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d)) at 0x%X\n",
+    printf("KERNEL PANIC : PAGE FAULT\n(present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d))\n\tat 0x%X\n\n",
                         present,     rw,                            us,  reserved,           id,   faulting_address);
 
-    printf("KERNEL PANIC : PAGE FAULT\n");
     abort();
 }
-
-
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void
-unhandled_interrupt(interrupt_stack_frame_t* frame)
-{
-    printf("Unhandled interrupt 0x%X\n", *(uint32_t*)(frame->vec_no));
-}
-

@@ -80,17 +80,18 @@ tasking_fork()
     __slog__(COM1_PORT, "fork(), parent tid(0x%X), child tid(0x%X)\n", parent_task->tid, task_ptr->next->tid);
 
     uint32_t eip;
-    eip = read_instruction_pointer();
-    // From here on, we may have called read_instruction_pointer and are the parent task
+    RF_READ_IST_PTR(eip);
+    // From here on, we may have called read_eip and are the parent task
     // OR
     // We are the child task and we need to start execution
     if (current_task == parent_task)
     {
         // Set esp, ebp, eip for our child
         uint32_t esp;
-        asm volatile("mov %%esp, %0" : "=r" (esp));
+        RF_READ_STK_PTR(esp);
         uint32_t ebp;
-        asm volatile("mov %%ebp, %0" : "=r" (ebp));
+        RF_READ_BAS_PTR(ebp);
+
         child_task->esp = esp;
         child_task->ebp = ebp;
         child_task->eip = eip;
@@ -116,15 +117,15 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
     }
 
     uint32_t esp;
-    asm volatile("mov %%esp, %0" : "=r" (esp));
+    RF_READ_STK_PTR(esp);
     uint32_t ebp;
-    asm volatile("mov %%ebp, %0" : "=r" (ebp));
+    RF_READ_BAS_PTR(ebp);
     uint32_t eip;
-    eip = read_instruction_pointer();
+    RF_READ_IST_PTR(eip);
 
     if (0x7A10ADED == eip)
     {
-        // If read_instruction_pointer() returns 0x7A1OADED, we are immediately after context_switch(), just return
+        // If read_eip() returns 0x7A1OADED, we are immediately after context_switch(), just return
         return;
     }
 
@@ -169,11 +170,10 @@ tasking_move_stack(uint32_t new_stack_addr, uint32_t stack_size)
 
     __slog__(COM1_PORT, "Requested new stack at 0x%X, size(0x%X)\n", new_stack_addr, stack_size);
 
-    // The usage of register int is error-prone since the value of register can be changed in subsequents functions calls
     uint32_t esp;
-    asm volatile("mov %%esp, %0" : "=r" (esp));
+    RF_READ_STK_PTR(esp);
     uint32_t ebp;
-    asm volatile("mov %%ebp, %0" : "=r" (ebp));
+    RF_READ_BAS_PTR(ebp);
 
     uint32_t offset = new_stack_addr - initial_esp;
     uint32_t new_esp = esp + offset;
@@ -195,8 +195,8 @@ tasking_move_stack(uint32_t new_stack_addr, uint32_t stack_size)
         }
     }
 
-    asm volatile("mov %0, %%esp" : : "r" (new_esp));
-    asm volatile("mov %0, %%ebp" : : "r" (new_ebp));
+    RF_WRITE_STK_PTR(new_esp);
+    RF_WRITE_BAS_PTR(new_ebp);
 
     __slog__(COM1_PORT, "Stack moved, esp(0x%X->0x%X)\n", esp, new_esp);
 }

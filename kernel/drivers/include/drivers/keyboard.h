@@ -90,14 +90,10 @@
 #define KBD_KEY_PAGDWN_DOWN  KBD_NUMPAD_3_DOWN
 #define KBD_KEY_PAGDWN_UP    KBD_NUMPAD_3_UP
 
-#define KBD_IRQ_INTERRUPT_NO 0x09
+#define KBD_IRQ              0x01
 
 void keyboard_init(uint8_t in_port);
-
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void keyboard_irq_handler(interrupt_stack_frame_t* frame);
+void keyboard_irq_handler(interrupt_stack_frame_t frame);
 
 
 #endif

@@ -111,9 +111,6 @@ __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* 
         // Get the alloc_addr physical address
         *pa = (alloc_addr_frame | alloc_addr_offset);
     }
-
-    // Zeroize the allocated memory except for the block descriptor header
-    memset((void*) (block_descriptor + sizeof(kheap_block_descriptor_t)), 0x00, block_descriptor->size - sizeof(kheap_block_descriptor_t));
     
     ordered_array_insert(&kheap, block_descriptor);
     

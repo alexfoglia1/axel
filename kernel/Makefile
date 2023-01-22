@@ -11,7 +11,7 @@ BOOTDIR?=$(EXEC_PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -mgeneral-regs-only
-CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Iinclude -Icommon/include -Iinterrupts/include -Idrivers/include -Icontrollers/include -Isyscall/include -Ifilesystem/include
+CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Di686=0 -Ddebug_x86_84=1 -DARCH=i686 -Iinclude -Icommon/include -Iinterrupts/include -Idrivers/include -Icontrollers/include -Isyscall/include -Ifilesystem/include
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lk -lgcc
 
@@ -48,13 +48,19 @@ $(ARCHDIR)/tty.o \
 $(ARCHDIR)/io.o \
 $(ARCHDIR)/gdt.o \
 $(ARCHDIR)/idt.o \
+$(ARCHDIR)/store_gdt.o \
+$(ARCHDIR)/store_idt.o \
+$(ARCHDIR)/int_entry_points.o \
+$(ARCHDIR)/irq_entry_points.o \
+$(ARCHDIR)/ll_int_dispatcher.o \
+$(ARCHDIR)/ll_irq_dispatcher.o \
 $(ARCHDIR)/cpuid.o \
 $(ARCHDIR)/cpuid_supported.o \
 $(ARCHDIR)/enable_paging.o \
 $(ARCHDIR)/load_page_directory.o \
 $(ARCHDIR)/copy_page_physical.o \
 $(ARCHDIR)/flush_tlb.o \
-$(ARCHDIR)/read_instruction_pointer.o \
+$(ARCHDIR)/read_eip.o \
 $(ARCHDIR)/context_switch.o \
 $(ARCHDIR)/syscall_interface.o \
 $(ISRDIR)/isr.o \

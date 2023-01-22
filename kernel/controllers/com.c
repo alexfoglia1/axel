@@ -1,10 +1,13 @@
 #include <controllers/com.h>
 #include <controllers/pic.h>
 
+#include <interrupts/isr.h>
+
 #include <common/utils.h>
 
 #include <kernel/arch/io.h>
 #include <kernel/arch/vga.h>
+#include <kernel/arch/idt.h>
 
 #include <kernel/memory_manager.h>
 
@@ -100,17 +103,17 @@ com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits
         if (COM1_PORT == com_port)
         {
             com_1_port_initialized = 0x01;
-            pic_add_irq(COM1_IRQ_INTERRUPT_NO, &com_1_irq_handler);
+            isr_register(IRQ_TO_INT_NO(COM1_IRQ), &com_1_irq_handler);
         }
         else if (COM2_PORT == com_port)
         {
             com_2_port_initialized = 0x01;
-            pic_add_irq(COM2_IRQ_INTERRUPT_NO, &com_2_irq_handler);
+            isr_register(IRQ_TO_INT_NO(COM2_IRQ), &com_2_irq_handler);
         }
         else if (COM3_PORT == com_port)
         {
             com_3_port_initialized = 0x01;
-            pic_add_irq(COM3_IRQ_INTERRUPT_NO, &com_3_irq_handler);
+            isr_register(IRQ_TO_INT_NO(COM3_IRQ), &com_3_irq_handler);
         }
      }
 }
@@ -230,7 +233,9 @@ com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen
                 (interrupt_byte == byte_rx) &&
                 (*input_buffer_llen > 0))
             {
-                uint8_t* buf = kmalloc(*input_buffer_llen);
+                uint8_t* buf = kmalloc(*input_buffer_llen * sizeof(uint32_t));
+                memset(buf, 0x00, *input_buffer_llen * sizeof(uint32_t));
+                
                 read(syscall_type, buf, *input_buffer_llen);
                 // I can kfree buf because i'm inside an IRQ handler : kernel has called sti() and hence paging + heap are active
                 // Moreover, kernel is initializing COM after paging
@@ -248,29 +253,22 @@ com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen
 }
 
 
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
 void
-com_1_irq_handler(interrupt_stack_frame_t* frame)
+com_1_irq_handler(interrupt_stack_frame_t frame)
 {
     com_irq_handler(COM1_PORT, com_1_input_buffer, &com_1_input_ll, SYSCALL_TYPE_COM_1_READ);
 }
 
 
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void com_2_irq_handler(interrupt_stack_frame_t* frame)
+void
+com_2_irq_handler(interrupt_stack_frame_t frame)
 {
     com_irq_handler(COM2_PORT, com_2_input_buffer, &com_2_input_ll, SYSCALL_TYPE_COM_2_READ);
 }
 
 
-#ifndef __DEBUG_STUB__
-__attribute__((interrupt))
-#endif
-void com_3_irq_handler(interrupt_stack_frame_t* frame)
+void
+com_3_irq_handler(interrupt_stack_frame_t frame)
 {
     com_irq_handler(COM3_PORT, com_3_input_buffer, &com_3_input_ll, SYSCALL_TYPE_COM_3_READ);
 }
@@ -300,9 +298,14 @@ com_flush(int com_port)
             outb(com_port, output_buffer[i]);
         }
 
-        for(uint32_t i = bytes_to_transmit; i < *output_buf_llen; i++)
+        for (uint32_t i = bytes_to_transmit; i < *output_buf_llen; i++)
         {
             output_buffer[i - bytes_to_transmit] = output_buffer[i];
+        }
+
+        for (uint32_t i = 0; i < bytes_to_transmit; i++)
+        {
+            output_buffer[i + *output_buf_llen] = 0x00;
         }
 
         *output_buf_llen -= bytes_to_transmit;
