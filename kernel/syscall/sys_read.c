@@ -31,6 +31,10 @@ sys_read(interrupt_stack_frame_t frame)
     char temp[512];
     sprintf(temp, "sys_read: err_code(%u), int_no(0x%X)\n\ttype(0x%X), count(0x%X), buf(0x%X), ioaddr(0x%X)\n\n", err_code, int_no, type, count, buf, ioaddr);
     tty_putstring(temp);
+
+    char temp2[512];
+    sprintf(temp2, "sys_read: eax(0x%X), ebx(0x%X), ecx(0x%X), edx(0x%X)\n", frame.eax, frame.ebx, frame.ecx, frame.edx);
+    tty_putstring(temp2);
     while(1);
     return;
 #if 0

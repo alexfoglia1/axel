@@ -3,13 +3,27 @@
 
 #include <stdint.h>
 
-typedef struct
+struct i686_interrupt_stack
 {
    uint32_t ds;
    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
    uint32_t int_no, err_code, syscall_type, syscall_buffer, syscall_count, syscall_ioaddr;
    uint32_t eip, cs, eflags, useresp, ss;
-} interrupt_stack_frame_t;
+};
+
+struct debug_interrupt_stack
+{
+   uint32_t ds;
+   uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+   uint32_t int_no, err_code, syscall_type, syscall_buffer, syscall_count, syscall_ioaddr;
+   uint32_t eip, cs, eflags, useresp, ss;
+};
+
+#if ARCH == i686
+typedef struct i686_interrupt_stack interrupt_stack_frame_t;
+#else
+typedef struct debug_interrupt_stack interrupt_stack_frame_t;
+#endif
 
 typedef void (*hl_interrupt_handler)(interrupt_stack_frame_t frame);
 
