@@ -52,6 +52,8 @@ void hl_int_dispatcher(interrupt_stack_frame_t stack_frame);
 // |
 // v
 void divide_by_zero_exception(interrupt_stack_frame_t stack_frame);
+void undef_opcode_exception(interrupt_stack_frame_t stack_frame);
+void gpf_exception(interrupt_stack_frame_t stack_frame);
 void page_fault_exception(interrupt_stack_frame_t stack_frame);
 void unhandled_interrupt(interrupt_stack_frame_t stack_frame);
 

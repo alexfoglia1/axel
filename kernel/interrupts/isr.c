@@ -14,14 +14,14 @@ static hl_interrupt_handler hl_interrupt_handlers[IDT_N_ENTRY_POINTS] =
     &unhandled_interrupt,      // INT 3 : UNHANDLED
     &unhandled_interrupt,      // INT 4 : UNHANDLED
     &unhandled_interrupt,      // INT 5 : UNHANDLED
-    &unhandled_interrupt,      // INT 6 : UNHANDLED
+    &undef_opcode_exception,   // INT 6 : UNDEFINED OPCODE
     &unhandled_interrupt,      // INT 7 : UNHANDLED
     &unhandled_interrupt,      // INT 8 : UNHANDLED (PIT TIMER IRQ : IT WILL BE ADDED BY PIT DRIVER)
     &unhandled_interrupt,      // INT 9 : UNHANDLED (KEYBOARD IRQ  : IT WILL BE ADDED BY KEYBOARD DRIVER)
     &unhandled_interrupt,      // INT 10 : UNHANDLED 
     &unhandled_interrupt,      // INT 11 : UNHANDLED (COM_2 IRQ : IT WILL BE ADDED BY COM DRIVER)
     &unhandled_interrupt,      // INT 12 : UNHANDLED (COM_1 IRQ : IT WILL BE ADDED BY COM DRIVER)
-    &unhandled_interrupt,      // INT 13 : UNHANDLED
+    &gpf_exception,            // INT 13 : GENERAL PROTECTION FAULT
     &page_fault_exception,     // INT 14 : PAGE FAULT
     &unhandled_interrupt,      // INT 15 : UNHANDLED
     &unhandled_interrupt,      // INT 16 : UNHANDLED
@@ -56,7 +56,6 @@ isr_register(uint32_t int_no, hl_interrupt_handler handler)
 void
 hl_int_dispatcher(interrupt_stack_frame_t stack_frame)
 {
-    printf("hl_int_dispatcher : requested int no 0x%X\n", stack_frame.int_no);
     hl_interrupt_handlers[stack_frame.int_no](stack_frame);
 }
 
@@ -65,8 +64,6 @@ void
 unhandled_interrupt(interrupt_stack_frame_t frame)
 {
     printf("Unhandled interrupt 0x%X\n", frame.int_no);
-    printf("eax(%u), ebx(%u), ecx(%u), edx(%u)\n", frame.eax, frame.ebx, frame.ecx, frame.edx);
-    while(1);
 }
 
 
@@ -74,6 +71,22 @@ void
 divide_by_zero_exception(interrupt_stack_frame_t stack_frame)
 {
     printf("KERNEL PANIC : DIVIDE BY 0 EXCEPTION\n");
+    abort();
+}
+
+void undef_opcode_exception(interrupt_stack_frame_t stack_frame)
+{
+    uint32_t isr;
+    RF_READ_IST_PTR(isr);
+
+    printf("KERNEL PANIC : UNDEFINED OPCODE AT 0x%x\n", isr);
+    abort();
+}
+
+
+void gpf_exception(interrupt_stack_frame_t frame)
+{
+    printf("KERNEL PANIC : GENERAL PROTECTION FAULT\n");
     abort();
 }
 

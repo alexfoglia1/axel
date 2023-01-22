@@ -2,70 +2,54 @@
 
 #include <kernel/arch/tty.h>
 #include <kernel/arch/io.h>
-#include <kernel/arch/rf.h>
-
-#include <stdio.h>
 
 
 void
 sys_write(interrupt_stack_frame_t frame)
 {
-    uint32_t rtype = frame.eax;
-    uint32_t rbuf = frame.ebx;
-    uint32_t rcount = frame.ecx;
-    uint32_t rioaddr = frame.edx;
-    uint32_t err_code = frame.err_code; // should be zero ?
-    uint32_t int_no = frame.int_no; // Should be 0x20
+    uint32_t type   = frame.eax;
+    uint32_t buf    = frame.ebx;
+    uint32_t count  = frame.ecx;
+    uint32_t ioaddr = frame.edx;
 
-    uint32_t type = (uint32_t) rtype;
-    uint32_t count = (uint32_t) rcount;
-    uint32_t buf = (uint32_t) rbuf;
-    uint32_t ioaddr = (uint32_t) rioaddr;
-
-    char temp[512];
-    sprintf(temp, "sys_write: err_code(%u), int_no(0x%X)\n\ttype(0x%X), count(0x%X), buf(0x%X), ioaddr(0x%X)\n\n", err_code, int_no, type, count, buf, ioaddr);
-    tty_putstring(temp);
-    while(1);
-    return;
-#if 0
-    switch (register_type)
+    switch (type)
     {
         case SYSCALL_TYPE_TTY_WRITE:
         {
-            const char* buffer = (const char*)(register_buf);
-            tty_putchars(buffer, register_count);
+            const char* buffer = (const char*)(buf);
+            tty_putchars(buffer, buf);
 
             break;
         }
         case SYSCALL_TYPE_IO_WRITE_BYTE:
         {
-            uint8_t* buffer = (uint8_t*)(register_buf);
-            for (uint32_t i = 0; i < register_count; i++)
+            uint8_t* buffer = (uint8_t*)(buf);
+            for (uint32_t i = 0; i < count; i++)
             {
-                outb(register_count, buffer[i]);
+                outb(ioaddr, buffer[i]);
             }
             break;
         }
         case SYSCALL_TYPE_IO_WRITE_WORD:
         {
-            uint16_t* buffer = (uint16_t*)(register_buf);
-            for (uint32_t i = 0; i < register_count; i++)
+            uint16_t* buffer = (uint16_t*)(buf);
+            for (uint32_t i = 0; i < count; i++)
             {
-                outw(register_ioaddr, buffer[i]);
+                outw(ioaddr, buffer[i]);
             }
             break;
         }
         case SYSCALL_TYPE_IO_WRITE_LONG:
         {
-            uint32_t* buffer = (uint32_t*)(register_buf);
-            for (uint32_t i = 0; i < register_count; i++)
+            uint32_t* buffer = (uint32_t*)(buf);
+            for (uint32_t i = 0; i < count; i++)
             {
-                outl(register_ioaddr, buffer[i]);
+                outl(ioaddr, buffer[i]);
             }
             break;
         }
         default:
             break;
     }
-#endif
+
 }
