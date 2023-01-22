@@ -26,19 +26,27 @@ print(const char* data, size_t length)
     const unsigned char* bytes = (const unsigned char*) data;
     for (size_t i = 0; i < length; i++)
     {
+        unsigned char current_byte = bytes[i];
+
+        if (0x00 == current_byte)
+        {
+            break;
+        }
+
         if (0x00 == __print_to__)
         {
-            if (EOF == putchar(bytes[i]))
+            if (EOF == putchar(current_byte))
             {
                 return false;
             }
         }
         else
         {
-            __print_to__[__print_to_idx__] = data[i];
+            __print_to__[__print_to_idx__] = current_byte;
             __print_to_idx__ += 1;
         }
     }
+
     return true;
 }
 

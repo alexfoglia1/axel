@@ -233,7 +233,9 @@ com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen
                 (interrupt_byte == byte_rx) &&
                 (*input_buffer_llen > 0))
             {
-                uint8_t* buf = kmalloc(*input_buffer_llen);
+                uint8_t* buf = kmalloc(*input_buffer_llen * sizeof(uint32_t));
+                memset(buf, 0x00, *input_buffer_llen * sizeof(uint32_t));
+                
                 read(syscall_type, buf, *input_buffer_llen);
                 // I can kfree buf because i'm inside an IRQ handler : kernel has called sti() and hence paging + heap are active
                 // Moreover, kernel is initializing COM after paging
@@ -296,9 +298,14 @@ com_flush(int com_port)
             outb(com_port, output_buffer[i]);
         }
 
-        for(uint32_t i = bytes_to_transmit; i < *output_buf_llen; i++)
+        for (uint32_t i = bytes_to_transmit; i < *output_buf_llen; i++)
         {
             output_buffer[i - bytes_to_transmit] = output_buffer[i];
+        }
+
+        for (uint32_t i = 0; i < bytes_to_transmit; i++)
+        {
+            output_buffer[i + *output_buf_llen] = 0x00;
         }
 
         *output_buf_llen -= bytes_to_transmit;

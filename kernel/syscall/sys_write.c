@@ -3,8 +3,6 @@
 #include <kernel/arch/tty.h>
 #include <kernel/arch/io.h>
 
-#include <stdio.h>
-
 void
 sys_write(interrupt_stack_frame_t frame)
 {
