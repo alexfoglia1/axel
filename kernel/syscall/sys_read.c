@@ -1,7 +1,6 @@
 #include <syscall/syscall.h>
 
 #include <kernel/arch/tty.h>
-#include <kernel/arch/rf.h>
 
 #include <stdio.h>
 
@@ -11,17 +10,12 @@
 void
 sys_read(interrupt_stack_frame_t frame)
 {
-    uint32_t rtype = frame.syscall_type;
-    uint32_t rcount = frame.syscall_count;
-    uint32_t rbuf = frame.syscall_buffer;
-    uint32_t rioaddr = frame.syscall_ioaddr;
+    uint32_t rtype = frame.eax;
+    uint32_t rbuf = frame.ebx;
+    uint32_t rcount = frame.ecx;
+    uint32_t rioaddr = frame.edx;
     uint32_t err_code = frame.err_code; // should be zero ?
-    uint32_t int_no = frame.int_no; // Should be 0x21
-    
-    //RF_READ_GENERAL_A_32(rtype);
-    //RF_READ_GENERAL_B_32(rcount);
-    //RF_READ_GENERAL_C_32(rbuf);
-    //RF_READ_GENERAL_D_32(rioaddr);
+    uint32_t int_no = frame.int_no; // Should be 0x20
 
     uint32_t type = (uint32_t) rtype;
     uint32_t count = (uint32_t) rcount;

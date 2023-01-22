@@ -3,10 +3,6 @@
 .globl isr0_entry_point
 isr0_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $0 // interrupt no
@@ -15,10 +11,6 @@ isr0_entry_point:
 .globl isr1_entry_point
 isr1_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $1
@@ -34,10 +26,6 @@ isr2_entry_point:
 .globl isr3_entry_point
 isr3_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $3
@@ -46,10 +34,6 @@ isr3_entry_point:
 .globl isr4_entry_point
 isr4_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $4
@@ -58,10 +42,6 @@ isr4_entry_point:
 .globl isr5_entry_point
 isr5_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $5
@@ -70,6 +50,7 @@ isr5_entry_point:
 .globl isr6_entry_point
 isr6_entry_point:
     cli
+    
     push $0
     push $6
     jmp ll_int_dispatcher
@@ -77,10 +58,6 @@ isr6_entry_point:
 .globl isr7_entry_point
 isr7_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $7
@@ -89,10 +66,6 @@ isr7_entry_point:
 .globl isr8_entry_point
 isr8_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $8
@@ -101,10 +74,6 @@ isr8_entry_point:
 .globl isr9_entry_point
 isr9_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $9
@@ -113,10 +82,6 @@ isr9_entry_point:
 .globl isr10_entry_point
 isr10_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $10
@@ -125,10 +90,6 @@ isr10_entry_point:
 .globl isr11_entry_point
 isr11_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $11
@@ -137,10 +98,6 @@ isr11_entry_point:
 .globl isr12_entry_point
 isr12_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $12
@@ -149,6 +106,7 @@ isr12_entry_point:
 .globl isr13_entry_point
 isr13_entry_point:
     cli
+    
     push $0
     push $13
     jmp ll_int_dispatcher
@@ -156,21 +114,14 @@ isr13_entry_point:
 .globl isr14_entry_point
 isr14_entry_point:
     cli
-    push $0   // syscall_arg0 
-    push $0   // syscall_arg1
-    push $0   // syscall_arg2
-    push $0   // syscall_arg3 
-    	      // Error code from CPU
+    // Error code from CPU
+    
     push $14
     jmp ll_int_dispatcher
 
 .globl isr15_entry_point
 isr15_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $15
@@ -179,10 +130,6 @@ isr15_entry_point:
 .globl isr16_entry_point
 isr16_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $16
@@ -191,10 +138,6 @@ isr16_entry_point:
 .globl isr17_entry_point
 isr17_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $17
@@ -203,11 +146,7 @@ isr17_entry_point:
 .globl isr18_entry_point
 isr18_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
-    
+
     push $0 // error code
     push $18
     jmp ll_int_dispatcher
@@ -215,10 +154,6 @@ isr18_entry_point:
 .globl isr19_entry_point
 isr19_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $19
@@ -227,10 +162,6 @@ isr19_entry_point:
 .globl isr20_entry_point
 isr20_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $20
@@ -239,10 +170,6 @@ isr20_entry_point:
 .globl isr21_entry_point
 isr21_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $21
@@ -251,10 +178,6 @@ isr21_entry_point:
 .globl isr22_entry_point
 isr22_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $22
@@ -263,10 +186,6 @@ isr22_entry_point:
 .globl isr23_entry_point
 isr23_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $23
@@ -275,10 +194,6 @@ isr23_entry_point:
 .globl isr24_entry_point
 isr24_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $24
@@ -287,10 +202,6 @@ isr24_entry_point:
 .globl isr25_entry_point
 isr25_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $25
@@ -299,10 +210,6 @@ isr25_entry_point:
 .globl isr26_entry_point
 isr26_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $26
@@ -311,10 +218,6 @@ isr26_entry_point:
 .globl isr27_entry_point
 isr27_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $27
@@ -323,10 +226,6 @@ isr27_entry_point:
 .globl isr28_entry_point
 isr28_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $28
@@ -335,10 +234,6 @@ isr28_entry_point:
 .globl isr29_entry_point
 isr29_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $29
@@ -347,11 +242,7 @@ isr29_entry_point:
 .globl isr30_entry_point
 isr30_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
-    
+
     push $0 // error code
     push $30
     jmp ll_int_dispatcher
@@ -359,10 +250,6 @@ isr30_entry_point:
 .globl isr31_entry_point
 isr31_entry_point:
     cli
-    push $0 // syscall_arg0 
-    push $0 // syscall_arg1
-    push $0 // syscall_arg2
-    push $0 // syscall_arg3 
     
     push $0 // error code
     push $31
@@ -372,12 +259,6 @@ isr31_entry_point:
 isr32_entry_point:
     cli
 
-    // syscall args from syscall_interface
-    push %edx // syscall_extra
-    push %ecx // syscall_buffer
-    push %ebx // syscall_count
-    push %eax // syscall_type
-    
     push $0 // error code
     push $32
     jmp ll_int_dispatcher
@@ -385,11 +266,6 @@ isr32_entry_point:
 .globl isr33_entry_point
 isr33_entry_point:
     cli
-    // syscall args from syscall_interface
-    push %edx // syscall_extra
-    push %ecx // syscall_buffer
-    push %ebx // syscall_count
-    push %eax // syscall_type
     
     push $0 // error code
     push $33
@@ -398,10 +274,6 @@ isr33_entry_point:
 .globl isr34_entry_point
 isr34_entry_point:
     cli
-    push $0
-    push $0
-    push $0
-    push $0
     
     push $0 // error code
     push $34

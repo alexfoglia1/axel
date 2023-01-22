@@ -4,8 +4,8 @@
 //
 //
 //[24 + %esp] = syscall_extra
-//[20 + %esp] = syscall_buffer
-//[16 + %esp] = syscall_count
+//[20 + %esp] = syscall_count
+//[16 + %esp] = syscall_buf
 //[12 + %esp] = syscall_type
 //[8  + %esp] = int_no
 
