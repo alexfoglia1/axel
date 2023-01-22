@@ -50,11 +50,13 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //   I can __slog__ if com are not yet initialized, output is just buffered
     __slog__(COM1_PORT, "System boot\n"); 
 
-//  Initializing TTY, GDT, IDT and system calls (this shall be the very first thing to do, otherwise printf will triple fault)
+//  Initializing TTY, GDT, IDT and system calls
     tty_init();
     gdt_init();
-    idt_init();
 
+//  We need pic to be remapped before IDT initialization
+    pic_remap();
+    idt_init();
     __slog__(COM1_PORT, "Descriptors initialized\n");
 
     syscall_init();

@@ -14,7 +14,7 @@ void context_switch(uint32_t eip, uint32_t esp, uint32_t ebp, uint32_t page_dire
 void syscall_interface(uint32_t syscall_int_no, uint32_t syscall_type, uint32_t buffer, uint32_t count, uint32_t extra);
 
 
-// Interrupt service routines entry points : the idt shall point always to them
+// Interrupt service routines entry points : the idt shall point always to them in the range 0-31
 void isr0_entry_point();
 void isr1_entry_point();
 void isr2_entry_point();
@@ -47,9 +47,9 @@ void isr28_entry_point();
 void isr29_entry_point();
 void isr30_entry_point();
 void isr31_entry_point();
-void isr32_entry_point();
-void isr33_entry_point();
-void isr34_entry_point();
+
+void isr80_entry_point();
+void isr81_entry_point();
 // ^
 // |
 // |
@@ -64,6 +64,45 @@ void isr34_entry_point();
 // |
 // v
 void ll_int_dispatcher();
+// ^
+// |
+// |
+// |
+// |
+//
+// The above routines calls the hl_int_dispatcher() defined in kernel/interrupts/isr.h
+
+// IRQ entry points : the idt shall point always to them in the range 32-47
+void irq0_entry_point();
+void irq1_entry_point();
+void irq2_entry_point();
+void irq3_entry_point();
+void irq4_entry_point();
+void irq5_entry_point();
+void irq6_entry_point();
+void irq7_entry_point();
+void irq8_entry_point();
+void irq9_entry_point();
+void irq10_entry_point();
+void irq11_entry_point();
+void irq12_entry_point();
+void irq13_entry_point();
+void irq14_entry_point();
+void irq15_entry_point();
+// ^
+// |
+// |
+// |
+// |
+//
+// The above routines calls the below
+//
+// |
+// |
+// |
+// |
+// v
+void ll_irq_dispatcher();
 // ^
 // |
 // |

@@ -20,7 +20,7 @@ idt_init()
         memset(&idt[i], 0x00, sizeof(struct idt_entry));
     }
 
-
+//  Interrupt handlers low-level entry points
     idt_add_entry(0,  &isr0_entry_point,  PRESENT | TRP_GATE);
     idt_add_entry(1,  &isr1_entry_point,  PRESENT | TRP_GATE);
     idt_add_entry(2,  &isr2_entry_point,  PRESENT | TRP_GATE);
@@ -53,11 +53,33 @@ idt_init()
     idt_add_entry(29, &isr29_entry_point, PRESENT | TRP_GATE);
     idt_add_entry(30, &isr30_entry_point, PRESENT | TRP_GATE);
     idt_add_entry(31, &isr31_entry_point, PRESENT | TRP_GATE);
-    idt_add_entry(32, &isr32_entry_point, PRESENT | TRP_GATE);
-    idt_add_entry(33, &isr33_entry_point, PRESENT | TRP_GATE);
-    idt_add_entry(34, &isr34_entry_point, PRESENT | TRP_GATE);
 
+//  IRQ handlers low-level entry points
+    idt_add_entry(IRQ_TO_INT_NO(0),  &irq0_entry_point,  PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(1),  &irq1_entry_point,  PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(2),  &irq2_entry_point,  PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(3),  &irq3_entry_point,  PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(4),  &irq4_entry_point,  PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(5),  &irq5_entry_point,  PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(6),  &irq6_entry_point,  PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(7),  &irq7_entry_point,  PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(8),  &irq8_entry_point,  PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(9),  &irq9_entry_point,  PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(10), &irq10_entry_point, PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(11), &irq11_entry_point, PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(12), &irq12_entry_point, PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(13), &irq13_entry_point, PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(14), &irq14_entry_point, PRESENT | IRQ_GATE);
+    idt_add_entry(IRQ_TO_INT_NO(15), &irq15_entry_point, PRESENT | IRQ_GATE);
+
+
+//  Syscall handlers low-level entry points
+    idt_add_entry(SYSCALL_INT_NO_READ,  &isr80_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(SYSCALL_INT_NO_WRITE, &isr81_entry_point, PRESENT | TRP_GATE);
+    
     store_idt(&idt);
+
+
 }
 
 

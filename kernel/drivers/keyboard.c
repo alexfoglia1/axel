@@ -6,6 +6,7 @@
 #include <common/utils.h>
 
 #include <kernel/arch/io.h>
+#include <kernel/arch/idt.h>
 #include <kernel/arch/tty.h>
 
 #include <stdio.h> // Todo : printing is not keyboard driver responsability
@@ -21,7 +22,7 @@ keyboard_init(uint8_t in_port)
     is_shift_holded = 0;
     data_port = in_port;
 
-    isr_register(KBD_IRQ_INTERRUPT_NO, &keyboard_irq_handler);
+    isr_register(IRQ_TO_INT_NO(KBD_IRQ), &keyboard_irq_handler);
 
     __slog__(COM1_PORT, "Keyboard initialized\n");
 }

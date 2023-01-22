@@ -4,6 +4,7 @@
 #include <controllers/com.h>
 
 #include <kernel/arch/io.h>
+#include <kernel/arch/idt.h>
 
 #include <common/utils.h>
 
@@ -55,7 +56,7 @@ pit_init()
     outb(PIT_CHANNEL_0_PORT, div_low);
     outb(PIT_CHANNEL_0_PORT, div_high);
 
-    isr_register(PIT_IRQ_INTERRUPT_NO, pit_irq0_handler);
+    isr_register(IRQ_TO_INT_NO(PIT_IRQ), pit_irq0_handler);
 }
 
 
@@ -92,8 +93,6 @@ pit_irq0_handler(interrupt_stack_frame_t frame)
 {
     ticks_cnt  += 1;
     millis_cnt = (ticks_cnt * PIT_MILLIS_PER_TICK);
-
-    pic_reset_master(); //IRQ0 ACK
     outb(PIC_MASTER_CMD_PORT, PIC_EOI);
 
     if (0x00 != callback)

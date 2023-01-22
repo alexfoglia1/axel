@@ -1,48 +1,87 @@
 #include <interrupts/isr.h>
 
+#include <controllers/pic.h>
+
 #include <kernel/arch/idt.h>
 #include <kernel/arch/rf.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-static hl_interrupt_handler hl_interrupt_handlers[IDT_N_ENTRY_POINTS] = 
+static hl_interrupt_handler hl_interrupt_handlers[IDT_SIZE] = 
 {
-    &divide_by_zero_exception, // INT 0 : DIVIDE BY ZERO
-    &unhandled_interrupt,      // INT 1 : UNHANDLED
-    &unhandled_interrupt,      // INT 2 : UNHANDLED
-    &unhandled_interrupt,      // INT 3 : UNHANDLED
-    &unhandled_interrupt,      // INT 4 : UNHANDLED
-    &unhandled_interrupt,      // INT 5 : UNHANDLED
-    &undef_opcode_exception,   // INT 6 : UNDEFINED OPCODE
-    &unhandled_interrupt,      // INT 7 : UNHANDLED
-    &unhandled_interrupt,      // INT 8 : UNHANDLED (PIT TIMER IRQ : IT WILL BE ADDED BY PIT DRIVER)
-    &unhandled_interrupt,      // INT 9 : UNHANDLED (KEYBOARD IRQ  : IT WILL BE ADDED BY KEYBOARD DRIVER)
-    &unhandled_interrupt,      // INT 10 : UNHANDLED 
-    &unhandled_interrupt,      // INT 11 : UNHANDLED (COM_2 IRQ : IT WILL BE ADDED BY COM DRIVER)
-    &unhandled_interrupt,      // INT 12 : UNHANDLED (COM_1 IRQ : IT WILL BE ADDED BY COM DRIVER)
-    &gpf_exception,            // INT 13 : GENERAL PROTECTION FAULT
-    &page_fault_exception,     // INT 14 : PAGE FAULT
-    &unhandled_interrupt,      // INT 15 : UNHANDLED
-    &unhandled_interrupt,      // INT 16 : UNHANDLED
-    &unhandled_interrupt,      // INT 17 : UNHANDLED
-    &unhandled_interrupt,      // INT 18 : UNHANDLED
-    &unhandled_interrupt,      // INT 19 : UNHANDLED
-    &unhandled_interrupt,      // INT 20 : UNHANDLED
-    &unhandled_interrupt,      // INT 21 : UNHANDLED
-    &unhandled_interrupt,      // INT 22 : UNHANDLED
-    &unhandled_interrupt,      // INT 23 : UNHANDLED
-    &unhandled_interrupt,      // INT 24 : UNHANDLED
-    &unhandled_interrupt,      // INT 25 : UNHANDLED
-    &unhandled_interrupt,      // INT 26 : UNHANDLED
-    &unhandled_interrupt,      // INT 27 : UNHANDLED
-    &unhandled_interrupt,      // INT 28 : UNHANDLED
-    &unhandled_interrupt,      // INT 29 : UNHANDLED
-    &unhandled_interrupt,      // INT 30 : UNHANDLED
-    &unhandled_interrupt,      // INT 31 : UNHANDLED
-    &unhandled_interrupt,      // INT 32 : UNHANDLED
-    &unhandled_interrupt,      // INT 33 : UNHANDLED (SYSCALL READ  : IT WILL BE ADDED BY SYSCALL HANDLER)
-    &unhandled_interrupt       // INT 34 : UNHANDLED (SYSCALL WRITE : IT WILL BE ADDED BY SYSCALL HANDLER)
+    &divide_by_zero_exception,    // INT 0  : DIVIDE BY ZERO
+    &unhandled_interrupt,         // INT 1  : UNHANDLED
+    &unhandled_interrupt,         // INT 2  : UNHANDLED
+    &unhandled_interrupt,         // INT 3  : UNHANDLED
+    &unhandled_interrupt,         // INT 4  : UNHANDLED
+    &unhandled_interrupt,         // INT 5  : UNHANDLED
+    &undef_opcode_exception,      // INT 6  : UNDEFINED OPCODE
+    &unhandled_interrupt,         // INT 7  : UNHANDLED
+    &unhandled_interrupt,         // INT 8  : UNHANDLED
+    &unhandled_interrupt,         // INT 9  : UNHANDLED
+    &unhandled_interrupt,         // INT 10 : UNHANDLED 
+    &unhandled_interrupt,         // INT 11 : UNHANDLED
+    &unhandled_interrupt,         // INT 12 : UNHANDLED
+    &gpf_exception,               // INT 13 : GENERAL PROTECTION FAULT
+    &page_fault_exception,        // INT 14 : PAGE FAULT
+    &unhandled_interrupt,         // INT 15 : UNHANDLED
+    &unhandled_interrupt,         // INT 16 : UNHANDLED
+    &unhandled_interrupt,         // INT 17 : UNHANDLED
+    &unhandled_interrupt,         // INT 18 : UNHANDLED
+    &unhandled_interrupt,         // INT 19 : UNHANDLED
+    &unhandled_interrupt,         // INT 20 : UNHANDLED
+    &unhandled_interrupt,         // INT 21 : UNHANDLED
+    &unhandled_interrupt,         // INT 22 : UNHANDLED
+    &unhandled_interrupt,         // INT 23 : UNHANDLED
+    &unhandled_interrupt,         // INT 24 : UNHANDLED
+    &unhandled_interrupt,         // INT 25 : UNHANDLED
+    &unhandled_interrupt,         // INT 26 : UNHANDLED
+    &unhandled_interrupt,         // INT 27 : UNHANDLED
+    &unhandled_interrupt,         // INT 28 : UNHANDLED
+    &unhandled_interrupt,         // INT 29 : UNHANDLED
+    &unhandled_interrupt,         // INT 30 : UNHANDLED
+    &unhandled_interrupt,         // INT 31 : UNHANDLED
+
+    &unhandled_interrupt,         // INT 32 : IRQ0
+    &unhandled_interrupt,         // INT 33 : IRQ1
+    &unhandled_interrupt,         // INT 34 : IRQ2
+    &unhandled_interrupt,         // INT 35 : IRQ3
+    &unhandled_interrupt,         // INT 36 : IRQ4
+    &unhandled_interrupt,         // INT 37 : IRQ5
+    &unhandled_interrupt,         // INT 38 : IRQ6
+    &unhandled_interrupt,         // INT 39 : IRQ7
+    &unhandled_interrupt,         // INT 40 : IRQ8
+    &unhandled_interrupt,         // INT 41 : IRQ9
+    &unhandled_interrupt,         // INT 42 : IRQ10
+    &unhandled_interrupt,         // INT 43 : IRQ11
+    &unhandled_interrupt,         // INT 44 : IRQ12
+    &unhandled_interrupt,         // INT 45 : IRQ13
+    &unhandled_interrupt,         // INT 46 : IRQ14
+    &unhandled_interrupt,         // INT 47 : IRQ15
+
+    0, 0, 0,                      // INT 48->50   null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 51->60   null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 61->70   null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 71->80   null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 81->90   null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 91->100  null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 101->110 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 111->120 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 121->130 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 131->140 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 141->150 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 151->160 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 161->170 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 171->180 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 181->190 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 191->200 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 201->210 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 211->220 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 221->230 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 231->240 null
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // INT 241->250 null
+    0, 0, 0, 0, 0                 // INT 251->255 null
 };
 
 
@@ -56,7 +95,23 @@ isr_register(uint32_t int_no, hl_interrupt_handler handler)
 void
 hl_int_dispatcher(interrupt_stack_frame_t stack_frame)
 {
-    hl_interrupt_handlers[stack_frame.int_no](stack_frame);
+    if (hl_interrupt_handlers[stack_frame.int_no])
+    {
+        hl_interrupt_handlers[stack_frame.int_no](stack_frame);
+    }
+}
+
+
+void
+hl_irq_dispatcher(interrupt_stack_frame_t stack_frame)
+{
+    if (stack_frame.int_no >= PIC_IRQ_SLV_THRESHOLD)
+    {
+        pic_reset_slave();
+    }
+    pic_reset_master();
+
+    hl_int_dispatcher(stack_frame);
 }
 
 

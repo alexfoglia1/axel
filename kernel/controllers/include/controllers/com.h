@@ -32,7 +32,11 @@
 #define COM_CMD_TEST_ECHO    0xAE
 #define COM_CMD_ENB_DATA_IRQ 0x01
 
-#define COM1_IRQ_INTERRUPT_NO  0x0C
+#define COM1_IRQ             0x04
+#define COM2_IRQ             0x03
+#define COM3_IRQ             COM1_IRQ
+#define COM4_IRQ             COM2_IRQ
+
 #define COM2_IRQ_INTERRUPT_NO  0x0B
 #define COM3_IRQ_INTERRUPT_NO  COM1_IRQ_INTERRUPT_NO
 #define COM4_IRQ_INTERRUPT_NO  COM2_IRQ_INTERRUPT_NO

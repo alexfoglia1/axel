@@ -10,8 +10,8 @@
 #define SYSCALL_TYPE_COM_3_READ    0x06
 
 // These interrupts numbers shall be equals to the interrupts number defined in kernel/syscall/syscall.h
-#define SYSCALL_INT_NO_READ  32
-#define SYSCALL_INT_NO_WRITE 33
+#define SYSCALL_INT_NO_READ  80
+#define SYSCALL_INT_NO_WRITE 81
 
 #include <sys/cdefs.h>
 

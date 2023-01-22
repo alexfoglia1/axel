@@ -8,11 +8,6 @@
 
 #include <unistd.h>
 
-// These are the interrupt numbers associated to system calls
-#define SYSCALL_INT_NO_READ  32
-#define SYSCALL_INT_NO_WRITE 33
-
-
 // Map interrupts number to system calls in the IDT
 void syscall_init();
 
@@ -20,8 +15,6 @@ void syscall_init();
 // Actual system calls code : one file per handler, these functions are called by the user through the syscall_interface:
 // each assembly routine in syscall_interface.S triggers a software interrupt which number shall be mapped in the IDT
 // with the particular system call associated to such an interrupt number
-
-
 void sys_write(interrupt_stack_frame_t frame);
 void sys_read(interrupt_stack_frame_t  frame);
 

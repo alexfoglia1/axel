@@ -14,30 +14,30 @@ syscall_interface:
     mov %esp, %ebp
     mov 8(%esp), %eax
     
-test_32: // test if it is a read
-    cmpl $32, %eax
-    je  trigger_int_32
-    jmp test_33 // it is not a read, test if it is a write
+test_80: // test if it is a read
+    cmpl $80, %eax
+    je  trigger_int_80
+    jmp test_81 // it is not a read, test if it is a write
     
-trigger_int_32:
+trigger_int_80:
     mov 12(%esp), %eax
     mov 16(%esp), %ebx
     mov 20(%esp), %ecx
     mov 24(%esp), %edx
-    int $32
+    int $80
     jmp _exit
 
-test_33:
-    cmpl $33, %eax
-    je  trigger_int_33
+test_81:
+    cmpl $81, %eax
+    je  trigger_int_81
     jmp _exit // it is neither read or write, return
     
-trigger_int_33:
+trigger_int_81:
     mov 12(%esp), %eax
     mov 16(%esp), %ebx
     mov 20(%esp), %ecx
     mov 24(%esp), %edx
-    int $33
+    int $81
     jmp _exit
     
 _exit:

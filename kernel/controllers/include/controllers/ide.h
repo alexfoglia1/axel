@@ -5,7 +5,8 @@
 #include <interrupts/isr.h> // for interrupt stack frame t
 
 
-#define IDE_IRQ_INTERRUPT_NO 0x76
+#define IDE_ATA_CH1_IRQ 0x0E
+#define IDE_ATA_CH2_IRQ 0x0F
 
 
 void ide_irq_handler(interrupt_stack_frame_t frame);

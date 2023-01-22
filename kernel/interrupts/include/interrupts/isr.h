@@ -51,10 +51,28 @@ void hl_int_dispatcher(interrupt_stack_frame_t stack_frame);
 // |
 // |
 // v
+void unhandled_interrupt(interrupt_stack_frame_t stack_frame);
 void divide_by_zero_exception(interrupt_stack_frame_t stack_frame);
 void undef_opcode_exception(interrupt_stack_frame_t stack_frame);
 void gpf_exception(interrupt_stack_frame_t stack_frame);
 void page_fault_exception(interrupt_stack_frame_t stack_frame);
-void unhandled_interrupt(interrupt_stack_frame_t stack_frame);
+
+// The below routine is called by the asm ll_irq_dispatcher() defined in kernel/arch/asm.h
+// |
+// |
+// |
+// |
+// |
+// v
+void hl_irq_dispatcher(interrupt_stack_frame_t stack_frame); // This extends the behavior of hl_int_dispatcher : it resets the pic when an interrupt has been served
+// ^
+// |
+// |
+// |
+// |
+//
+// The above routine calls :
+// 1) unhandled_interrupt() if the particular irq_no received by the ll_irq_dispatcher has not been registered by the corresponding device driver, OR
+// 2) the isr routine which the corresponding device driver has registered
 
 #endif

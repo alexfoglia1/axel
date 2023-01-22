@@ -255,27 +255,18 @@ isr31_entry_point:
     push $31
     jmp ll_int_dispatcher
 
-.globl isr32_entry_point
-isr32_entry_point:
+.globl isr80_entry_point
+isr80_entry_point:
     cli
 
     push $0 // error code
-    push $32
+    push $80
     jmp ll_int_dispatcher
 
-.globl isr33_entry_point
-isr33_entry_point:
-    cli
-    
-    push $0 // error code
-    push $33
-    jmp ll_int_dispatcher
-
-.globl isr34_entry_point
-isr34_entry_point:
+.globl isr81_entry_point
+isr81_entry_point:
     cli
     
     push $0 // error code
-    push $34
+    push $81
     jmp ll_int_dispatcher
-

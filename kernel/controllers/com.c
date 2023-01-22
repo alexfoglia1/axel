@@ -7,6 +7,7 @@
 
 #include <kernel/arch/io.h>
 #include <kernel/arch/vga.h>
+#include <kernel/arch/idt.h>
 
 #include <kernel/memory_manager.h>
 
@@ -102,17 +103,17 @@ com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits
         if (COM1_PORT == com_port)
         {
             com_1_port_initialized = 0x01;
-            isr_register(COM1_IRQ_INTERRUPT_NO, &com_1_irq_handler);
+            isr_register(IRQ_TO_INT_NO(COM1_IRQ), &com_1_irq_handler);
         }
         else if (COM2_PORT == com_port)
         {
             com_2_port_initialized = 0x01;
-            isr_register(COM2_IRQ_INTERRUPT_NO, &com_2_irq_handler);
+            isr_register(IRQ_TO_INT_NO(COM2_IRQ), &com_2_irq_handler);
         }
         else if (COM3_PORT == com_port)
         {
             com_3_port_initialized = 0x01;
-            isr_register(COM3_IRQ_INTERRUPT_NO, &com_3_irq_handler);
+            isr_register(IRQ_TO_INT_NO(COM3_IRQ), &com_3_irq_handler);
         }
      }
 }

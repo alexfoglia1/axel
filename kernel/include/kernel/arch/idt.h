@@ -5,11 +5,16 @@
 #include <kernel/arch/asm.h>
 
 #define IDT_SIZE 256 // The length of the entire IDT structure
-#define IDT_N_ENTRY_POINTS 35 // Actual serviced interrupts
+
+#define IRQ_TO_INT_NO(IRQ)(IRQ + 32)
 
 #define TSK_GATE 0x5
 #define IRQ_GATE 0xE
 #define TRP_GATE 0xF
+
+// These are the interrupt numbers associated to system calls
+#define SYSCALL_INT_NO_READ  80
+#define SYSCALL_INT_NO_WRITE 81
 
 struct idt_entry
 {
