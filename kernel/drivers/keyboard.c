@@ -28,7 +28,7 @@ keyboard_init(uint8_t in_port)
 
     isr_register(IRQ_TO_INT_NO(KBD_IRQ), &keyboard_irq_handler);
 
-    __slog__(COM1_PORT, "Keyboard initialized\n");
+    __klog__(COM1_PORT, "Keyboard initialized\n");
 }
 
 
@@ -211,7 +211,7 @@ keyboard_irq_handler(interrupt_stack_frame_t frame)
             }
             break;
         default:
-            __slog__(COM1_PORT, "Keyboard IRQ handler : cannot handle key %b\n", key);
+            __klog__(COM1_PORT, "Keyboard IRQ handler : cannot handle key %b\n", key);
             break;
     }
 

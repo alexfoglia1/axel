@@ -1,16 +1,15 @@
-#include <stdbool.h>
+#include <kernel/arch/tty.h>
+#include <kernel/arch/io.h>
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
-#include <kernel/arch/tty.h>
-#include <kernel/arch/vga.h>
-#include <kernel/arch/io.h>
-
-
 static const size_t 	VGA_WIDTH = 80;
 static const size_t 	VGA_HEIGHT = 25;
 static uint16_t* const 	VGA_MEMORY = (uint16_t*) 0xB8000;
+
+char _tty_prompt_buffer[TTY_BUFFER_SIZE];
 
 static size_t 	 _row;
 static size_t 	 _column;
@@ -19,35 +18,8 @@ static uint16_t* _tty;
 static size_t	 _tabulations;
 static size_t	 _tabulation_width;
 
-void
-tty_init(void)
-{
-    _row = 0;
-    _column = 0;
-    _color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-    _tty = VGA_MEMORY;
-    _tabulations = 8;
-    _tabulation_width = VGA_WIDTH / _tabulations; //10 tabulations spaces for the moment
-    
-    for (size_t y = 0; y < VGA_HEIGHT; y++)
-    {
-        for (size_t x = 0; x < VGA_WIDTH; x++)
-        {
-            const size_t index = y * VGA_WIDTH + x;
-            _tty[index] = vga_entry(' ', _color);
-        }
-    }
-}
-
-
-void
-tty_set_color(enum vga_color fg, enum vga_color bg)
-{
-    _color = vga_entry_color(fg, bg);
-}
-
-
-void
+// local tty utility functions
+static void
 tty_scroll()
 {
     for (size_t y = 0; y < VGA_HEIGHT - 1; y++)
@@ -68,7 +40,18 @@ tty_scroll()
 }
 
 
-void
+static void
+tty_update_cursor_position(void)
+{
+    const size_t index = _row * VGA_WIDTH + _column;
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint8_t) (index & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (uint8_t) ((index >> 8) & 0xFF));
+}
+
+
+static void
 tty_putchar(char c)
 {
     if ('\n' == c)
@@ -135,7 +118,7 @@ tty_putchar(char c)
 }
 
 
-void
+static void
 tty_putchars(const char* data, size_t size)
 {
     for (size_t i = 0; i < size; i++)
@@ -143,12 +126,44 @@ tty_putchars(const char* data, size_t size)
         tty_putchar(data[i]);
     }
 }
+// ----------------------------------
 
 
+// tty kernel-exposed interface
 void
 tty_putstring(const char* data)
 {
     tty_putchars(data, strlen(data));
+}
+
+
+void
+tty_init(void)
+{
+    _row = 0;
+    _column = 0;
+    _color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    _tty = VGA_MEMORY;
+    _tabulations = 8;
+    _tabulation_width = VGA_WIDTH / _tabulations; //10 tabulations spaces for the moment
+    
+    for (size_t y = 0; y < VGA_HEIGHT; y++)
+    {
+        for (size_t x = 0; x < VGA_WIDTH; x++)
+        {
+            const size_t index = y * VGA_WIDTH + x;
+            _tty[index] = vga_entry(' ', _color);
+        }
+    }
+
+    memset(_tty_prompt_buffer, 0x00, TTY_BUFFER_SIZE);
+}
+
+
+void
+tty_set_color(enum vga_color fg, enum vga_color bg)
+{
+    _color = vga_entry_color(fg, bg);
 }
 
 
@@ -196,21 +211,11 @@ tty_column_left(void)
 }
 
 
-void tty_reset_column(void)
+void
+tty_reset_column(void)
 {
     _column = 0;
 
     tty_update_cursor_position();
 }
-
-
-void
-tty_update_cursor_position(void)
-{
-    const size_t index = _row * VGA_WIDTH + _column;
-    outb(0x3D4, 0x0F);
-    outb(0x3D5, (uint8_t) (index & 0xFF));
-    outb(0x3D4, 0x0E);
-    outb(0x3D5, (uint8_t) ((index >> 8) & 0xFF));
-}
-
+// ----------------------------------

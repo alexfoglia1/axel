@@ -3,6 +3,9 @@
 #include <kernel/arch/tty.h>
 #include <kernel/arch/io.h>
 
+#include <string.h>
+
+
 void
 sys_write(interrupt_stack_frame_t frame)
 {
@@ -16,7 +19,7 @@ sys_write(interrupt_stack_frame_t frame)
         case SYSCALL_TYPE_TTY_WRITE:
         {
             const char* buffer = (const char*)(buf);
-            tty_putchars(buffer, count);
+            printk(buffer);
 
             break;
         }

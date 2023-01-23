@@ -1,6 +1,8 @@
 #include <kernel/memory_manager.h>
 
-#include <stdio.h>
+#include <kernel/arch/asm.h>
+#include <kernel/arch/tty.h>
+
 #include <string.h>
 #include <stdlib.h>
 
@@ -35,8 +37,7 @@ __kmalloc__(uint32_t size, uint8_t page_aligned, uint32_t* pa)
     }
     else
     {
-        printf("KERNEL PANIC : OUT OF MEMORY\n");
-        abort();
+        panic("KERNEL PANIC : OUT OF MEMORY\n");
     }
 
 }
@@ -105,8 +106,7 @@ memory_next_available_frame()
 // Check the reason why we are outside the loop
     if (bitmap_index == frame_bitmap_len)
     {
-        printf("KERNEL PANIC : OUT OF MEMORY - NO FREE FRAMES\n");
-        abort();
+        panic("KERNEL PANIC : OUT OF MEMORY - NO FREE FRAMES\n");
     }
 
     int bitmap = frame_bitmap[bitmap_index];
@@ -129,15 +129,15 @@ memory_acquire_frame(uint32_t frame_addr)
 //  Check frame_addr is page aligned
     if (frame_addr & PAGE_ALIGN_MASK)
     {
-        printf("KERNEL PANIC : INVALID PAGE FRAME TO ACQUIRE (0x%X)\n", frame_addr);
-        abort();
+        printk("INVALID PAGE FRAME TO ACQUIRE (0x%X)\n", frame_addr);
+        panic("KERNEL PANIC : MEMORY ERROR\n");
     }
 
 //  Check memory manager was initialized
     if (0x00 == frame_bitmap)
     {
-        printf("KERNEL PANIC : INVALID MEMORY STATE WHILE ACQUIRING FRAME (0x%X)\n", frame_addr);
-        abort();
+        printk("INVALID MEMORY STATE WHILE ACQUIRING FRAME (0x%X)\n", frame_addr);
+        panic("KERNEL PANIC : MEMORY ERROR\n");
     }
 
 //  Get frame index

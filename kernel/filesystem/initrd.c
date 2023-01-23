@@ -61,7 +61,6 @@ initrd_finddir(vfs_node_t *node, char *name)
    return 0;
 }
 
-#include <stdio.h>
 
 vfs_node_t*
 initrd_init(uint32_t location)

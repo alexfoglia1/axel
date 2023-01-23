@@ -1,8 +1,7 @@
 #include <kernel/kheap.h>
 #include <kernel/paging.h>
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <kernel/arch/tty.h>
 
 #include <common/utils.h>
 #include <common/ordered_array.h>
@@ -14,11 +13,11 @@ static ordered_array_t kheap;
 static void
 slog_heap_state(int com_port, const char* prompt)
 {
-    __slog__(com_port, "%s:\n", prompt);
+    __klog__(com_port, "%s:\n", prompt);
     for (uint32_t i = 0; i < kheap.array_ll; i++)
     {
         kheap_block_descriptor_t* block_i = ordered_array_at(&kheap, i);
-        __slog__(com_port, "block[%d] :\n\t\tDescriptor location: 0x%X\n\t\tAllocated address: 0x%X\n\t\tIn-memory size: 0x%X\n\t\tBlock state: %s\n", 
+        __klog__(com_port, "block[%d] :\n\t\tDescriptor location: 0x%X\n\t\tAllocated address: 0x%X\n\t\tIn-memory size: 0x%X\n\t\tBlock state: %s\n", 
                             i, block_i, block_i->addr, block_i->size, (KHEAP_AVAILABLE_BLOCK == block_i->status) ? "available" :
                                                                       (KHEAP_USED_BLOCK == block_i->status)      ? "used" : "merged");
     }
@@ -68,7 +67,7 @@ merge_available_blocks()
     if (kheap.array_ll == 1 && KHEAP_AVAILABLE_BLOCK == ((kheap_block_descriptor_t*) ordered_array_at(&kheap, 0))->status)
     {
         ordered_array_delete_at(&kheap, 0);
-        __slog__(COM1_PORT, "Kernel heap clean : unique available block removed\n");
+        __klog__(COM1_PORT, "Kernel heap clean : unique available block removed\n");
     }
 }
 
@@ -114,7 +113,7 @@ __kheap_malloc_at__(uint32_t va, uint32_t size, uint8_t page_aligned, uint32_t* 
     
     ordered_array_insert(&kheap, block_descriptor);
     
-    __slog__(COM1_PORT, "kheap malloc : requested 0x%X, allocated 0x%X, descriptor address 0x%X, returned address 0x%X\n", size, block_descriptor->size, va, block_descriptor->addr);
+    __klog__(COM1_PORT, "kheap malloc : requested 0x%X, allocated 0x%X, descriptor address 0x%X, returned address 0x%X\n", size, block_descriptor->size, va, block_descriptor->addr);
     //slog_heap_state(COM1_PORT, "Kernel heap state after malloc");
 
     return (void*) block_descriptor->addr;
@@ -163,8 +162,7 @@ __kheap_malloc__(uint32_t size, uint8_t page_aligned, uint32_t* pa)
         // Check if highest_addr + required space does not exceed KHEAP_END
         if (highest_addr + minimum_requred_space + extra_required_space > KHEAP_START + KHEAP_SIZE)
         {
-            printf("KERNEL PANIC : HEAP OUT OF BOUNDS\n");
-            abort();
+            panic("KERNEL PANIC : HEAP OUT OF BOUNDS\n");
         }
         else
         {
@@ -225,12 +223,11 @@ kheap_free(void* p)
         {
             if (block_i->status != KHEAP_USED_BLOCK)
             {
-                printf("KERNEL PANIC : DOUBLE FREE 0x%X\n", p);
-                abort();
+                panic("KERNEL PANIC : DOUBLE FREE\n");
             }
             else
             {
-                __slog__(COM1_PORT, "kheap free memory at 0x%X\n", ptr);
+                __klog__(COM1_PORT, "kheap free memory at 0x%X\n", ptr);
 
                 block_i->status = KHEAP_AVAILABLE_BLOCK;
                 //slog_heap_state(COM1_PORT, "Kernel heap state after free");
@@ -241,6 +238,5 @@ kheap_free(void* p)
         }
     }
 
-    printf("KERNEL PANIC : DOUBLE FREE OR MEMORY CORRUPTION 0x%X\n", p);
-    abort();
+    panic("KERNEL PANIC : DOUBLE FREE OR MEMORY CORRUPTION\n");
 }

@@ -1,5 +1,4 @@
 #include <controllers/acpi.h>
-#include <controllers/com.h>
 
 #include <common/utils.h>
 
@@ -7,8 +6,6 @@
 
 #include <kernel/arch/io.h>
 
-#include <stddef.h>
-#include <stdio.h>
 #include <string.h>
 
 static uint32_t *SMI_CMD;
@@ -132,14 +129,14 @@ void acpi_enable(void)
 
          if (i < 300)
          {
-            __slog__(COM1_PORT, "ACPI is enabled\n");
+            __klog__(COM1_PORT, "ACPI is enabled\n");
             acpi_enabled = 0x01;
          }
       }
    }
    else
    {
-      __slog__(COM1_PORT, "Could not enable ACPI\n");
+      __klog__(COM1_PORT, "Could not enable ACPI\n");
       acpi_enabled = 0x01;
    }
 }
@@ -228,24 +225,24 @@ acpi_init()
                      SLP_EN = 1<<13;
                      SCI_EN = 0x01;
 
-                     __slog__(COM1_PORT, "ACPI initialized\n");
+                     __klog__(COM1_PORT, "ACPI initialized\n");
 
                      return;
                   }
                }
                else
                {
-                     __slog__(COM1_PORT, "Cannot initialize ACPI : No _S5_ found\n");
+                     __klog__(COM1_PORT, "Cannot initialize ACPI : No _S5_ found\n");
                }
             }
             else
             {
-               __slog__(COM1_PORT, "Cannot initialize ACPI : No DSDT found\n");
+               __klog__(COM1_PORT, "Cannot initialize ACPI : No DSDT found\n");
             }
          }
          else
          {
-            __slog__(COM1_PORT, "Cannot initialize ACPI : No FACP found\n");
+            __klog__(COM1_PORT, "Cannot initialize ACPI : No FACP found\n");
          }
 
          ptr++;
@@ -254,7 +251,7 @@ acpi_init()
    }
    else
    {
-      __slog__(COM1_PORT, "Cannot initialize ACPI : No RSDT found\n");
+      __klog__(COM1_PORT, "Cannot initialize ACPI : No RSDT found\n");
    }
 
    SCI_EN = 0x00;
@@ -266,17 +263,17 @@ acpi_shutdown(void)
 {
    if (0x00 == acpi_is_initialized())
    {
-      __slog__(COM1_PORT, "Requested shutdown but ACPI was not initialized\n");
+      __klog__(COM1_PORT, "Requested shutdown but ACPI was not initialized\n");
    }
    else
    {
       if (0x00 == acpi_enabled)
       {
-         __slog__(COM1_PORT, "Requested shutdown but ACPI is not enabled\n");
+         __klog__(COM1_PORT, "Requested shutdown but ACPI is not enabled\n");
       }
       else
       {
-         __slog__(COM1_PORT, "System Shutdown");
+         __klog__(COM1_PORT, "System Shutdown");
 
          outw((uint32_t) PM1a_CNT, SLP_TYPa | SLP_EN );
          if ( PM1b_CNT != 0 )

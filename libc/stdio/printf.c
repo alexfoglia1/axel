@@ -1,16 +1,13 @@
-#include <limits.h>
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 
-#include <kernel/arch/tty.h>
-#include <kernel/arch/vga.h>
-
 
 static char* __print_to__   = 0x00;
 static int __print_to_idx__ = 0;
+
 
 void
 __redirect_printf__(char* print_to)

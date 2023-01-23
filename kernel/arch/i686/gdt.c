@@ -1,9 +1,6 @@
 #include <kernel/arch/gdt.h>
 
-#include <common/utils.h>
-
 #include <string.h>
-#include <stdio.h>
 
 
 static gdt_entry_t gdt_entries[GDT_ENTRIES];

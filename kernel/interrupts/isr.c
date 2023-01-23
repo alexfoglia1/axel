@@ -8,9 +8,6 @@
 
 #include <common/utils.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-
 static hl_interrupt_handler hl_interrupt_handlers[IDT_ENTRIES] = 
 {
     &divide_by_zero_exception,    // INT 0  : DIVIDE BY ZERO
@@ -104,7 +101,7 @@ hl_int_dispatcher(interrupt_stack_frame_t stack_frame)
     }
     else
     {
-        __slog__(COM1_PORT, "hl_int_dispatcher : ISR for int_no(0x%X) is null pointer\n", stack_frame.int_no);
+        __klog__(COM1_PORT, "hl_int_dispatcher : ISR for int_no(0x%X) is null pointer\n", stack_frame.int_no);
     }
 }
 
@@ -125,29 +122,25 @@ hl_irq_dispatcher(interrupt_stack_frame_t stack_frame)
 void
 unhandled_interrupt(interrupt_stack_frame_t frame)
 {
-    __slog__(COM1_PORT, "Unhandled interrupt 0x%X\n", frame.int_no);
+    __klog__(COM1_PORT, "Unhandled interrupt 0x%X\n", frame.int_no);
 }
 
 
 void
 divide_by_zero_exception(interrupt_stack_frame_t stack_frame)
 {
-    tty_putstring("KERNEL PANIC : DIVIDE BY 0 EXCEPTION\n");
-    abort();
+    panic("KERNEL PANIC : DIVIDE BY 0 EXCEPTION\n");
 }
 
 void undef_opcode_exception(interrupt_stack_frame_t stack_frame)
 {
-    tty_putstring("KERNEL PANIC : UNDEFINED OPCODE\n");
-    
-    abort();
+    panic("KERNEL PANIC : UNDEFINED OPCODE\n");
 }
 
 
 void gpf_exception(interrupt_stack_frame_t frame)
 {
-    tty_putstring("KERNEL PANIC : GENERAL PROTECTION FAULT\n");
-    abort();
+    panic("KERNEL PANIC : GENERAL PROTECTION FAULT\n");
 }
 
 
@@ -166,11 +159,9 @@ page_fault_exception(interrupt_stack_frame_t frame)
     int reserved = (frame.err_code >> 3) & 0x1;     // Overwritten CPU-reserved bits of page entry?
     int id = (frame.err_code>> 4) & 0x1;            // Caused by an instruction fetch?
 
-    // Output an error message.
-    char buf[512];
-    sprintf(buf, "KERNEL PANIC : PAGE FAULT\n(present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d))\n\tat 0x%X\n\n",
-                        present,     rw,                            us,  reserved,           id,   faulting_address);
-    tty_putstring(buf);
+    // Output a detailed error message.
+    printk("(present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d))\n\tat 0x%X\n\n",
+                           present, rw, us, reserved, id, faulting_address);
 
-    abort();
+    panic("KERNEL PANIC : PAGE FAULT\n");
 }

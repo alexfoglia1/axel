@@ -23,7 +23,7 @@ tasking_init(uint32_t _initial_esp)
     next_tid = 0x01;
     initial_esp = _initial_esp;
 
-    __slog__(COM1_PORT, "Initializing multitask, initial_esp(0x%X)\n", initial_esp);
+    __klog__(COM1_PORT, "Initializing multitask, initial_esp(0x%X)\n", initial_esp);
 
     // Relocate stack
     tasking_move_stack(STACK_START, STACK_SIZE);
@@ -43,7 +43,7 @@ tasking_init(uint32_t _initial_esp)
 
     next_tid += 1;
 
-    __slog__(COM1_PORT, "Multitask initialized, current ready queue: tid(0x%X)\n", current_task->tid);
+    __klog__(COM1_PORT, "Multitask initialized, current ready queue: tid(0x%X)\n", current_task->tid);
 
     sti();
 }
@@ -80,7 +80,7 @@ tasking_fork()
     }
     task_ptr->next = child_task;
 
-    __slog__(COM1_PORT, "fork(), parent tid(0x%X), child tid(0x%X)\n", parent_task->tid, task_ptr->next->tid);
+    __klog__(COM1_PORT, "fork(), parent tid(0x%X), child tid(0x%X)\n", parent_task->tid, task_ptr->next->tid);
 
     uint32_t eip;
     RF_READ_IST_PTR(eip);
@@ -180,7 +180,7 @@ tasking_move_stack(uint32_t new_stack_addr, uint32_t stack_size)
 
     paging_flush_tlb();
 
-    __slog__(COM1_PORT, "Requested new stack at 0x%X, size(0x%X)\n", new_stack_addr, stack_size);
+    __klog__(COM1_PORT, "Requested new stack at 0x%X, size(0x%X)\n", new_stack_addr, stack_size);
 
     uint32_t esp;
     RF_READ_STK_PTR(esp);
@@ -193,7 +193,7 @@ tasking_move_stack(uint32_t new_stack_addr, uint32_t stack_size)
 
     memcpy((void*) new_esp, (void*) esp, initial_esp - esp);
 
-    __slog__(COM1_PORT, "Copied kernel initial stack to new stack\n");
+    __klog__(COM1_PORT, "Copied kernel initial stack to new stack\n");
 
     for (uint32_t i = new_stack_addr; i > new_stack_addr - stack_size; i-= sizeof(uint32_t))
     {
@@ -210,5 +210,5 @@ tasking_move_stack(uint32_t new_stack_addr, uint32_t stack_size)
     RF_WRITE_STK_PTR(new_esp);
     RF_WRITE_BAS_PTR(new_ebp);
 
-    __slog__(COM1_PORT, "Stack moved, esp(0x%X->0x%X)\n", esp, new_esp);
+    __klog__(COM1_PORT, "Stack moved, esp(0x%X->0x%X)\n", esp, new_esp);
 }

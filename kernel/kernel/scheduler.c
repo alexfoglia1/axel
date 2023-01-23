@@ -45,7 +45,7 @@ scheduler_init(uint32_t _com_tx_freq_hz)
         com_tx_freq_hz = _com_tx_freq_hz;
     }
 
-    __slog__(COM1_PORT, "Scheduler initialized, requested com tx(%u Hz), actual com tx(%u Hz)\n", _com_tx_freq_hz, com_tx_freq_hz);
+    __klog__(COM1_PORT, "Scheduler initialized, requested com tx(%u Hz), actual com tx(%u Hz)\n", _com_tx_freq_hz, com_tx_freq_hz);
 }
 
 

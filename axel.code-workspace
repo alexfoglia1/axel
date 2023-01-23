@@ -42,7 +42,9 @@
             "rf.h": "c",
             "multitasking.h": "c",
             "tty.h": "c",
-            "asm.h": "c"
+            "asm.h": "c",
+            "errno.h": "c",
+            "stdlib.h": "c"
         }
     }
 

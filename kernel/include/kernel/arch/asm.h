@@ -17,6 +17,8 @@ void context_switch(uint32_t eip, uint32_t esp, uint32_t ebp, uint32_t page_dire
 void syscall_interface(uint32_t syscall_int_no, uint32_t syscall_type, uint32_t buffer, uint32_t count, uint32_t extra);
 void enter_user_mode();
 
+void __attribute__((noreturn)) panic(const char* prompt); // Preferred abnormal termination if an exception happened in kernel mode, otherwise user mode shall call the stdlib abort()
+
 
 // Interrupt service routines entry points : the idt shall point always to them in the range 0-31
 void isr0_entry_point();

@@ -24,7 +24,7 @@ sys_read(interrupt_stack_frame_t frame)
             uint8_t* buffer = (uint8_t*)(buf);
             int read = com_read(COM1_PORT, buffer, count);
             if (read)
-                __slog__(COM1_PORT, "[COM1] >> %s\n", buffer);
+                __klog__(COM1_PORT, "[COM1] >> %s\n", buffer);
             break;
         }
         case SYSCALL_TYPE_COM_2_READ:
@@ -32,7 +32,7 @@ sys_read(interrupt_stack_frame_t frame)
             uint8_t* buffer = (uint8_t*)(buf);
             int read = com_read(COM2_PORT, buffer, count);
             if (read)
-                __slog__(COM1_PORT, "[COM2] >> %s\n", buffer);
+                __klog__(COM1_PORT, "[COM2] >> %s\n", buffer);
             break;
         }
         case SYSCALL_TYPE_COM_3_READ:
@@ -40,7 +40,7 @@ sys_read(interrupt_stack_frame_t frame)
             uint8_t* buffer = (uint8_t*)(buf);
             int read = com_read(COM3_PORT, buffer, count);
             if (read)
-                __slog__(COM1_PORT, "[COM3] >> %s\n", buffer);
+                __klog__(COM1_PORT, "[COM3] >> %s\n", buffer);
             break;
         }
         default:

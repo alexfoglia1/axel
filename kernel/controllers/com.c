@@ -6,15 +6,12 @@
 #include <common/utils.h>
 
 #include <kernel/arch/io.h>
-#include <kernel/arch/vga.h>
 #include <kernel/arch/idt.h>
 
 #include <kernel/memory_manager.h>
 
-#include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 

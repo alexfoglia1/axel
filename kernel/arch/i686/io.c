@@ -1,10 +1,4 @@
 #include <kernel/arch/io.h>
-#include <kernel/arch/gdt.h>
-#include <kernel/arch/idt.h>
-
-#include <common/utils.h>
-
-#include <stdio.h>
 
 void
 cli()

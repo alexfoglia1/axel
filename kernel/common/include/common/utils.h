@@ -15,7 +15,7 @@ extern char __slog_buf__[SERIAL_LOG_BUFLEN];
 extern char __slog_prm__[SERIAL_LOG_BUFLEN - SERIAL_LOG_TSTMP_BUFLEN];
 extern char __slog_tst__[SERIAL_LOG_TSTMP_BUFLEN];
 
-#define __slog__(com_port, format, ...) \
+#define __klog__(com_port, format, ...) \
             do { \
                 sprintf(__slog_prm__, format, ##__VA_ARGS__); \
                 cmos_rtc_datetime_t datetime; \

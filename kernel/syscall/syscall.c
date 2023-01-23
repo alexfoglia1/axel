@@ -12,5 +12,5 @@ syscall_init()
     isr_register(SYSCALL_INT_NO_READ,  &sys_read);
     isr_register(SYSCALL_INT_NO_WRITE, &sys_write);
 
-    __slog__(COM1_PORT, "Syscall mapped\n");
+    __klog__(COM1_PORT, "Syscall mapped\n");
 }
