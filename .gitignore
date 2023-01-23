@@ -1,6 +1,7 @@
 *.d
 *.o
 *.a
+*.out
 *.kernel
 isodir
 sysroot
