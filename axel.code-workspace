@@ -41,7 +41,8 @@
             "syscall.h": "c",
             "rf.h": "c",
             "multitasking.h": "c",
-            "tty.h": "c"
+            "tty.h": "c",
+            "asm.h": "c"
         }
     }
 

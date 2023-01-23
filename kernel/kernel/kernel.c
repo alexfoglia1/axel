@@ -258,7 +258,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     printf("Initializing syscalls:\t");
 
     syscall_init();
-    
+
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printf("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
@@ -307,11 +307,23 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-    sti();
+//  Entering user mode
+    printf("Entering user mode . . .\n");
 
+    gdt_set_kernel_stack(tasking_get_current_task()->kernel_stack + KERNEL_STACK_SIZE);
+    enter_user_mode();
+//  --------------------------
+
+}
+
+
+// when user mode is entered, we continue from here (with IF = 1!)
+void
+user_mode_entry_point()
+{
     while(1)
     {
         sleep(1000);
-        __slog__(COM1_PORT, "Kernel alive\n");
+        printf("Kernel alive, user mode\n");
     }
 }

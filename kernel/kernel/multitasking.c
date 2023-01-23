@@ -1,6 +1,7 @@
 #include <kernel/multitasking.h>
 
 #include <kernel/arch/io.h>
+#include <kernel/arch/gdt.h>
 
 #include <common/utils.h>
 
@@ -36,6 +37,7 @@ tasking_init(uint32_t _initial_esp)
     current_task->eip = 0;
     current_task->page_directory = paging_current_page_directory();
     current_task->next = (struct task*)(0x00);
+    current_task->kernel_stack = (uint32_t) kmalloc_a(KERNEL_STACK_SIZE);
 
     ready_tasks = current_task;
 
@@ -65,6 +67,7 @@ tasking_fork()
     child_task->ebp = 0;
     child_task->eip = 0;
     child_task->page_directory = child_directory;
+    current_task->kernel_stack = (uint32_t) kmalloc_a(KERNEL_STACK_SIZE);
     child_task->next = (struct task*) (0x00);
     
     next_tid += 1;
@@ -144,8 +147,10 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
         current_task = ready_tasks;
     }
 
-    // Perform context switch
     paging_set_current_page_directory(current_task->page_directory);
+    gdt_set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
+
+    // Perform context switch
     context_switch(current_task->eip, current_task->esp, current_task->ebp, current_task->page_directory->physical_addr);
 } 
 
@@ -154,6 +159,13 @@ int
 tasking_gettid()
 {
     return current_task->tid;
+}
+
+
+task_t*
+tasking_get_current_task()
+{
+    return (task_t*) current_task;
 }
 
 

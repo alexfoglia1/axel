@@ -79,7 +79,7 @@ paging_init()
         
         current_pte->present = 0x01;            // The page is present
         current_pte->rw = 0;                    // We don't want to write over the kernel
-        current_pte->user = 0;                  // We don't want userspace processes access to this pages
+        current_pte->user = 1;                  // We don't want user access to this pages (atm, we want because enter_user_mode() returns to kernel code)
         current_pte->pa = pa >> 12;             // We are identity mapping
 
         //Tell the memory manager that a page frame is acquired
@@ -150,7 +150,7 @@ paging_map(uint32_t va_from, uint32_t va_to, page_directory_t* page_directory)
         
         current_pte->present = 0x01;            
         current_pte->rw = 0x01;                  
-        current_pte->user = 0;             
+        current_pte->user = 0x01;             
         current_pte->pa = physical_frame >> 12;
 
         memory_acquire_frame(physical_frame);

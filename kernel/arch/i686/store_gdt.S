@@ -14,3 +14,9 @@ store_gdt:
     
 flush:
     ret
+
+.globl store_tss
+store_tss:
+    movw $0x2B, %ax
+    ltr %ax
+    ret

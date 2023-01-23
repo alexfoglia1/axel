@@ -92,6 +92,6 @@ idt_add_entry(uint8_t pos, uint32_t isr, uint8_t flags)
     idt_entries[pos].isr_high       = ((isr >> 16) & 0xFFFF);
 
     idt_entries[pos].kernel_cs      = 0x08;
-    idt_entries[pos].attributes     = flags;
+    idt_entries[pos].attributes     = flags | 0x60;
     idt_entries[pos].reserved       = 0;
 }
