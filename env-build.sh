@@ -1,5 +1,6 @@
 SYSTEM_HEADER_PROJECTS="libc kernel"
 PROJECTS="libc kernel"
+SWBASE="bash"
 
 export OSNAME=axel
 export MAKE=${MAKE:-make}
@@ -14,6 +15,7 @@ export EXEC_PREFIX=$PREFIX
 export BOOTDIR=/boot
 export LIBDIR=$EXEC_PREFIX/lib
 export INCLUDEDIR=$PREFIX/include
+export BINDIR=$PREFIX/bin
 
 export CFLAGS='-O0 -g -Wno-unused-parameter -Werror'
 export CPPFLAGS=''
