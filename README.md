@@ -88,6 +88,11 @@ The hosted development environment is an x86_64 machine running Ubuntu 22.04 LTS
 An x86 gcc cross compiler and binutils shall be present in the $PATH environment variable to compile AXEL.
 Refer to [this guide](https://wiki.osdev.org/GCC_Cross-Compiler) to get one.
 
+Under linux, one can then modify the \$\{HOME\}/.bashrc file, e.g. if cross compiler is installed in \$\{HOME\}/opt/cross/bin:
+
+    export PATH="${HOME}/opt/cross/bin:${PATH}"
+
+
 The build process is automated through:
 
     build.sh   : builds the kernel binary
