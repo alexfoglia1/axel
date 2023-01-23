@@ -42,7 +42,7 @@ void paging_init();
 void paging_map(uint32_t va_from, uint32_t va_to, page_directory_t* page_directory); 
 void paging_get_page(uint32_t va, uint32_t* page_table_index, uint32_t* frame_index);
 void paging_flush_tlb();
-void paging_set_current_page_directory(page_directory_t* page_directory);
+void paging_set_current_page_directory(page_directory_t* page_directory, uint8_t hardware);
 
 page_directory_t* paging_clone_directory(page_directory_t* src);
 page_directory_t* paging_current_page_directory();

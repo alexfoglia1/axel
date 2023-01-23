@@ -138,7 +138,7 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
     current_task->eip = eip;
     current_task->page_directory = paging_current_page_directory();
 
-    // Implementing round robin scheduler
+    // Implementing time sharing scheduler
     // TODO : use pit_ticks and/or pit_millis to implement different scheduling policies
     current_task = current_task->next;
     if (0x00 == current_task)
@@ -147,7 +147,8 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
         current_task = ready_tasks;
     }
 
-    paging_set_current_page_directory(current_task->page_directory);
+    // Context switch will set the current page directory in CR3, no need to perform an hardware set page directory in paging.c
+    paging_set_current_page_directory(current_task->page_directory, 0x00);
     gdt_set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
 
     // Perform context switch

@@ -232,7 +232,13 @@ paging_kernel_page_directory()
 
 
 void
-paging_set_current_page_directory(page_directory_t* page_directory)
+paging_set_current_page_directory(page_directory_t* page_directory, uint8_t hardware)
 {
     current_directory = page_directory;
+
+    if (0x01 == hardware)
+    {
+        // Requested hardware set
+        load_page_directory(current_directory->physical_addr);
+    }
 }

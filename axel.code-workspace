@@ -44,7 +44,8 @@
             "tty.h": "c",
             "asm.h": "c",
             "errno.h": "c",
-            "stdlib.h": "c"
+            "stdlib.h": "c",
+            "scheduler.h": "c"
         }
     }
 

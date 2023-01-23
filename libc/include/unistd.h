@@ -5,9 +5,8 @@
 #define SYSCALL_TYPE_IO_WRITE_BYTE 0x01
 #define SYSCALL_TYPE_IO_WRITE_WORD 0x02
 #define SYSCALL_TYPE_IO_WRITE_LONG 0x03
-#define SYSCALL_TYPE_COM_1_READ    0x04
-#define SYSCALL_TYPE_COM_2_READ    0x05
-#define SYSCALL_TYPE_COM_3_READ    0x06
+
+#define SYSCALL_TYPE_COM_READ(N)(0x04 + N)
 
 // These interrupts numbers shall be equals to the interrupts number defined in kernel/syscall/syscall.h
 #define SYSCALL_INT_NO_READ  80

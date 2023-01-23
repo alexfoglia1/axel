@@ -168,8 +168,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //  Initialize COM
     com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
     com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
-    com_init(COM3_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
-    com_set_int_byte(0x0D); // Fire a read syscall when <enter> is received
 
     __klog__(COM1_PORT, "COM ports initialized\n");
     printk("Detecting COM1:\t\t");
@@ -204,23 +202,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
         __klog__(COM1_PORT, "COM 2 Not Detected\n");
     }
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-
-    printk("Detecting COM3:\t\t");
-    if (com_is_initialized(COM3_PORT) == 0x01)
-    {
-        tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-        printk("[OK]\n");
-
-        __klog__(COM1_PORT, "COM 3 Detected\n");
-    }
-    else
-    {
-        tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
-        printk("[KO]\n");
-
-        __klog__(COM1_PORT, "COM 3 Not Detected\n");
-    }
-    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  -------------------------------------------------------------------------------------------
 
 //  Initializing PS/2 controller
@@ -231,13 +212,11 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     {
         tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
         printk("[%s]\n", ps2_is_dual_channel() == 0x01 ? "2" : "1");
-        tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
     }
     else
     {
         tty_set_color(VGA_COLOR_RED, VGA_COLOR_BLACK);
         printk("[0]\n");
-        tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
     }
 
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
@@ -291,7 +270,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     printk("Initializing scheduler:\t");
     
     tasking_init(esp);
-    scheduler_init(COM_STD_TX_FREQ_HZ);
     pit_set_callback(&scheduler);
     
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);

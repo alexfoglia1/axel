@@ -2,8 +2,6 @@
 
 #include <kernel/arch/tty.h>
 
-#include <stdio.h>
-
 #include <controllers/com.h>
 
 #include <common/utils.h>
@@ -19,7 +17,7 @@ sys_read(interrupt_stack_frame_t frame)
 
     switch (type)
     {
-        case SYSCALL_TYPE_COM_1_READ:
+        case SYSCALL_TYPE_COM_READ(1):
         {
             uint8_t* buffer = (uint8_t*)(buf);
             int read = com_read(COM1_PORT, buffer, count);
@@ -27,20 +25,12 @@ sys_read(interrupt_stack_frame_t frame)
                 __klog__(COM1_PORT, "[COM1] >> %s\n", buffer);
             break;
         }
-        case SYSCALL_TYPE_COM_2_READ:
+        case SYSCALL_TYPE_COM_READ(2):
         {
             uint8_t* buffer = (uint8_t*)(buf);
             int read = com_read(COM2_PORT, buffer, count);
             if (read)
                 __klog__(COM1_PORT, "[COM2] >> %s\n", buffer);
-            break;
-        }
-        case SYSCALL_TYPE_COM_3_READ:
-        {
-            uint8_t* buffer = (uint8_t*)(buf);
-            int read = com_read(COM3_PORT, buffer, count);
-            if (read)
-                __klog__(COM1_PORT, "[COM3] >> %s\n", buffer);
             break;
         }
         default:
