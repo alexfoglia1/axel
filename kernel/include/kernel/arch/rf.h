@@ -15,6 +15,8 @@
 #define RF_READ_SRC_PTR(DST) asm volatile("mov %%esi, %0" : "=r" (DST))
 #define RF_READ_DST_PTR(DST) asm volatile("mov %%edi, %0" : "=r" (DST))
 #define RF_READ_IST_PTR(DST) do { DST = read_eip(); } while(0)
+#define RF_READ_COD_SEL(DST) asm volatile("mov %%cs, %0" : "=r" (DST))
+#define RF_READ_STK_SEL(DST) asm volatile("mov %%ss, %0" : "=r" (DST))
 
 #define RF_READ_CR_0(DST) asm volatile("movl %%cr0, %0" : "=r" (DST))
 #define RF_READ_CR_1(DST) asm volatile("movl %%cr1, %0" : "=r" (DST))

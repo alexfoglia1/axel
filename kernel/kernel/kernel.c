@@ -50,16 +50,28 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //   I can __slog__ if com are not yet initialized, output is just buffered
     __slog__(COM1_PORT, "System boot\n"); 
 
-//  Initializing TTY, GDT, IDT and system calls
+//  Log stack segment selector and code segment selector before GDT initialization
+    uint32_t cs, ss;
+    RF_READ_COD_SEL(cs);
+    RF_READ_STK_SEL(ss);
+    __slog__(COM1_PORT, "Before GDT initialization: ss(0x%X), cs(0x%X)\n", ss, cs);
+//  -------------------------
+
+//  Initializing TTY, GDT and IDT
     tty_init();
     gdt_init();
 
 //  We need pic to be remapped before IDT initialization
     pic_remap();
+//  -------------------------
     idt_init();
     __slog__(COM1_PORT, "Descriptors initialized\n");
+//  -------------------------
 
-    syscall_init();
+//  Log stack segment selector and code segment selector after GDT initialization
+    RF_READ_COD_SEL(cs);
+    RF_READ_STK_SEL(ss);
+    __slog__(COM1_PORT, "After GDT initialization: ss(0x%X), cs(0x%X)\n", ss, cs);
 //  -------------------------
 
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
@@ -242,6 +254,15 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
+//  Initializing system calls
+    printf("Initializing syscalls:\t");
+
+    syscall_init();
+    
+    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+    printf("[OK]\n");
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+//  --------------------------
 //  Initializing ramdisk
     printf("Mounting initrd:\t\t");
 
