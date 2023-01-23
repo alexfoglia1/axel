@@ -1,5 +1,6 @@
 #include <string.h>
 
+
 void*
 memmove(void* dstptr, const void* srcptr, size_t size)
 {
@@ -8,16 +9,16 @@ memmove(void* dstptr, const void* srcptr, size_t size)
 
     if (dst < src)
     {
-    for (size_t i = 0; i < size; i++)
+        for (size_t i = 0; i < size; i++)
         {
-      dst[i] = src[i];
+            dst[i] = src[i];
         }
     }
     else
     {
-    for (size_t i = size; i != 0; i--)
+        for (size_t i = size; i != 0; i--)
         {
-      dst[i-1] = src[i-1];
+            dst[i-1] = src[i-1];
         }
   }
 

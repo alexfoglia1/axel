@@ -65,6 +65,8 @@ The codebase has the following structure:
     libc/
          unistd: reimplementation of the C unistd library, which contains an interface to system calls
 
+    sw-base/
+            bash : a basic bash process, part of software provided for the user by the OS
 
     sysroot: The AXEL-OS system root, it is generated during the build process and it contains kernel binary and a minimal initial filesystem
     

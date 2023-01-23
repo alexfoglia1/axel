@@ -212,7 +212,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //  -------------------------------------------------------------------------------------------
 
 //  Initializing PS/2 controller
-    printf("Detecting PS/2 Channels:\t");
+    printf("Detecting PS/2 channels:\t");
 
     ps2_controller_init();
     if (ps2_is_present())
@@ -288,39 +288,9 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 
     sti();
 
-    printf("Welcome!\n");
-
-    while(1);
-
-#if 0
-    int tid = tasking_fork();
-    if (0 == tid)
+    while(1)
     {
-        int child_tid = tasking_fork();
-        if (0 == child_tid)
-        {
-            while (1)
-            {
-                printf("I am child's child, fork() returned 0x%X,0x%X, get_tid() returned 0x%X\n", tid, child_tid, tasking_gettid());
-                sleep(1000);
-            }
-        }
-        else
-        {
-            while (1)
-            {
-                printf("I am parent's child, fork() returned 0x%X,0x%X, get_tid() returned 0x%X\n", tid, child_tid, tasking_gettid());
-                sleep(2000);
-            }
-        }
+        sleep(1000);
+        __slog__(COM1_PORT, "Kernel alive\n");
     }
-    else
-    {
-        while (1)
-        {
-            printf("I am parent, fork() returned 0x%X, get_tid() returned 0x%X\n", tid, tasking_gettid());
-            sleep(4000);
-        }
-    }
-#endif
 }

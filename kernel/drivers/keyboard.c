@@ -9,11 +9,13 @@
 #include <kernel/arch/idt.h>
 #include <kernel/arch/tty.h>
 
-#include <stdio.h> // Todo : printing is not keyboard driver responsability
+#include <string.h>
 
 static uint8_t is_caps;
 static uint8_t is_shift_holded;
 static uint8_t data_port;
+static uint8_t kbd_mem[1024];
+static uint8_t kbd_mem_idx;
 
 void
 keyboard_init(uint8_t in_port)
@@ -21,6 +23,8 @@ keyboard_init(uint8_t in_port)
     is_caps = 0;
     is_shift_holded = 0;
     data_port = in_port;
+    memset(&kbd_mem, 0x00, 1024);
+    kbd_mem_idx = 0;
 
     isr_register(IRQ_TO_INT_NO(KBD_IRQ), &keyboard_irq_handler);
 
@@ -213,8 +217,25 @@ keyboard_irq_handler(interrupt_stack_frame_t frame)
 
     if (to_print != '\0')
     {
-        printf("%c", to_print); // TODO : printing is not keyboard driver responsability
+        kbd_mem[kbd_mem_idx] = to_print;
+        kbd_mem_idx += 1;
+
+        kbd_mem_idx %= 1024;
     }
 
     outb(PIC_MASTER_CMD_PORT, PIC_EOI);
+}
+
+
+int
+keyboard_read(uint8_t* buf, uint32_t size)
+{
+    uint32_t read_size = __min__(size, kbd_mem_idx);
+    memcpy(buf, kbd_mem, read_size);
+
+    memmove(kbd_mem, &kbd_mem[read_size], 1024 - read_size);
+    memset(&kbd_mem[1024 - read_size], 0x00, read_size);
+    kbd_mem_idx -= read_size;
+
+    return read_size;
 }

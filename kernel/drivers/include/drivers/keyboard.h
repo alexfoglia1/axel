@@ -94,6 +94,7 @@
 
 void keyboard_init(uint8_t in_port);
 void keyboard_irq_handler(interrupt_stack_frame_t frame);
+int  keyboard_read(uint8_t* buf, uint32_t size);
 
 
 #endif
