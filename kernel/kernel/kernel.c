@@ -65,6 +65,8 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     pic_remap();
 //  -------------------------
     idt_init();
+    syscall_init();
+    
     __slog__(COM1_PORT, "Descriptors initialized\n");
 //  -------------------------
 
@@ -254,15 +256,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-//  Initializing system calls
-    printf("Initializing syscalls:\t");
 
-    syscall_init();
-
-    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-    printf("[OK]\n");
-    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-//  --------------------------
 //  Initializing ramdisk
     printf("Mounting initrd:\t\t");
 

@@ -3,6 +3,7 @@
 #include <controllers/pic.h>
 
 #include <kernel/arch/idt.h>
+#include <kernel/arch/tty.h>
 #include <kernel/arch/rf.h>
 
 #include <common/utils.h>
@@ -131,18 +132,13 @@ unhandled_interrupt(interrupt_stack_frame_t frame)
 void
 divide_by_zero_exception(interrupt_stack_frame_t stack_frame)
 {
-    printf("KERNEL PANIC : DIVIDE BY 0 EXCEPTION\n");
+    tty_putstring("KERNEL PANIC : DIVIDE BY 0 EXCEPTION\n");
     abort();
 }
 
 void undef_opcode_exception(interrupt_stack_frame_t stack_frame)
 {
-    printf("KERNEL PANIC : UNDEFINED OPCODE\n");
-    printf("\teax(0x%X), ebx(0x%X), ecx(0x%X), edx(0x%X)\n", stack_frame.eax, stack_frame.ebx, stack_frame.ecx, stack_frame.edx);
-    printf("\tesp(0x%X), ebp()\n", stack_frame.esp);//, stack_frame.ebp);
-    printf("\teip(0x%X)\n", stack_frame.eip);
-    printf("\tcs(0x%X), ds(), edi(), esi()\n", stack_frame.cs);// stack_frame.ds, stack_frame.edi, stack_frame.esi);
-    printf("\teflags(0x%X), ss(0x%X), err_code(0x%X)\n\n", stack_frame.eflags, stack_frame.err_code, stack_frame.ss);
+    tty_putstring("KERNEL PANIC : UNDEFINED OPCODE\n");
     
     abort();
 }
@@ -150,7 +146,7 @@ void undef_opcode_exception(interrupt_stack_frame_t stack_frame)
 
 void gpf_exception(interrupt_stack_frame_t frame)
 {
-    printf("KERNEL PANIC : GENERAL PROTECTION FAULT\n");
+    tty_putstring("KERNEL PANIC : GENERAL PROTECTION FAULT\n");
     abort();
 }
 
@@ -171,8 +167,10 @@ page_fault_exception(interrupt_stack_frame_t frame)
     int id = (frame.err_code>> 4) & 0x1;            // Caused by an instruction fetch?
 
     // Output an error message.
-    printf("KERNEL PANIC : PAGE FAULT\n(present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d))\n\tat 0x%X\n\n",
+    char buf[512];
+    sprintf(buf, "KERNEL PANIC : PAGE FAULT\n(present(%d), write-operation(%d), user-mode(%d), reserved(%d), fetch(%d))\n\tat 0x%X\n\n",
                         present,     rw,                            us,  reserved,           id,   faulting_address);
+    tty_putstring(buf);
 
     abort();
 }
