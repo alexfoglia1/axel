@@ -6,11 +6,8 @@
 #include <common/utils.h>
 
 #include <kernel/arch/io.h>
-#include <kernel/arch/tty.h>
 
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 

@@ -166,8 +166,8 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //  -------------------------
 
 //  Initialize COM
-    com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
-    com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1);
+    com_init(COM1_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1, COM_BLOCKING_O|COM_AUTOFLSH_O);
+    com_init(COM2_PORT, 9600, COM_BITS_8, COM_PARITY_NONE, COM_STOPBITS_1, COM_BLOCKING_O|COM_AUTOFLSH_O);
 
     __klog__(COM1_PORT, "COM ports initialized\n");
     printk("Detecting COM1:\t\t");

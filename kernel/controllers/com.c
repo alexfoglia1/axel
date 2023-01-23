@@ -30,8 +30,8 @@ static uint32_t com2_output_ll = 0;
 static uint32_t com1_input_ll = 0;
 static uint32_t com2_input_ll = 0;
 
-static uint32_t com1_flags = 0;
-static uint32_t com2_flags = 0;
+static uint8_t com1_flags = 0;
+static uint8_t com2_flags = 0;
 
 
 static uint8_t
@@ -56,7 +56,7 @@ COM_SET_BPS(uint8_t bits, uint8_t parity, uint8_t stop_bits)
 
 
 void
-com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits)
+com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits, uint8_t flags)
 {
     if (com_port != COM1_PORT && com_port != COM2_PORT)
     {
@@ -83,11 +83,15 @@ com_init(int com_port, int baud, uint8_t bits, uint8_t parity, uint8_t stop_bits
        if (COM1_PORT == com_port)
        {
            com1_port_initialized = 0x01;
+           com1_flags = flags;
+
            isr_register(IRQ_TO_INT_NO(COM1_IRQ), &com1_irq_handler);
        }
        else if (COM2_PORT == com_port)
        {
            com2_port_initialized = 0x01;
+           com2_flags = flags;
+
            isr_register(IRQ_TO_INT_NO(COM2_IRQ), &com2_irq_handler);
        }
     }
@@ -116,7 +120,10 @@ com_write(int com_port, uint8_t* buf)
     uint32_t* output_buf_llen = (COM1_PORT == com_port) ? &com1_output_ll :
                                 (COM2_PORT == com_port) ? &com2_output_ll : (uint32_t*) 0x00;
 
-    if (0x00 == output_buffer || 0x00 == output_buf_llen)
+    uint8_t* flags = (COM1_PORT == com_port) ? &com1_flags :
+                     (COM2_PORT == com_port) ? &com2_flags : (uint8_t*) 0x00;
+
+    if (0x00 == output_buffer || 0x00 == output_buf_llen || 0x00 == flags)
     {
         // Todo : someone want to write over an unexisting serial port, handle this case!
         return -1;
@@ -137,7 +144,7 @@ com_write(int com_port, uint8_t* buf)
         }
     }
 
-    return len;
+    return ((*flags & COM_AUTOFLSH_O)) ? com_flush(com_port) : len;
 }
 
 
@@ -151,14 +158,21 @@ com_read(int com_port, uint8_t* buf, uint32_t n_bytes)
     uint32_t* input_buffer_llen = (COM1_PORT == com_port) ? &com1_input_ll :
                                   (COM2_PORT == com_port) ? &com2_input_ll : (uint32_t*) 0x00;
 
-    if (0x00 == input_buffer || 0x00 == input_buffer_llen)
+    uint8_t* flags = (COM1_PORT == com_port) ? &com1_flags :
+                     (COM2_PORT == com_port) ? &com2_flags : (uint8_t*) 0x00;
+
+    if (0x00 == input_buffer || 0x00 == input_buffer_llen || 0x00 == flags)
     {
         // Todo : someone want to read over an unexisting serial port, handle this case!
         return -1;
     }
     else
     {
-        int bytes_to_read = __min__(n_bytes, *input_buffer_llen);
+        int bytes_to_read = 0;
+        do
+        {
+            bytes_to_read = __min__(n_bytes, *input_buffer_llen);
+        } while(0x00 == bytes_to_read && (*flags & COM_BLOCKING_O));
 
         memcpy(buf, input_buffer, bytes_to_read);
         for (uint32_t i = bytes_to_read; i < *input_buffer_llen; i++)
