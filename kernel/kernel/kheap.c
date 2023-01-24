@@ -162,6 +162,15 @@ __kheap_malloc__(uint32_t size, uint8_t page_aligned, uint32_t* pa)
         // Check if highest_addr + required space does not exceed KHEAP_END
         if (highest_addr + minimum_requred_space + extra_required_space > KHEAP_START + KHEAP_SIZE)
         {
+            printk("Requested %u + extra %u bytes = %u to allocate from 0x%X to 0x%X but heap end is at 0x%X\n",
+                size,
+                minimum_requred_space,
+                size + minimum_requred_space,
+                highest_addr,
+                highest_addr + size + minimum_requred_space,
+                KHEAP_START + KHEAP_SIZE
+            );
+
             panic("KERNEL PANIC : HEAP OUT OF BOUNDS\n");
         }
         else

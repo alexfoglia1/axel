@@ -55,6 +55,7 @@ void isr31_entry_point();
 
 void isr80_entry_point();
 void isr81_entry_point();
+void isr82_entry_point();
 // ^
 // |
 // |

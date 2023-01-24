@@ -38,6 +38,7 @@ $(ARCH_FREEOBJS) \
 errno/errno.o \
 unistd/read.o \
 unistd/write.o \
+unistd/fork.o \
 stdio/printf.o \
 stdio/putchar.o \
 stdio/puts.o \

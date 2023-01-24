@@ -32,7 +32,7 @@ keyboard_init(uint8_t in_port)
 }
 
 
-void
+int
 keyboard_irq_handler(interrupt_stack_frame_t frame)
 {
     uint8_t key = inb(data_port);
@@ -224,6 +224,8 @@ keyboard_irq_handler(interrupt_stack_frame_t frame)
     }
 
     outb(PIC_MASTER_CMD_PORT, PIC_EOI);
+
+    return 0;
 }
 
 

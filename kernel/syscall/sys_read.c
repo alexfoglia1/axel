@@ -6,8 +6,10 @@
 
 #include <common/utils.h>
 
+#include <unistd.h>
 
-void
+
+int
 sys_read(interrupt_stack_frame_t frame)
 {
     uint32_t type = frame.eax;
@@ -23,6 +25,7 @@ sys_read(interrupt_stack_frame_t frame)
             int read = com_read(COM1_PORT, buffer, count);
             if (read)
                 __klog__(COM1_PORT, "[COM1] >> %s\n", buffer);
+            return read;
             break;
         }
         case SYSCALL_TYPE_COM_READ(2):
@@ -31,9 +34,12 @@ sys_read(interrupt_stack_frame_t frame)
             int read = com_read(COM2_PORT, buffer, count);
             if (read)
                 __klog__(COM1_PORT, "[COM2] >> %s\n", buffer);
+            return read;
             break;
         }
         default:
             break;
     }
+
+    return -1;
 }

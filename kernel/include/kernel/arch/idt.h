@@ -16,6 +16,7 @@
 // These are the interrupt numbers associated to system calls
 #define SYSCALL_INT_NO_READ  80
 #define SYSCALL_INT_NO_WRITE 81
+#define SYSCALL_INT_NO_FORK  82
 
 typedef struct idt_entry
 {

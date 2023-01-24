@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <errno.h>
-#include <stdbool.h>
+#include <unistd.h>
 
 #include <kernel/paging.h>
 #include <kernel/kheap.h>
@@ -39,6 +39,8 @@
 #define MINOR_V 1
 #define STAGE_V 'B'
 
+uint32_t bash_addr = 0;
+
 
 void
 kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
@@ -68,6 +70,19 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     
     __klog__(COM1_PORT, "Descriptors initialized\n");
 //  -------------------------
+
+    // test start
+    char buf[6] = {'c', 'i', 'a', 'o', '\n', '\0'};
+    interrupt_stack_frame_t fake_frame;
+    fake_frame.eax = SYSCALL_TYPE_TTY_WRITE;
+    fake_frame.ebx = (uint32_t) buf;
+    fake_frame.ecx = 0;
+    fake_frame.edx = 0;
+
+    int res = sys_write(fake_frame);
+    printk("write return value %u\n", res);
+    while(1); // test end
+
 
 //  Log stack segment selector and code segment selector after GDT initialization
     RF_READ_COD_SEL(cs);
@@ -233,39 +248,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-
-//  Initializing ramdisk
-    printk("Mounting initrd:\t\t");
-
-    vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(mbd->mods_addr));
-    uint32_t i = 0;
-    struct dirent *node = 0;
-    while ((node = vfs_read_dir(vfs_root, i)) != 0)
-    {
-        __klog__(COM1_PORT, "Found file %s\n", node->name);
-
-        vfs_node_t* fs_node = vfs_find_dir(vfs_root, node->name);
-
-        if (fs_node->flags == FS_DIRECTORY)
-        {
-            __klog__(COM1_PORT, "%s/%s is a directory\n", vfs_root->name, fs_node->name);
-        }
-        else
-        {
-            __klog__(COM1_PORT, "%s/%s is a file\n", vfs_root->name, fs_node->name);
-            char buf[256];
-            vfs_read(fs_node, 0, 256, (uint8_t*) buf);
-            __klog__(COM1_PORT, "File content: %s\n", (const char*) buf);
-        }
-
-        i += 1;
-    }
-
-    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-    printk("[OK]\n");
-    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-//  --------------------------
-
 //  Initializing multitasking
     printk("Initializing scheduler:\t");
     
@@ -277,8 +259,36 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
+//  Initializing ramdisk
+    printk("Mounting initrd:\t\t");
+
+    vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(mbd->mods_addr));
+    uint32_t i = 0;
+    struct dirent *node = 0;
+    while ((node = vfs_read_dir(vfs_root, i)) != 0)
+    {
+        vfs_node_t* fs_node = vfs_find_dir(vfs_root, node->name);
+
+        if (fs_node->flags == FS_DIRECTORY)
+        {
+            __klog__(COM1_PORT, "(0x%X) Found directory %s/%s\n", fs_node, vfs_root->name, fs_node->name);
+        }
+        else
+        {
+            __klog__(COM1_PORT, "(0x%X) Found file %s%s\n", fs_node, vfs_root->name, fs_node->name);
+            bash_addr = (uint32_t)(fs_node);
+        }
+
+        i += 1;
+    }
+
+    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+    printk("[OK]\n");
+    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+//  --------------------------
+
 //  Entering user mode
-    printk("Entering user mode . . .\n");
+    printk("\nEntering user mode\n");
 
     gdt_set_kernel_stack(tasking_get_current_task()->kernel_stack + KERNEL_STACK_SIZE);
     enter_user_mode();
@@ -291,9 +301,29 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 void
 user_mode_entry_point()
 {
-    while(1)
+    printf("User mode\n");
+
+    char tmp[64];
+    memset(tmp, 0x00, 64);
+    for (int i = 1; i < 5; i++)
     {
-        sleep(1000);
-        printf("Kernel alive, user mode\n");
+        int res = write(SYSCALL_TYPE_TTY_WRITE, tmp, i);
+        printf("tty write count %u, returned %u\n", i , res);
+    }
+    while(1);
+    
+    int tid = fork();
+    if (0x00 == tid)
+    {
+        vfs_node_t* bash_fs_node = (vfs_node_t*)(bash_addr);
+        printf("Starting %s\n\n", bash_fs_node->name);
+    }
+    else
+    {
+        while(1)
+        {
+            sleep(1000);
+            printf("Kernel alive, user mode\n");
+        }
     }
 }

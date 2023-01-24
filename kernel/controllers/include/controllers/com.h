@@ -52,7 +52,7 @@ int com_read(int com_port, uint8_t* buf, uint32_t n_bytes); // copy buffered inp
 
 int com_flush(int com_port); // Effectively transmit data to outport
 
-void com1_irq_handler(interrupt_stack_frame_t frame); // buffers input data from COM1
-void com2_irq_handler(interrupt_stack_frame_t frame); // buffers input data from COM2
+int com1_irq_handler(interrupt_stack_frame_t frame); // buffers input data from COM1
+int com2_irq_handler(interrupt_stack_frame_t frame); // buffers input data from COM2
 
 #endif

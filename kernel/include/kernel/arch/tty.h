@@ -3,6 +3,7 @@
 
 #include <kernel/arch/vga.h>
 #include <stdio.h> // for sprintf (legal in both user and kernel, it does not make use of any system calls)
+#include <string.h> // for printk memset
 
 #define TTY_BUFFER_SIZE 512
 

@@ -25,7 +25,7 @@ typedef struct i686_interrupt_stack interrupt_stack_frame_t;
 typedef struct debug_interrupt_stack interrupt_stack_frame_t;
 #endif
 
-typedef void (*hl_interrupt_handler)(interrupt_stack_frame_t frame);
+typedef int (*hl_interrupt_handler)(interrupt_stack_frame_t frame);
 
 // Register high level interrupt service routines : it shall be used by the kernel and device drivers
 void isr_register(uint32_t int_no, hl_interrupt_handler handler); 
@@ -37,7 +37,7 @@ void isr_register(uint32_t int_no, hl_interrupt_handler handler);
 // |
 // |
 // v
-void hl_int_dispatcher(interrupt_stack_frame_t stack_frame);
+int hl_int_dispatcher(interrupt_stack_frame_t stack_frame);
 // ^
 // |
 // |
@@ -51,11 +51,11 @@ void hl_int_dispatcher(interrupt_stack_frame_t stack_frame);
 // |
 // |
 // v
-void unhandled_interrupt(interrupt_stack_frame_t stack_frame);
-void divide_by_zero_exception(interrupt_stack_frame_t stack_frame);
-void undef_opcode_exception(interrupt_stack_frame_t stack_frame);
-void gpf_exception(interrupt_stack_frame_t stack_frame);
-void page_fault_exception(interrupt_stack_frame_t stack_frame);
+int unhandled_interrupt(interrupt_stack_frame_t stack_frame);
+int divide_by_zero_exception(interrupt_stack_frame_t stack_frame);
+int undef_opcode_exception(interrupt_stack_frame_t stack_frame);
+int gpf_exception(interrupt_stack_frame_t stack_frame);
+int page_fault_exception(interrupt_stack_frame_t stack_frame);
 
 // The below routine is called by the asm ll_irq_dispatcher() defined in kernel/arch/asm.h
 // |
@@ -64,7 +64,7 @@ void page_fault_exception(interrupt_stack_frame_t stack_frame);
 // |
 // |
 // v
-void hl_irq_dispatcher(interrupt_stack_frame_t stack_frame); // This extends the behavior of hl_int_dispatcher : it resets the pic when an interrupt has been served
+int hl_irq_dispatcher(interrupt_stack_frame_t stack_frame); // This extends the behavior of hl_int_dispatcher : it resets the pic when an interrupt has been served
 // ^
 // |
 // |

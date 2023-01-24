@@ -270,3 +270,11 @@ isr81_entry_point:
     push $0 // error code
     push $81
     jmp ll_int_dispatcher
+
+.globl isr82_entry_point
+isr82_entry_point:
+    cli
+    
+    push $0 // error code
+    push $82
+    jmp ll_int_dispatcher
