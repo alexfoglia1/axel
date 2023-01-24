@@ -48,6 +48,7 @@ string/memcpy.o \
 string/memmove.o \
 string/memset.o \
 string/strlen.o \
+arch/i686/syscall_interface.o \
 
 
 HOSTEDOBJS=\

@@ -63,7 +63,6 @@ $(ARCHDIR)/flush_tlb.o \
 $(ARCHDIR)/read_eip.o \
 $(ARCHDIR)/context_switch.o \
 $(ARCHDIR)/enter_user_mode.o \
-$(ARCHDIR)/syscall_interface.o \
 $(ARCHDIR)/panic.o \
 $(ISRDIR)/isr.o \
 $(SYSCALLDIR)/sys_write.o \
