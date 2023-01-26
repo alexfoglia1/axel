@@ -34,9 +34,14 @@ cmos_datetime_to_str(cmos_rtc_datetime_t datetime, char* buf)
 }
 
 
+#include <kernel/arch/io.h>
 void
 sleep(uint32_t millis)
 {
     uint32_t millis0 = pit_get_millis();
-    while (pit_get_millis() - millis0 < millis);
+    uint32_t act_millis = millis0;
+    while (act_millis - millis0 < millis)
+    {
+        act_millis = pit_get_millis();
+    }
 }

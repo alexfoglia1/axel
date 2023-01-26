@@ -71,18 +71,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     __klog__(COM1_PORT, "Descriptors initialized\n");
 //  -------------------------
 
-    // test start
-    char buf[6] = {'c', 'i', 'a', 'o', '\n', '\0'};
-    interrupt_stack_frame_t fake_frame;
-    fake_frame.eax = SYSCALL_TYPE_TTY_WRITE;
-    fake_frame.ebx = (uint32_t) buf;
-    fake_frame.ecx = 0;
-    fake_frame.edx = 0;
-
-    int res = sys_write(fake_frame);
-    printk("write return value %u\n", res);
-    while(1); // test end
-
 
 //  Log stack segment selector and code segment selector after GDT initialization
     RF_READ_COD_SEL(cs);
@@ -258,6 +246,11 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     printk("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
+
+    // test start
+    int res = fork();
+    printk("fork return value %u\n", res);
+    while(1); // test end
 
 //  Initializing ramdisk
     printk("Mounting initrd:\t\t");

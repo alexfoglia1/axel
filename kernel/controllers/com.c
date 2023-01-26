@@ -7,6 +7,7 @@
 
 #include <kernel/arch/io.h>
 #include <kernel/arch/idt.h>
+#include <kernel/arch/tty.h>
 
 #include <kernel/memory_manager.h>
 
@@ -168,11 +169,21 @@ com_read(int com_port, uint8_t* buf, uint32_t n_bytes)
     }
     else
     {
-        int bytes_to_read = 0;
-        do
+        uint8_t _break = 0x00;
+        int bytes_to_read = __min__(n_bytes, *input_buffer_llen);
+        while (0x00 == _break)
         {
             bytes_to_read = __min__(n_bytes, *input_buffer_llen);
-        } while(0x00 == bytes_to_read && (*flags & COM_BLOCKING_O));
+
+            if (0x00 == bytes_to_read && (*flags & COM_BLOCKING_O))
+            {
+                _break = 0x00;
+            }
+            else
+            {
+                _break = 0x01;
+            }
+        }
 
         memcpy(buf, input_buffer, bytes_to_read);
         for (uint32_t i = bytes_to_read; i < *input_buffer_llen; i++)

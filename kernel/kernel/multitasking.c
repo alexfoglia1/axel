@@ -80,7 +80,7 @@ tasking_fork()
     }
     task_ptr->next = child_task;
 
-    __klog__(COM1_PORT, "fork(), parent tid(0x%X), child tid(0x%X)\n", parent_task->tid, task_ptr->next->tid);
+    __klog__(COM1_PORT, "tasking_fork(), parent tid(0x%X), child tid(0x%X)\n", parent_task->tid, task_ptr->next->tid);
 
     uint32_t eip;
     RF_READ_IST_PTR(eip);
