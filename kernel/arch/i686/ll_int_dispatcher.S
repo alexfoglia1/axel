@@ -14,6 +14,7 @@ ll_int_dispatcher:
     
     call hl_int_dispatcher
 
+    mov %eax, -4(%ebp)
     pop %eax
     mov %ax, %ds
     mov %ax, %es
@@ -22,5 +23,6 @@ ll_int_dispatcher:
     
     popa
     add $8, %esp
+    movl -4(%ebp), %eax
     sti
     iret

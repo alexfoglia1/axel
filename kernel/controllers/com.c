@@ -7,6 +7,7 @@
 
 #include <kernel/arch/io.h>
 #include <kernel/arch/idt.h>
+#include <kernel/arch/tty.h>
 
 #include <kernel/memory_manager.h>
 
@@ -168,11 +169,21 @@ com_read(int com_port, uint8_t* buf, uint32_t n_bytes)
     }
     else
     {
-        int bytes_to_read = 0;
-        do
+        uint8_t _break = 0x00;
+        int bytes_to_read = __min__(n_bytes, *input_buffer_llen);
+        while (0x00 == _break)
         {
             bytes_to_read = __min__(n_bytes, *input_buffer_llen);
-        } while(0x00 == bytes_to_read && (*flags & COM_BLOCKING_O));
+
+            if (0x00 == bytes_to_read && (*flags & COM_BLOCKING_O))
+            {
+                _break = 0x00;
+            }
+            else
+            {
+                _break = 0x01;
+            }
+        }
 
         memcpy(buf, input_buffer, bytes_to_read);
         for (uint32_t i = bytes_to_read; i < *input_buffer_llen; i++)
@@ -192,12 +203,14 @@ com_read(int com_port, uint8_t* buf, uint32_t n_bytes)
 }
 
 
-static void
+static int
 com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen)
 {
     if (COM_INBUF_LEN == *input_buffer_llen)
     {
         errno = EOVERFLOW;
+
+        return -1;
     }
     else
     {
@@ -211,20 +224,22 @@ com_irq_handler(int com_port, uint8_t* input_buffer, uint32_t* input_buffer_llen
     }
 
     outb(PIC_MASTER_CMD_PORT, PIC_EOI);
+
+    return 0;
 }
 
 
-void
+int
 com1_irq_handler(interrupt_stack_frame_t frame)
 {
-    com_irq_handler(COM1_PORT, com1_input_buffer, &com1_input_ll);
+    return com_irq_handler(COM1_PORT, com1_input_buffer, &com1_input_ll);
 }
 
 
-void
+int
 com2_irq_handler(interrupt_stack_frame_t frame)
 {
-    com_irq_handler(COM2_PORT, com2_input_buffer, &com2_input_ll);
+    return com_irq_handler(COM2_PORT, com2_input_buffer, &com2_input_ll);
 }
 
 

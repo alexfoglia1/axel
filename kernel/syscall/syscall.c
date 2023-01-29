@@ -6,11 +6,14 @@
 
 #include <kernel/arch/tty.h>
 
+#include <unistd.h>
+
 void
 syscall_init()
 {
     isr_register(SYSCALL_INT_NO_READ,  &sys_read);
     isr_register(SYSCALL_INT_NO_WRITE, &sys_write);
+    isr_register(SYSCALL_INT_NO_FORK,  &sys_fork);
 
     __klog__(COM1_PORT, "Syscall mapped\n");
 }

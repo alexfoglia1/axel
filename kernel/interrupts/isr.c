@@ -92,21 +92,23 @@ isr_register(uint32_t int_no, hl_interrupt_handler handler)
 }
 
 
-void
+int
 hl_int_dispatcher(interrupt_stack_frame_t stack_frame)
 {
     if (0x00 != hl_interrupt_handlers[stack_frame.int_no])
     {
-        hl_interrupt_handlers[stack_frame.int_no](stack_frame);
+        return hl_interrupt_handlers[stack_frame.int_no](stack_frame);
     }
     else
     {
         __klog__(COM1_PORT, "hl_int_dispatcher : ISR for int_no(0x%X) is null pointer\n", stack_frame.int_no);
+
+        return -1;
     }
 }
 
 
-void
+int
 hl_irq_dispatcher(interrupt_stack_frame_t stack_frame)
 {
     if (stack_frame.int_no >= PIC_IRQ_SLV_THRESHOLD)
@@ -115,36 +117,39 @@ hl_irq_dispatcher(interrupt_stack_frame_t stack_frame)
     }
     pic_reset_master();
 
-    hl_int_dispatcher(stack_frame);
+    return hl_int_dispatcher(stack_frame);
 }
 
 
-void
+int
 unhandled_interrupt(interrupt_stack_frame_t frame)
 {
     __klog__(COM1_PORT, "Unhandled interrupt 0x%X\n", frame.int_no);
+
+    return 0;
 }
 
 
-void
+int __attribute__((noreturn))
 divide_by_zero_exception(interrupt_stack_frame_t stack_frame)
 {
     panic("KERNEL PANIC : DIVIDE BY 0 EXCEPTION\n");
 }
 
-void undef_opcode_exception(interrupt_stack_frame_t stack_frame)
+
+int __attribute__((noreturn)) undef_opcode_exception(interrupt_stack_frame_t stack_frame)
 {
     panic("KERNEL PANIC : UNDEFINED OPCODE\n");
 }
 
 
-void gpf_exception(interrupt_stack_frame_t frame)
+int __attribute__((noreturn)) gpf_exception(interrupt_stack_frame_t frame)
 {
     panic("KERNEL PANIC : GENERAL PROTECTION FAULT\n");
 }
 
 
-void
+int __attribute__((noreturn))
 page_fault_exception(interrupt_stack_frame_t frame)
 {
     // A page fault has occurred.

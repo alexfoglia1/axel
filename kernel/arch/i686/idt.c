@@ -76,10 +76,10 @@ idt_init()
     idt_add_entry(IRQ_TO_INT_NO(14), (uint32_t) &irq14_entry_point, PRESENT | IRQ_GATE);
     idt_add_entry(IRQ_TO_INT_NO(15), (uint32_t) &irq15_entry_point, PRESENT | IRQ_GATE);
 
-
 //  Syscall handlers low-level entry points
     idt_add_entry(SYSCALL_INT_NO_READ,  (uint32_t) &isr80_entry_point, PRESENT | TRP_GATE);
     idt_add_entry(SYSCALL_INT_NO_WRITE, (uint32_t) &isr81_entry_point, PRESENT | TRP_GATE);
+    idt_add_entry(SYSCALL_INT_NO_FORK,  (uint32_t) &isr82_entry_point, PRESENT | TRP_GATE);
     
     store_idt((uint32_t)(&idt_ptr));
 }

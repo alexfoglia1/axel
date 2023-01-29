@@ -49,6 +49,7 @@ tasking_init(uint32_t _initial_esp)
 }
 
 
+#include <kernel/arch/tty.h>
 int
 tasking_fork()
 {
@@ -80,7 +81,7 @@ tasking_fork()
     }
     task_ptr->next = child_task;
 
-    __klog__(COM1_PORT, "fork(), parent tid(0x%X), child tid(0x%X)\n", parent_task->tid, task_ptr->next->tid);
+    __klog__(COM1_PORT, "tasking_fork(), parent tid(0x%X), child tid(0x%X)\n", parent_task->tid, task_ptr->next->tid);
 
     uint32_t eip;
     RF_READ_IST_PTR(eip);
@@ -100,12 +101,11 @@ tasking_fork()
         child_task->eip = eip;
 
         sti();
-
         return child_task->tid;
     }
     else
     {
-        // return 0 by convention
+        sti();
         return 0;
     }
 }

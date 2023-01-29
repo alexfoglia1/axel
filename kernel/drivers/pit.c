@@ -88,7 +88,7 @@ pit_set_callback(pit_callback_t _callback)
 }
 
 
-void
+int
 pit_irq0_handler(interrupt_stack_frame_t frame)
 {
     ticks_cnt  += 1;
@@ -99,4 +99,6 @@ pit_irq0_handler(interrupt_stack_frame_t frame)
     {
         callback(ticks_cnt, millis_cnt);
     }
+
+    return 0;
 }

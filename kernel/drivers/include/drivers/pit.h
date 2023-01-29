@@ -29,6 +29,6 @@ uint32_t pit_get_ticks();
 
 void pit_set_callback(pit_callback_t callback);
 
-void pit_irq0_handler(interrupt_stack_frame_t frame);
+int pit_irq0_handler(interrupt_stack_frame_t frame);
 
 #endif

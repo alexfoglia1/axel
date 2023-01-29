@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <errno.h>
-#include <stdbool.h>
+#include <unistd.h>
 
 #include <kernel/paging.h>
 #include <kernel/kheap.h>
@@ -237,29 +237,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 //  Initializing ramdisk
     printk("Mounting initrd:\t\t");
 
-    vfs_node_t* vfs_root = initrd_init(*(uint32_t*)(mbd->mods_addr));
-    uint32_t i = 0;
-    struct dirent *node = 0;
-    while ((node = vfs_read_dir(vfs_root, i)) != 0)
-    {
-        __klog__(COM1_PORT, "Found file %s\n", node->name);
-
-        vfs_node_t* fs_node = vfs_find_dir(vfs_root, node->name);
-
-        if (fs_node->flags == FS_DIRECTORY)
-        {
-            __klog__(COM1_PORT, "%s/%s is a directory\n", vfs_root->name, fs_node->name);
-        }
-        else
-        {
-            __klog__(COM1_PORT, "%s/%s is a file\n", vfs_root->name, fs_node->name);
-            char buf[256];
-            vfs_read(fs_node, 0, 256, (uint8_t*) buf);
-            __klog__(COM1_PORT, "File content: %s\n", (const char*) buf);
-        }
-
-        i += 1;
-    }
+    initrd_init(*(uint32_t*)(mbd->mods_addr));
 
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printk("[OK]\n");
@@ -291,9 +269,21 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 void
 user_mode_entry_point()
 {
-    while(1)
+    int tid = fork();
+    if (tid == 0)
     {
-        sleep(1000);
-        printf("Kernel alive, user mode\n");
+        while(1)
+        {
+            printf("I'm child process in user mode, my tid is(%u)\n", tasking_gettid());
+            sleep(100);
+        }
+    }
+    else
+    {
+        while(1)
+        {
+            printf("I'm parent process in user mode, my tid is(%u), my child's tid is(%u)\n", tasking_gettid(), tid);
+            sleep(100);
+        }
     }
 }

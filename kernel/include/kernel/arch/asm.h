@@ -4,6 +4,9 @@
 
 #include <stdint.h>
 
+#define sti() do { asm volatile("sti"); } while(0)
+#define cli() do { asm volatile("cli"); } while(0)
+
 void store_gdt(uint32_t gdt_addr);
 void store_idt(uint32_t idt_addr);
 void store_tss();
@@ -55,6 +58,7 @@ void isr31_entry_point();
 
 void isr80_entry_point();
 void isr81_entry_point();
+void isr82_entry_point();
 // ^
 // |
 // |

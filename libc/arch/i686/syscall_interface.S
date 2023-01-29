@@ -30,7 +30,7 @@ trigger_int_80:
 test_81:
     cmpl $81, %eax
     je  trigger_int_81
-    jmp _exit // it is neither read or write, return
+    jmp test_82 // it is neither read or write, test it is a fork
     
 trigger_int_81:
     mov 12(%esp), %eax
@@ -38,6 +38,19 @@ trigger_int_81:
     mov 20(%esp), %ecx
     mov 24(%esp), %edx
     int $81
+    jmp _exit
+
+test_82:
+    cmpl $82, %eax
+    je trigger_int_82
+    jmp _exit
+
+trigger_int_82:
+    mov 12(%esp), %eax
+    mov 16(%esp), %ebx
+    mov 20(%esp), %ecx
+    mov 24(%esp), %edx
+    int $82
     jmp _exit
     
 _exit:
