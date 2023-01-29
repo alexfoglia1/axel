@@ -136,3 +136,10 @@ initrd_init(uint32_t location)
 
    return initrd_root;
 }
+
+
+vfs_node_t*
+initrd_get_root()
+{
+    return initrd_root;
+}

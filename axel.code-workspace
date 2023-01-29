@@ -45,7 +45,8 @@
             "asm.h": "c",
             "errno.h": "c",
             "stdlib.h": "c",
-            "scheduler.h": "c"
+            "scheduler.h": "c",
+            "elf-loader.h": "c"
         }
     }
 

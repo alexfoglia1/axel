@@ -95,6 +95,7 @@ kernel/memory_manager.o \
 kernel/paging.o \
 kernel/multitasking.o \
 kernel/scheduler.o \
+kernel/elf_loader.o \
 kernel/kernel.o \
 
 OBJS=\
