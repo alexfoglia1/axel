@@ -88,7 +88,7 @@ The hosted development environment is an x86_64 machine running Ubuntu 22.04 LTS
 An x86 gcc cross compiler and binutils shall be present in the $PATH environment variable to compile AXEL.
 Refer to [this guide](https://wiki.osdev.org/GCC_Cross-Compiler) to get one.
 
-Under linux, one can then modify the \$\{HOME\}/.bashrc file, e.g. if cross compiler is installed in \$\{HOME\}/opt/cross/bin:
+Under linux, one can then modify the ~/.bashrc file, e.g. if cross compiler is installed in ~/opt/cross/bin:
 
     export PATH="${HOME}/opt/cross/bin:${PATH}"
 
@@ -115,7 +115,7 @@ One can either:
     
 1. flash the axel.iso file in a USB drive and boot it on a real machine
 2. use a virtual environment such as qemu to launch the iso
-3. On a unix physical machine, just add the axel.kernel compiled file under /boot directory and change the /boot/grub/grub.cfg to boot axel
+3. on a grub-booted platform, just add the axel.kernel compiled file under /boot directory and change the /boot/grub/grub.cfg to boot axel
 
 I personally use the virtual machine QEMU:
 
