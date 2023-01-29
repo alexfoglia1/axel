@@ -40,12 +40,16 @@ parse_header(elf_header_t* header, vfs_node_t* fs_node)
 static elf_load_status_t
 parse_program_header(elf_header_t* header, elf_program_header_t* program_header, vfs_node_t* fs_node)
 {
-    printk("Program header table position 0x%X\n", header->program_header_pos);
-    vfs_read(fs_node, header->program_header_pos, sizeof(elf_program_header_t), (uint8_t*) program_header);
+    uint16_t n = header->program_header_entry_no;
+    uint16_t size = header->program_header_entry_size;
+    
+    for(uint16_t i = 0; i < n; i++)
+    {
+        vfs_read(fs_node, header->program_header_pos + i * size, size, (uint8_t*) program_header);
 
-    printk("Segment type: %u, p_offset(%u),\n p_vaddr(0x%X), p_filesz(%u), p_memsz(%u), required_alignment(%u)\n",
-    program_header->type, program_header->p_offset, program_header->p_vaddr, program_header->p_filesz, program_header->p_memsz, program_header->requied_alignment);
-
+        printk("Segment type: %u, p_offset(%u), p_vaddr(0x%X), p_filesz(%u), p_memsz(%u), required_alignment(%u)\n",
+        program_header->type, program_header->p_offset, program_header->p_vaddr, program_header->p_filesz, program_header->p_memsz, program_header->requied_alignment);
+    }
     return ELF_HEADER_OK;
 }
 
