@@ -46,7 +46,7 @@
             "errno.h": "c",
             "stdlib.h": "c",
             "scheduler.h": "c",
-            "elf-loader.h": "c"
+            "elf_loader.h": "c"
         }
     }
 

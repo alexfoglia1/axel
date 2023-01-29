@@ -7,7 +7,7 @@
 #include <kernel/memory_manager.h>
 #include <kernel/multitasking.h>
 #include <kernel/scheduler.h>
-#include <kernel/elf-loader.h>
+#include <kernel/elf_loader.h>
 
 #include <kernel/arch/cpuid.h>
 #include <kernel/arch/tty.h>
@@ -271,6 +271,7 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
                                     header.bitsize == ELF_BITSIZE_64 ? "64" : "UNKNOWN");
             printk("ELF endianity(%s)\n", header.endianity == ELF_ENDIANITY_LITTLE ? "LITTLE ENDIAN" :
                                           header.endianity == ELF_ENDIANITY_BIG    ? "BIG ENDIAN" : "UNKNOWN");
+            
 
         }
 
