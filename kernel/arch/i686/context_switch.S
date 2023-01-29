@@ -16,5 +16,5 @@ context_switch:
     mov $0x7A10ADED, %eax // set return value equals to a well known constant
     sti
     
-    jmp %ebx //jump to new task, if I am child eip = ebx = return from here = return 0xDEADC0DE
+    jmp %ebx //jump to new task
     

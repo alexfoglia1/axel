@@ -2,6 +2,7 @@
 
 #include <kernel/arch/tty.h>
 #include <kernel/arch/io.h>
+#include <kernel/arch/asm.h>
 
 #include <controllers/com.h>
 

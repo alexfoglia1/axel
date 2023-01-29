@@ -3,9 +3,6 @@
 
 #include <stdint.h>
 
-// Some useful assembly routines
-void cli();
-void sti();
 uint8_t inb (int port_no);
 void outb (int port_no, int data);
 uint16_t inw (int port_no);

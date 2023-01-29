@@ -34,7 +34,6 @@ cmos_datetime_to_str(cmos_rtc_datetime_t datetime, char* buf)
 }
 
 
-#include <kernel/arch/io.h>
 void
 sleep(uint32_t millis)
 {

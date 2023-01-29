@@ -1,19 +1,5 @@
 #include <kernel/arch/io.h>
 
-void
-cli()
-{
-    asm volatile("cli");
-}
-
-
-void
-sti()
-{
-    asm volatile("sti");
-}
-
-
 uint8_t
 inb (int port_no)
 {

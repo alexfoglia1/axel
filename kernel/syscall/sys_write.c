@@ -2,6 +2,7 @@
 
 #include <kernel/arch/tty.h>
 #include <kernel/arch/io.h>
+#include <kernel/arch/asm.h>
 
 #include <string.h>
 #include <unistd.h>
@@ -20,6 +21,7 @@ sys_write(interrupt_stack_frame_t frame)
         case SYSCALL_TYPE_TTY_WRITE:
         {
             const char* buffer = (const char*)(buf);
+            printk(buffer);
             return strlen(buffer); // printk is a tty_putstring -> tty_putchars(str, strlen(str)) hence the number of bytes written is strlen(buffer)
             break;
         }

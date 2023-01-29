@@ -49,6 +49,7 @@ tasking_init(uint32_t _initial_esp)
 }
 
 
+#include <kernel/arch/tty.h>
 int
 tasking_fork()
 {
@@ -100,12 +101,11 @@ tasking_fork()
         child_task->eip = eip;
 
         sti();
-
         return child_task->tid;
     }
     else
     {
-        // return 0 by convention
+        sti();
         return 0;
     }
 }

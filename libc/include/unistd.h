@@ -19,7 +19,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-// Assembly interface to actual system calls, this shall be equals to the signature defined in kernel/arch/asm.h
+// Assembly interface to actual system calls
 extern int syscall_interface(uint32_t syscall_int_no, uint32_t syscall_type, uint32_t buffer, uint32_t count, uint32_t extra);
 
 int write(uint32_t syscall_type, void* buffer, size_t count);
