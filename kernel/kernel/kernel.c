@@ -271,8 +271,11 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
                                     header.bitsize == ELF_BITSIZE_64 ? "64" : "UNKNOWN");
             printk("ELF endianity(%s)\n", header.endianity == ELF_ENDIANITY_LITTLE ? "LITTLE ENDIAN" :
                                           header.endianity == ELF_ENDIANITY_BIG    ? "BIG ENDIAN" : "UNKNOWN");
-            
-
+            printk("ELF type(%s)\n", header.type == ELF_TYPE_EXECUTABLE ? "EXECUTABLE" :
+                                     header.type == ELF_TYPE_SHARED ? "SHARED" :
+                                     header.type == ELF_TYPE_RELOCATABLE ? "RELOCATABLE" :
+                                     header.type == ELF_TYPE_CORE ? "CORE" : "UNKNOWN");
+            printk("ELF instruction set(%s)\n", header.instruction_set == ELF_ARCH_X86 ? "X86" : "UNSUPPORTED");
         }
 
         i += 1;
