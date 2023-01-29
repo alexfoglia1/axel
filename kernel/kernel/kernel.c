@@ -243,44 +243,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
     printk("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
-
-    vfs_node_t* vfs_root = initrd_get_root();
-    uint32_t i = 0;
-    struct dirent *node = 0;
-    while ((node = vfs_read_dir(vfs_root, i)) != 0)
-    {
-        vfs_node_t* fs_node = vfs_find_dir(vfs_root, node->name);
-
-        if (fs_node->flags == FS_DIRECTORY)
-        {
-            printk("(0x%X) Found directory %s/%s\n", fs_node, vfs_root->name, fs_node->name);
-        }
-        else
-        {
-            printk("(0x%X) Found file %s%s\n", fs_node, vfs_root->name, fs_node->name);
-
-            elf_header_t header;
-            char ascii[4] = {'\0', '\0', '\0', '\0'};
-            vfs_read(fs_node, 0, sizeof(elf_header_t), (uint8_t*) &header);
-
-            ascii[2] = (header.magic_no & 0xFF000000) >> 24;
-            ascii[1] = (header.magic_no & 0x00FF0000) >> 16;
-            ascii[0] = (header.magic_no & 0x0000FF00) >> 8;
-            printk("ELF magic no(0x%X), ascii(%s)\n", header.magic_no & 0x000000FF, ascii);
-            printk("ELF bit(%s)\n", header.bitsize == ELF_BITSIZE_32 ? "32" :
-                                    header.bitsize == ELF_BITSIZE_64 ? "64" : "UNKNOWN");
-            printk("ELF endianity(%s)\n", header.endianity == ELF_ENDIANITY_LITTLE ? "LITTLE ENDIAN" :
-                                          header.endianity == ELF_ENDIANITY_BIG    ? "BIG ENDIAN" : "UNKNOWN");
-            printk("ELF type(%s)\n", header.type == ELF_TYPE_EXECUTABLE ? "EXECUTABLE" :
-                                     header.type == ELF_TYPE_SHARED ? "SHARED" :
-                                     header.type == ELF_TYPE_RELOCATABLE ? "RELOCATABLE" :
-                                     header.type == ELF_TYPE_CORE ? "CORE" : "UNKNOWN");
-            printk("ELF instruction set(%s)\n", header.instruction_set == ELF_ARCH_X86 ? "X86" : "UNSUPPORTED");
-        }
-
-        i += 1;
-    }
-
 //  --------------------------
 
 //  Initializing multitasking
@@ -293,6 +255,9 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     printk("[OK]\n");
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
+
+    elf_load_status_t load_status = elf_load("/usr/bin/bash.out");
+    printk("load status: %u\n", (int)(load_status));
 
 //  Entering user mode
     printk("Entering user mode . . .\n");
@@ -309,6 +274,5 @@ void
 user_mode_entry_point()
 {
     printf("Entered user mode\n");
-
     while(1);
 }

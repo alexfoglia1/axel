@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#include <filesystem/initrd.h>
+
+#define ELF_MAGIC_NO         0x7F
 
 #define ELF_BITSIZE_32       1
 #define ELF_BITSIZE_64       2
@@ -73,10 +76,50 @@ struct debug_elf_header
     uint16_t section_header_idx;
 };
 
+struct i686_elf_program_header
+{
+    uint32_t type;
+    uint32_t p_offset;
+    uint32_t p_vaddr;
+    uint32_t undefined;
+    uint32_t p_filesz;
+    uint32_t p_memsz;
+    uint32_t flags;
+    uint32_t requied_alignment;
+}__attribute__((packed));
+
+struct debug_elf_program_header
+{
+    uint32_t type;
+    uint32_t p_offset;
+    uint32_t p_vaddr;
+    uint32_t undefined;
+    uint32_t p_filesz;
+    uint32_t p_memsz;
+    uint32_t flags;
+    uint32_t requied_alignment;
+};
+
+
 #if ARCH == i686
 typedef struct i686_elf_header elf_header_t;
+typedef struct i686_elf_program_header elf_program_header_t;
 #else
 typedef struct debug_elf_header elf_header_t;
+typedef struct debug_elf_program_header elf_program_header_t;
 #endif
+
+typedef enum
+{
+    ELF_HEADER_OK = 0,
+    ELF_LOAD_OK,
+    ELF_WRONG_MAGIC_NO,
+    ELF_WRONG_ASCII,
+    ELF_UNSUPPORTED_ARCH,
+    ELF_NOT_FOUND
+} elf_load_status_t;
+
+elf_load_status_t elf_load(const char* exe_name);
+
 
 #endif
