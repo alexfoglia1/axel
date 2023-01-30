@@ -146,6 +146,5 @@ install-headers:
 install-kernel: $(OSNAME).kernel
 	mkdir -p $(DESTDIR)$(BOOTDIR)
 	cp $(OSNAME).kernel $(DESTDIR)$(BOOTDIR)
-	cp ./filesystem/initrd.img $(DESTDIR)$(BOOTDIR)/$(OSNAME).initrd
 
 -include $(OBJS:.o=.d)
