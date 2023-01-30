@@ -32,7 +32,7 @@ mv make-initrd/initrd.img isodir/boot/$OSNAME.initrd
 cat > isodir/boot/grub/grub.cfg << EOF
 menuentry "$OSNAME" {
 	multiboot /boot/$OSNAME.kernel
-        module /boot/$OSNAME.initrd.gz
+        module /boot/$OSNAME.initrd
 }
 EOF
 grub-mkrescue -o $OSNAME.iso isodir
