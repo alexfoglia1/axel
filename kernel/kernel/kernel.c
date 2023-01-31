@@ -234,7 +234,6 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-
 //  Initializing ramdisk
     printk("Mounting initrd:\t\t");
 
@@ -271,35 +270,18 @@ void
 user_mode_entry_point()
 {
     printf("\nEntered user mode, starting task spawner\n");
-    
-    int tid = fork();
-    if (tid == 0)
-    {
-        printf("child returned tid(%d)\n", tid);
-        while(1)
-        {
 
-        }
+    int tid = fork();
+    if (0x00 == tid)
+    {
+        printf("[%d] Task spawner started\n", tasking_gettid());
+        //int bash_tid = spawn("/usr/bin/bash.out");
+        //printf("%s [%d]\n", "/usr/bin/bash.out", bash_tid);
+        while(1);
     }
     else
     {
-        printf("parent returned tid(%d)\n", tid);
-        while(1)
-        {
-
-        }
+        printf("[%d] Kernel sleep\n", tasking_gettid());
+        while(1);
     }
-    //if (0x00 == tid)
-    //{
-
-    //    printf("[%d] Task spawner started\n", tasking_gettid());
-        //int bash_tid = spawn("/usr/bin/bash.out");
-        //printf("%s [%d]\n", "/usr/bin/bash.out", bash_tid);
-    //    for(;;);
-    //}
-    //else
-    //{
-    //    printf("[%d] Kernel sleep\n", tasking_gettid());
-    //    while(1);
-    //}
 }

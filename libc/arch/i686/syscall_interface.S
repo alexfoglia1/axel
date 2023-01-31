@@ -13,7 +13,6 @@ syscall_interface:
     push %ebp
     mov %esp, %ebp
     mov 8(%esp), %eax
-    pushf
     
 test_80: // test if it is a read
     cmpl $80, %eax
@@ -25,6 +24,7 @@ trigger_int_80:
     mov 16(%esp), %ebx
     mov 20(%esp), %ecx
     mov 24(%esp), %edx
+    pushf
     int $80
     jmp _exit
 
@@ -38,6 +38,7 @@ trigger_int_81:
     mov 16(%esp), %ebx
     mov 20(%esp), %ecx
     mov 24(%esp), %edx
+    pushf
     int $81
     jmp _exit
 
@@ -51,6 +52,7 @@ trigger_int_82:
     mov 16(%esp), %ebx
     mov 20(%esp), %ecx
     mov 24(%esp), %edx
+    pushf
     int $82
     jmp _exit 
 
@@ -63,6 +65,7 @@ trigger_int_83:
     mov 16(%esp), %ebx
     mov 20(%esp), %ecx
     mov 24(%esp), %edx
+    pushf
     int $83
     jmp _exit 
     

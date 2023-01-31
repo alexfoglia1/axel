@@ -21,7 +21,6 @@ sys_read(interrupt_stack_frame_t frame)
     uint32_t count = frame.ecx;
     //uint32_t ioaddr = frame.edx; todo read I/O
 
-    sti();
     switch (type)
     {
         case SYSCALL_TYPE_COM_READ(1):
@@ -58,7 +57,6 @@ sys_read(interrupt_stack_frame_t frame)
         default:
             break;
     }
-    cli();
 
     return -1;
 }

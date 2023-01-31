@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 int atoi(char* ascii)
 {
     int sign = '-' == ascii[0] ? -1 : 1;

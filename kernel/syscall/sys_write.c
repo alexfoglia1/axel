@@ -15,7 +15,7 @@ sys_write(interrupt_stack_frame_t frame)
     uint32_t buf    = frame.ebx;
     uint32_t count  = frame.ecx;
     uint32_t ioaddr = frame.edx;
-
+    
     switch (type)
     {
         case SYSCALL_TYPE_TTY_WRITE:
