@@ -14,10 +14,8 @@ sys_spawn(interrupt_stack_frame_t frame)
     if (ELF_LOAD_OK == load_status)
     {
         uint32_t bash_entry_point = elf_get_image_entry_point();
-        int tid = tasking_spawn_task(bash_entry_point);
-
-        return tid;
+        return tasking_spawn_task(bash_entry_point);
     }
-
+    
     return -1;
 }

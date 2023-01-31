@@ -270,20 +270,19 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 void
 user_mode_entry_point()
 {
-    printf("Entered user mode\n");
-
-    int tid = spawn("/usr/bin/bash.out");
-    printf("Spawned bash, tid(%d)\n", tid);
-    int tid2 = fork();
+    printf("\nEntered user mode, starting task spawner\n");
     
-    if (0x00 == tid2)
+    int tid = fork();
+    if (0x00 == tid)
     {
-        printf("Child here . . .\n");
+        printf("Task spawner started\n");
+        int bash_tid = spawn("/usr/bin/bash.out");
+        printf("%s [%d]\n", "/usr/bin/bash.out", bash_tid);
+        while(1);
     }
     else
     {
-        printf("Parent here . . .\n");
+        printf("Kernel sleep\n");
+        while(1);
     }
-
-    while(1);
 }

@@ -173,14 +173,8 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
     current_task->eip = eip;
     current_task->page_directory = paging_current_page_directory();
 
-    if (current_task->tid == 0x02)
-    {
-        __klog__(COM1_PORT, "Spawned task end timeslice. EIP saved 0x%X\n", current_task->eip);
-    }
-    else
-    {
-        __klog__(COM1_PORT, "Kernel task end timeslice. EIP saved 0x%X\n", current_task->eip);
-    }
+     __klog__(COM1_PORT, "Task (%d) end timeslice, EIP saved 0x%X\n", current_task->tid, current_task->eip);
+
 
     // Implementing time sharing scheduler
     // TODO : use pit_ticks and/or pit_millis to implement different scheduling policies
@@ -191,10 +185,8 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
         current_task = ready_tasks;
     }
 
-    if (current_task->tid == 0x02)
-    {
-        __klog__(COM1_PORT, "Spawned task ready to be context_switched. EIP after context switch will be 0x%X\n", current_task->eip);
-    }
+    __klog__(COM1_PORT, "Task (%d) ready to be context_switched. EIP after context switch will be 0x%X\n", current_task->tid, current_task->eip);
+    
 
     // Context switch will set the current page directory in CR3, no need to perform an hardware set page directory in paging.c
     paging_set_current_page_directory(current_task->page_directory, 0x00);
