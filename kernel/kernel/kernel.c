@@ -236,38 +236,44 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 
 
 //  Initializing ramdisk
-    printk("Mounting initrd:\t\t");
+//    printk("Mounting initrd:\t\t");
 
-    initrd_init(*(uint32_t*)(mbd->mods_addr));
+//    initrd_init(*(uint32_t*)(mbd->mods_addr));
 
-    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-    printk("[OK]\n");
-    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+//    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+//    printk("[OK]\n");
+//    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
 //  Initializing multitasking
-    printk("Initializing scheduler:\t");
+//    printk("Initializing scheduler:\t");
     
-    tasking_init(esp);
-    pit_set_callback(&scheduler);
+//    tasking_init(esp);
+//      pit_set_callback(&scheduler);
     
-    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
-    printk("[OK]\n");
-    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+//    tty_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
+//    printk("[OK]\n");
+//    tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
     sti();
 
-    int tid = tasking_fork();
+    int tid = 0;//tasking_fork();
     if (tid == 0)
     {
-        printf("child returned tid(%d)\n", tid);
-        while(1);
+        printk("child returned tid(%d)\n", tid);
+        while(1)
+        {
+
+        }
     }
     else
     {
-        printf("parent returned tid(%d)\n", tid);
-        while(1);
+        printk("parent returned tid(%d)\n", tid);
+        while(1)
+        {
+
+        }
     }
 
 //  Entering user mode
