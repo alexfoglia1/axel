@@ -17,6 +17,7 @@
 #define SYSCALL_INT_NO_READ  80
 #define SYSCALL_INT_NO_WRITE 81
 #define SYSCALL_INT_NO_FORK  82
+#define SYSCALL_INT_NO_SPAWN 83
 
 typedef struct idt_entry
 {

@@ -1,7 +1,10 @@
 #include <bash.h>
-#include <stdio.h>
+#include <unistd.h>
 
 void _start()
 {
-    printf("Hello, I'm axel bash!\n");
+    char buf[5] = {'b', 'a', 's', 'h', '\n'};
+    syscall_interface(SYSCALL_INT_NO_WRITE, SYSCALL_TYPE_TTY_WRITE, (uint32_t) buf, 5, 0);
+
+    while(1);
 }

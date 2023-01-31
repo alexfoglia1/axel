@@ -43,7 +43,7 @@ trigger_int_81:
 test_82:
     cmpl $82, %eax
     je trigger_int_82
-    jmp _exit
+    jmp test_83 // it is neither read, write or fork, test if it is a spawn
 
 trigger_int_82:
     mov 12(%esp), %eax
@@ -51,7 +51,19 @@ trigger_int_82:
     mov 20(%esp), %ecx
     mov 24(%esp), %edx
     int $82
-    jmp _exit
+    jmp _exit 
+
+test_83:
+    cmpl $83, %eax
+    je trigger_int_83
+
+trigger_int_83:
+    mov 12(%esp), %eax
+    mov 16(%esp), %ebx
+    mov 20(%esp), %ecx
+    mov 24(%esp), %edx
+    int $83
+    jmp _exit 
     
 _exit:
     mov %ebp, %esp

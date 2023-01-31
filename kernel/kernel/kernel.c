@@ -256,11 +256,8 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
     tty_set_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 //  --------------------------
 
-    elf_load_status_t load_status = elf_load("/usr/bin/bash.out");
-    printk("load status: %u\n", (int)(load_status));
-
 //  Entering user mode
-    printk("Entering user mode . . .\n");
+    printk("Entering user mode\n");
 
     gdt_set_kernel_stack(tasking_get_current_task()->kernel_stack + KERNEL_STACK_SIZE);
     enter_user_mode();
@@ -274,5 +271,19 @@ void
 user_mode_entry_point()
 {
     printf("Entered user mode\n");
+
+    int tid = spawn("/usr/bin/bash.out");
+    printf("Spawned bash, tid(%d)\n", tid);
+    int tid2 = fork();
+    
+    if (0x00 == tid2)
+    {
+        printf("Child here . . .\n");
+    }
+    else
+    {
+        printf("Parent here . . .\n");
+    }
+
     while(1);
 }

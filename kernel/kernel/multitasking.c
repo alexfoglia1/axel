@@ -49,7 +49,6 @@ tasking_init(uint32_t _initial_esp)
 }
 
 
-#include <kernel/arch/tty.h>
 int
 tasking_fork()
 {
@@ -111,6 +110,42 @@ tasking_fork()
 }
 
 
+int
+tasking_spawn_task(uint32_t entry_point)
+{
+    cli();
+
+    // Create the stack for new task
+    uint32_t new_stack = (uint32_t) kmalloc_a(8192);
+
+    // Allocate and initialize new task
+    task_t* child_task = (task_t*) kmalloc(sizeof(task_t));
+    child_task->tid = next_tid;
+    child_task->esp = new_stack;
+    child_task->ebp = new_stack + 8192;
+    child_task->eip = entry_point;
+    child_task->page_directory = paging_clone_directory(paging_current_page_directory());
+
+    child_task->next = (struct task*) (0x00);
+    
+    next_tid += 1;
+
+    // Put child task at the end of ready queue
+    volatile task_t* task_ptr = ready_tasks;
+    while (task_ptr->next != 0x00)
+    {
+        task_ptr = task_ptr->next;
+    }
+    task_ptr->next = child_task;
+
+    __klog__(COM1_PORT, "tasking_spawn_task(), spawned tid(0x%X)\n", child_task->tid);
+
+    sti();
+
+    return child_task->tid;
+}
+
+
 void
 tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
 {
@@ -138,6 +173,15 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
     current_task->eip = eip;
     current_task->page_directory = paging_current_page_directory();
 
+    if (current_task->tid == 0x02)
+    {
+        __klog__(COM1_PORT, "Spawned task end timeslice. EIP saved 0x%X\n", current_task->eip);
+    }
+    else
+    {
+        __klog__(COM1_PORT, "Kernel task end timeslice. EIP saved 0x%X\n", current_task->eip);
+    }
+
     // Implementing time sharing scheduler
     // TODO : use pit_ticks and/or pit_millis to implement different scheduling policies
     current_task = current_task->next;
@@ -145,6 +189,11 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
     {
         // If we served last process in ready queue, return to serve the first
         current_task = ready_tasks;
+    }
+
+    if (current_task->tid == 0x02)
+    {
+        __klog__(COM1_PORT, "Spawned task ready to be context_switched. EIP after context switch will be 0x%X\n", current_task->eip);
     }
 
     // Context switch will set the current page directory in CR3, no need to perform an hardware set page directory in paging.c
@@ -174,10 +223,6 @@ void
 tasking_move_stack(uint32_t new_stack_addr, uint32_t stack_size)
 {
     paging_map(new_stack_addr - stack_size, new_stack_addr, paging_current_page_directory());
-
-    uint32_t faulting_address = 0xDFFFFE04;
-    uint32_t table_index, frame_index;
-    paging_get_page(faulting_address, &table_index, &frame_index);
 
     paging_flush_tlb();
 

@@ -1,5 +1,5 @@
 . ./env-build.sh
 ./clean.sh
-./rebuild.sh
+./build.sh
 ./mkiso.sh
 ./qemu.sh

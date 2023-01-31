@@ -76,37 +76,27 @@ struct debug_elf_header
     uint16_t section_header_idx;
 };
 
-struct i686_elf_program_header
-{
-    uint32_t type;
-    uint32_t p_offset;
-    uint32_t p_vaddr;
-    uint32_t undefined;
-    uint32_t p_filesz;
-    uint32_t p_memsz;
-    uint32_t flags;
-    uint32_t requied_alignment;
-}__attribute__((packed));
 
-struct debug_elf_program_header
+/** Section Header */
+typedef struct
 {
-    uint32_t type;
-    uint32_t p_offset;
-    uint32_t p_vaddr;
-    uint32_t undefined;
-    uint32_t p_filesz;
-    uint32_t p_memsz;
-    uint32_t flags;
-    uint32_t requied_alignment;
-};
+	uint32_t sh_name;
+	uint32_t sh_type;
+	uint32_t sh_flags;
+	uint32_t sh_addr;
+	uint32_t sh_offset;
+	uint32_t sh_size;
+	uint32_t sh_link;
+	uint32_t sh_info;
+	uint32_t sh_addralign;
+	uint32_t sh_entsize;
+} Elf32_Shdr;
 
 
 #if ARCH == i686
 typedef struct i686_elf_header elf_header_t;
-typedef struct i686_elf_program_header elf_program_header_t;
 #else
 typedef struct debug_elf_header elf_header_t;
-typedef struct debug_elf_program_header elf_program_header_t;
 #endif
 
 typedef enum
@@ -120,6 +110,7 @@ typedef enum
 } elf_load_status_t;
 
 elf_load_status_t elf_load(const char* exe_name);
+uint32_t elf_get_image_entry_point();
 
 
 #endif

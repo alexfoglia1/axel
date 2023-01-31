@@ -39,6 +39,7 @@ errno/errno.o \
 unistd/read.o \
 unistd/write.o \
 unistd/fork.o \
+unistd/spawn.o \
 stdio/printf.o \
 stdio/putchar.o \
 stdio/puts.o \

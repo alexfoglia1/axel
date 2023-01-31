@@ -1,17 +1,22 @@
 #include <kernel/elf_loader.h>
+#include <kernel/memory_manager.h>
+#include <kernel/paging.h>
 
 #include <kernel/arch/tty.h>
 
 #include <string.h>
 
 
+static uint32_t image_entry_point = 0x00;
+
+
 static elf_load_status_t
-parse_header(elf_header_t* header, vfs_node_t* fs_node)
+check_header(uint8_t* elf_file)
 {
     char ascii[4] = {'\0', '\0', '\0', '\0'};
     uint8_t magic_no = 0x00;
 
-    vfs_read(fs_node, 0, sizeof(elf_header_t), (uint8_t*) header);
+    elf_header_t* header = (elf_header_t*) elf_file;
 
     ascii[2] = (header->magic_no & 0xFF000000) >> 24;
     ascii[1] = (header->magic_no & 0x00FF0000) >> 16;
@@ -37,23 +42,6 @@ parse_header(elf_header_t* header, vfs_node_t* fs_node)
 }
 
 
-static elf_load_status_t
-parse_program_header(elf_header_t* header, elf_program_header_t* program_header, vfs_node_t* fs_node)
-{
-    uint16_t n = header->program_header_entry_no;
-    uint16_t size = header->program_header_entry_size;
-    
-    for(uint16_t i = 0; i < n; i++)
-    {
-        vfs_read(fs_node, header->program_header_pos + i * size, size, (uint8_t*) program_header);
-
-        printk("Segment type: %u, p_offset(%u), p_vaddr(0x%X), p_filesz(%u), p_memsz(%u), required_alignment(%u)\n",
-        program_header->type, program_header->p_offset, program_header->p_vaddr, program_header->p_filesz, program_header->p_memsz, program_header->requied_alignment);
-    }
-    return ELF_HEADER_OK;
-}
-
-
 elf_load_status_t
 elf_load(const char* exe_name)
 {
@@ -70,14 +58,27 @@ elf_load(const char* exe_name)
         {
             if (memcmp(exe_name, fs_node->name, strlen(exe_name)) == 0)
             {
-                elf_header_t header;
-                status = parse_header(&header, fs_node);
+                uint8_t* elf_file = kmalloc(fs_node->length);
+                vfs_read(fs_node, 0, fs_node->length, (uint8_t*) elf_file);
+
+                status = check_header(elf_file);
 
                 if (ELF_HEADER_OK == status)
                 {
-                    elf_program_header_t program_header;
-                    status = parse_program_header(&header, &program_header, fs_node);
+                    elf_header_t* header = (elf_header_t*) elf_file;
+                    for (uint32_t i = 0; i < (uint32_t) header->section_header_entry_size * header->section_header_entry_no; i += header->section_header_entry_size)
+                    {
+                        Elf32_Shdr* shdr = (Elf32_Shdr *)((uintptr_t)header + (header->section_header_pos + i));
+                        if (shdr->sh_addr)
+                        {
+                            paging_map(shdr->sh_addr, shdr->sh_addr + shdr->sh_size, paging_current_page_directory());
+                            memcpy((void*) shdr->sh_addr, (void*) header + shdr->sh_offset, shdr->sh_size);
+                        }
+                    }
+
+                    image_entry_point = header->entry_pos;
                 }
+
 
                 break;
             }
@@ -85,6 +86,21 @@ elf_load(const char* exe_name)
 
         i += 1;
     }
+
+    if (image_entry_point != 0x00)
+    {
+        status = ELF_LOAD_OK;
+    }
     
     return status;
+}
+
+
+uint32_t
+elf_get_image_entry_point()
+{
+    uint32_t ret = image_entry_point;
+    image_entry_point = 0x00; // reset the last image entry point in order to load other elfs
+
+    return ret;
 }

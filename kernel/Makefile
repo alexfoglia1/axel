@@ -68,6 +68,7 @@ $(ISRDIR)/isr.o \
 $(SYSCALLDIR)/sys_write.o \
 $(SYSCALLDIR)/sys_read.o \
 $(SYSCALLDIR)/sys_fork.o \
+$(SYSCALLDIR)/sys_spawn.o \
 $(SYSCALLDIR)/syscall.o \
 $(CONTRDIR)/pic.o \
 $(CONTRDIR)/ps2.o \
