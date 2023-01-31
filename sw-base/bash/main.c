@@ -1,6 +1,5 @@
 #include <bash.h>
 #include <unistd.h>
-#include <stdio.h>
 
 void _start()
 {
