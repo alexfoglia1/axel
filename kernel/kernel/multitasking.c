@@ -116,7 +116,7 @@ tasking_spawn_task(uint32_t entry_point)
     cli();
 
     // Create the stack for new task
-    uint32_t new_stack = (uint32_t) kmalloc_a(8192);
+    uint32_t new_stack = (uint32_t) kmalloc_a(STACK_SIZE);
 
     // Allocate and initialize new task
     task_t* child_task = (task_t*) kmalloc(sizeof(task_t));
@@ -173,7 +173,7 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
     current_task->eip = eip;
     current_task->page_directory = paging_current_page_directory();
 
-     __klog__(COM1_PORT, "Task (%d) end timeslice, EIP saved 0x%X\n", current_task->tid, current_task->eip);
+    //__klog__(COM1_PORT, "Task (%d) end timeslice, EIP saved 0x%X\n", current_task->tid, current_task->eip);
 
     // Implementing time sharing scheduler
     // TODO : use pit_ticks and/or pit_millis to implement different scheduling policies
@@ -184,7 +184,7 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
         current_task = ready_tasks;
     }
 
-    __klog__(COM1_PORT, "Task (%d) ready to be context_switched. EIP after context switch will be 0x%X\n", current_task->tid, current_task->eip);
+    //__klog__(COM1_PORT, "Task (%d) ready to be context_switched. EIP after context switch will be 0x%X\n", current_task->tid, current_task->eip);
     
 
     // Context switch will set the current page directory in CR3, no need to perform an hardware set page directory in paging.c
@@ -248,4 +248,33 @@ tasking_move_stack(uint32_t new_stack_addr, uint32_t stack_size)
     RF_WRITE_BAS_PTR(new_ebp);
 
     __klog__(COM1_PORT, "Stack moved, esp(0x%X->0x%X)\n", esp, new_esp);
+}
+
+
+void
+tasking_kill(int tid)
+{
+    cli();
+
+    __klog__(COM1_PORT, "Terminating task %d\n", tid);
+    
+    volatile task_t* tmp_task = ready_tasks;
+    while (tmp_task->next->tid != tid)
+    {
+        // If we served last process in ready queue, return to serve the first
+        tmp_task = tmp_task->next;
+    }
+
+    __klog__(COM1_PORT, "Task(%d)->next points to terminating task(%d)\n", tmp_task->tid, tmp_task->next->tid);
+
+    volatile task_t* terminating = tmp_task->next;
+    tmp_task->next = terminating->next;
+    __klog__(COM1_PORT, "Task(%d)->next now points to (%d)\n", tmp_task->tid, tmp_task->next->tid);
+    
+    kfree((void*) terminating->page_directory);
+    kfree((void*) terminating->esp);
+    kfree((void*) terminating);
+    __klog__(COM1_PORT, "Task(%d) free'd resources, terminated\n", tid);
+
+    sti();
 }

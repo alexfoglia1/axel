@@ -8,6 +8,8 @@
 
 #include <common/utils.h>
 
+#include <kernel/multitasking.h>
+
 static hl_interrupt_handler hl_interrupt_handlers[IDT_ENTRIES] = 
 {
     &divide_by_zero_exception,    // INT 0  : DIVIDE BY ZERO
@@ -149,13 +151,20 @@ int __attribute__((noreturn)) gpf_exception(interrupt_stack_frame_t frame)
 }
 
 
-int __attribute__((noreturn))
+int
 page_fault_exception(interrupt_stack_frame_t frame)
 {
     // A page fault has occurred.
     // The faulting address is stored in the CR2 register.
     uint32_t faulting_address;
     RF_READ_CR_2(faulting_address); 
+
+    if (0x7A10ADED == faulting_address)
+    {
+        tasking_kill(tasking_gettid());
+
+        return 0;
+    }
 
     // The error code gives us details of what happened.
     int present = (frame.err_code >> 0) & 0x1;      // Page present
@@ -169,4 +178,6 @@ page_fault_exception(interrupt_stack_frame_t frame)
                            present, rw, us, reserved, id, faulting_address);
 
     panic("KERNEL PANIC : PAGE FAULT\n");
+
+    return -1;
 }

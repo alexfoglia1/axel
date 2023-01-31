@@ -236,7 +236,7 @@ kheap_free(void* p)
             }
             else
             {
-                __klog__(COM1_PORT, "kheap free memory at 0x%X\n", ptr);
+                __klog__(COM1_PORT, "kheap free 0x%X bytes of memory at 0x%X\n", block_i->size, ptr);
 
                 block_i->status = KHEAP_AVAILABLE_BLOCK;
                 //slog_heap_state(COM1_PORT, "Kernel heap state after free");

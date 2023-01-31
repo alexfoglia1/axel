@@ -274,9 +274,11 @@ user_mode_entry_point()
     int tid = fork();
     if (0x00 == tid)
     {
+        sleep(100);
         printf("[%d] Task spawner started\n", tasking_gettid());
-        //int bash_tid = spawn("/usr/bin/bash.out");
-        //printf("%s [%d]\n", "/usr/bin/bash.out", bash_tid);
+        sleep(100);
+        spawn("/usr/bin/bash.out");
+        
         while(1);
     }
     else

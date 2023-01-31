@@ -33,6 +33,7 @@ void tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis);
 int  tasking_fork();
 int  tasking_spawn_task(uint32_t entry_point);
 int  tasking_gettid();
+void tasking_kill(int tid);
 
 task_t* tasking_get_current_task();
 
