@@ -12,7 +12,7 @@ INCLUDEDIR?=$(PREFIX)/include
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -mgeneral-regs-only
 CPPFLAGS:=$(CPPFLAGS) -I.
 LDFLAGS:=$(LDFLAGS)
-LIBS:=$(LIBS) -nostdlib -lk -lgcc
+LIBS:=$(LIBS) -nostdlib -lc -lgcc
 
 BASH_OBJS=\
 bash.o \

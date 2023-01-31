@@ -13,7 +13,7 @@ INCLUDEDIR?=$(PREFIX)/include
 CFLAGS:=$(CFLAGS) -ffreestanding -Wall -Wextra -mgeneral-regs-only
 CPPFLAGS:=$(CPPFLAGS) -D__is_kernel -Di686=0 -Ddebug_x86_84=1 -DARCH=i686 -Iinclude -Icommon/include -Iinterrupts/include -Idrivers/include -Icontrollers/include -Isyscall/include -Ifilesystem/include
 LDFLAGS:=$(LDFLAGS)
-LIBS:=$(LIBS) -nostdlib -lk -lgcc
+LIBS:=$(LIBS) -nostdlib -lc -lgcc
 
 #x86 is the target architecture for the moment 
 ARCHDIR=arch/i686

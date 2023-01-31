@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/libc/include"
             ],
-            "defines": ["i686=0", "debug_amd64=1", "ARCH=i686", "__is_libk"],
+            "defines": ["i686=0", "debug_amd64=1", "ARCH=i686"],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++17",
