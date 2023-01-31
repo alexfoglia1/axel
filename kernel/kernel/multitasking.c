@@ -48,7 +48,7 @@ tasking_init(uint32_t _initial_esp)
     sti();
 }
 
-#include <kernel/arch/tty.h>
+
 int
 tasking_fork()
 {
@@ -100,13 +100,11 @@ tasking_fork()
         child_task->eip = eip;
 
         sti();
-        printk("tasking_fork() : parent returns %d\n", child_task->tid);
         return child_task->tid;
     }
     else
     {
         // return 0 by convention
-        printk("tasking_fork() : child returns 0\n");
         return 0;
     }
 }
@@ -151,7 +149,6 @@ tasking_spawn_task(uint32_t entry_point)
 void
 tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
 {
-    printk("scheduler\n");
     if (0x00 == current_task)
     {
         return;

@@ -13,6 +13,7 @@ syscall_interface:
     push %ebp
     mov %esp, %ebp
     mov 8(%esp), %eax
+    pushf
     
 test_80: // test if it is a read
     cmpl $80, %eax
