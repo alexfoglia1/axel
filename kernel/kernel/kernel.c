@@ -275,7 +275,7 @@ user_mode_entry_point()
     {
         while(1)
         {
-            printf("[%d] Child started\n", tasking_gettid());
+            printf("[%d] Child\n", tasking_gettid());
             sleep(100);
         }
     }
@@ -283,7 +283,7 @@ user_mode_entry_point()
     {
         while(1)
         {
-            printf("[%d] Kernel sleep\n", tasking_gettid());
+            printf("[%d] Parent\n", tasking_gettid());
             sleep(200);
         }
     }
