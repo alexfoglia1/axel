@@ -101,15 +101,14 @@ paging_init()
 
     // Paging is active, memory allocation can be redirected to the kernel heap
     memory_enable_heap_malloc();
-    __klog__(COM1_PORT, "Paging is active\n");
-
+    __klog__(COM1_PORT, "Paging is active, kernel page directory at pa(0x%X), va(0x%X)\n", kernel_directory->physical_addr, kernel_directory->tables_physical);
     // Now clone the kernel directory and use the clone
     current_directory = paging_clone_directory(kernel_directory);
     
     // current_directory is allocated AFTER paging and heap, tables_physical points a virtual address in the heap
     // but physical_addr stores tables_physical physical address due to the paging_clone_directory() behaviour
     load_page_directory(current_directory->physical_addr);
-    __klog__(COM1_PORT, "Kernel directory cloned\n");
+    __klog__(COM1_PORT, "Kernel directory cloned, current page directory at pa(0x%X), va(0x%X)\n", current_directory->physical_addr, current_directory->tables_physical);
 }
 
 
