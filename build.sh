@@ -13,9 +13,4 @@ for PROJECT in $PROJECTS; do
   (cd $PROJECT && DESTDIR="$SYSROOT" $MAKE install)
 done
 
-for PROJECT in $SWBASE; do
-  echo "Building sw-base $PROJECT"
-  (cd sw-base/$PROJECT && DESTDIR="$SYSROOT" $MAKE install)
-done
-
 echo "Done!"

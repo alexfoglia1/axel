@@ -1,6 +1,5 @@
 SYSTEM_HEADER_PROJECTS="libc kernel"
 PROJECTS="libc kernel"
-SWBASE="bash"
 
 export OSNAME=axel
 export MAKE=${MAKE:-make}
