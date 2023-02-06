@@ -13,7 +13,6 @@
 #define SYSCALL_INT_NO_READ  80
 #define SYSCALL_INT_NO_WRITE 81
 #define SYSCALL_INT_NO_FORK  82
-#define SYSCALL_INT_NO_SPAWN 83
 
 #include <sys/cdefs.h>
 
@@ -26,6 +25,5 @@ extern int syscall_interface(uint32_t syscall_int_no, uint32_t syscall_type, uin
 int write(uint32_t syscall_type, void* buffer, size_t count);
 int read(uint32_t syscall_type,  void* buffer, size_t count);
 int fork();
-int spawn(const char* filename);
 
 #endif

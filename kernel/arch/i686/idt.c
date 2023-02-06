@@ -80,7 +80,6 @@ idt_init()
     idt_add_entry(SYSCALL_INT_NO_READ,  (uint32_t) &isr80_entry_point, PRESENT | TRP_GATE);
     idt_add_entry(SYSCALL_INT_NO_WRITE, (uint32_t) &isr81_entry_point, PRESENT | TRP_GATE);
     idt_add_entry(SYSCALL_INT_NO_FORK,  (uint32_t) &isr82_entry_point, PRESENT | TRP_GATE);
-    idt_add_entry(SYSCALL_INT_NO_SPAWN, (uint32_t) &isr83_entry_point, PRESENT | TRP_GATE);
     
     store_idt((uint32_t)(&idt_ptr));
 }

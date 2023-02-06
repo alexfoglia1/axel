@@ -68,7 +68,6 @@ $(ISRDIR)/isr.o \
 $(SYSCALLDIR)/sys_write.o \
 $(SYSCALLDIR)/sys_read.o \
 $(SYSCALLDIR)/sys_fork.o \
-$(SYSCALLDIR)/sys_spawn.o \
 $(SYSCALLDIR)/syscall.o \
 $(CONTRDIR)/pic.o \
 $(CONTRDIR)/ps2.o \
@@ -96,7 +95,6 @@ kernel/memory_manager.o \
 kernel/paging.o \
 kernel/multitasking.o \
 kernel/scheduler.o \
-kernel/elf_loader.o \
 kernel/kernel.o \
 
 OBJS=\

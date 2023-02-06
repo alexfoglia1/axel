@@ -7,7 +7,6 @@
 #include <kernel/memory_manager.h>
 #include <kernel/multitasking.h>
 #include <kernel/scheduler.h>
-#include <kernel/elf_loader.h>
 
 #include <kernel/arch/cpuid.h>
 #include <kernel/arch/tty.h>
@@ -269,21 +268,23 @@ kernel_main(multiboot_info_t* mbd, uint32_t magic, uint32_t esp)
 void
 user_mode_entry_point()
 {
-    printf("\nEntered user mode, starting task spawner\n");
+    printf("\nEntered user mode\n");
 
     int tid = fork();
     if (0x00 == tid)
     {
-        sleep(100);
-        printf("[%d] Task spawner started\n", tasking_gettid());
-        sleep(100);
-        spawn("/usr/bin/bash.out");
-        
-        while(1);
+        while(1)
+        {
+            printf("[%d] Child started\n", tasking_gettid());
+            sleep(100);
+        }
     }
     else
     {
-        printf("[%d] Kernel sleep\n", tasking_gettid());
-        while(1);
+        while(1)
+        {
+            printf("[%d] Kernel sleep\n", tasking_gettid());
+            sleep(200);
+        }
     }
 }

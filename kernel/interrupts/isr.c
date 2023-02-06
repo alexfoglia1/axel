@@ -159,13 +159,6 @@ page_fault_exception(interrupt_stack_frame_t frame)
     uint32_t faulting_address;
     RF_READ_CR_2(faulting_address); 
 
-    if (0x7A10ADED == faulting_address)
-    {
-        tasking_kill(tasking_gettid());
-
-        return 0;
-    }
-
     // The error code gives us details of what happened.
     int present = (frame.err_code >> 0) & 0x1;      // Page present
     int rw = (frame.err_code >> 1) & 0x1;           // Write operation?

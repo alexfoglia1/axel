@@ -13,6 +13,5 @@ void syscall_init();
 int sys_write(interrupt_stack_frame_t frame);
 int sys_read(interrupt_stack_frame_t  frame);
 int sys_fork(interrupt_stack_frame_t  frame);
-int sys_spawn(interrupt_stack_frame_t frame);
 
 #endif

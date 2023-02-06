@@ -37,13 +37,15 @@ tasking_init(uint32_t _initial_esp)
     current_task->eip = 0;
     current_task->page_directory = paging_current_page_directory();
     current_task->next = (struct task*)(0x00);
+
+    // Initialize kernel stack
     current_task->kernel_stack = (uint32_t) kmalloc_a(KERNEL_STACK_SIZE);
 
     ready_tasks = current_task;
 
     next_tid += 1;
 
-    __klog__(COM1_PORT, "Multitask initialized, current ready queue: tid(0x%X)\n", current_task->tid);
+    __klog__(COM1_PORT, "Multitask initialized, kernel stack at 0x%X, current ready queue: (0x%X,)\n", current_task->kernel_stack, current_task->tid);
 
     sti();
 }
@@ -67,7 +69,10 @@ tasking_fork()
     child_task->ebp = 0;
     child_task->eip = 0;
     child_task->page_directory = child_directory;
-    current_task->kernel_stack = (uint32_t) kmalloc_a(KERNEL_STACK_SIZE);
+
+    // Initialize child kernel stack
+    child_task->kernel_stack = (uint32_t) kmalloc_a(KERNEL_STACK_SIZE);
+
     child_task->next = (struct task*) (0x00);
     
     next_tid += 1;
@@ -80,7 +85,8 @@ tasking_fork()
     }
     task_ptr->next = child_task;
 
-    __klog__(COM1_PORT, "tasking_fork(), parent tid(0x%X), child tid(0x%X)\n", parent_task->tid, task_ptr->next->tid);
+    __klog__(COM1_PORT, "tasking_fork(), parent tid(0x%X), parent kernel stack(0x%X), child tid(0x%X), child kernel stack(0x%X)\n",
+                                         parent_task->tid, parent_task->kernel_stack, child_task->tid, child_task->kernel_stack);
 
     uint32_t eip;
     RF_READ_IST_PTR(eip);
@@ -107,42 +113,6 @@ tasking_fork()
         // return 0 by convention
         return 0;
     }
-}
-
-
-int
-tasking_spawn_task(uint32_t entry_point)
-{
-    cli();
-
-    // Create the stack for new task
-    uint32_t new_stack = (uint32_t) kmalloc_a(STACK_SIZE);
-
-    // Allocate and initialize new task
-    task_t* child_task = (task_t*) kmalloc(sizeof(task_t));
-    child_task->tid = next_tid;
-    child_task->esp = new_stack;
-    child_task->ebp = new_stack + 8192;
-    child_task->eip = entry_point;
-    child_task->page_directory = paging_clone_directory(paging_current_page_directory());
-
-    child_task->next = (struct task*) (0x00);
-    
-    next_tid += 1;
-
-    // Put child task at the end of ready queue
-    volatile task_t* task_ptr = ready_tasks;
-    while (task_ptr->next != 0x00)
-    {
-        task_ptr = task_ptr->next;
-    }
-    task_ptr->next = child_task;
-
-    __klog__(COM1_PORT, "tasking_spawn_task(), spawned tid(0x%X)\n", child_task->tid);
-
-    sti();
-
-    return child_task->tid;
 }
 
 
@@ -189,7 +159,7 @@ tasking_scheduler(uint32_t pit_ticks, uint32_t pit_millis)
 
     // Context switch will set the current page directory in CR3, no need to perform an hardware set page directory in paging.c
     paging_set_current_page_directory(current_task->page_directory, 0x00);
-    gdt_set_kernel_stack(current_task->kernel_stack+KERNEL_STACK_SIZE);
+    gdt_set_kernel_stack(current_task->kernel_stack + KERNEL_STACK_SIZE);
 
     // Perform context switch
     context_switch(current_task->eip, current_task->esp, current_task->ebp, current_task->page_directory->physical_addr);
@@ -248,33 +218,4 @@ tasking_move_stack(uint32_t new_stack_addr, uint32_t stack_size)
     RF_WRITE_BAS_PTR(new_ebp);
 
     __klog__(COM1_PORT, "Stack moved, esp(0x%X->0x%X)\n", esp, new_esp);
-}
-
-
-void
-tasking_kill(int tid)
-{
-    cli();
-
-    __klog__(COM1_PORT, "Terminating task %d\n", tid);
-    
-    volatile task_t* tmp_task = ready_tasks;
-    while (tmp_task->next->tid != tid)
-    {
-        // If we served last process in ready queue, return to serve the first
-        tmp_task = tmp_task->next;
-    }
-
-    __klog__(COM1_PORT, "Task(%d)->next points to terminating task(%d)\n", tmp_task->tid, tmp_task->next->tid);
-
-    volatile task_t* terminating = tmp_task->next;
-    tmp_task->next = terminating->next;
-    __klog__(COM1_PORT, "Task(%d)->next now points to (%d)\n", tmp_task->tid, tmp_task->next->tid);
-    
-    kfree((void*) terminating->page_directory);
-    kfree((void*) terminating->esp);
-    kfree((void*) terminating);
-    __klog__(COM1_PORT, "Task(%d) free'd resources, terminated\n", tid);
-
-    sti();
 }
