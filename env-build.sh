@@ -16,7 +16,7 @@ export LIBDIR=$EXEC_PREFIX/lib
 export INCLUDEDIR=$PREFIX/include
 export BINDIR=$PREFIX/bin
 
-export CFLAGS='-O0 -g -Wno-unused-parameter -Werror'
+export CFLAGS='-O0 -g -Wno-unused-parameter -Wextra -Werror'
 export CPPFLAGS=''
 
 # Configure the cross-compiler to use the desired system root.
