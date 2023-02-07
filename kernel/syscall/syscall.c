@@ -5,8 +5,8 @@
 #include <interrupts/isr.h>
 
 #include <kernel/arch/tty.h>
+#include <kernel/arch/idt.h>
 
-#include <unistd.h>
 
 void
 syscall_init()
